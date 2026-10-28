@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "baton": {
+      "source": {
+        "source": "github",
+        "repo": "OpenLyceum/Baton"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "scenerystack@baton": true
+  }
+}
