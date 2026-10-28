@@ -1,21 +1,250 @@
 {
-  "title": "SceneryStack Template",
+  "title": "Spectroscopy Lab",
   "screens": {
-    "sim": "Sim"
+    "infrared": "Infrared",
+    "nmr": "NMR",
+    "uvVis": "UV-Vis",
+    "unknowns": "Unknowns"
   },
   "a11y": {
-    "screenSummary": {
-      "playArea": "The play area shows the main simulation content.",
-      "controlArea": "The control area has a Reset All button that returns the simulation to its starting state.",
-      "interactionHint": "Explore the simulation by interacting with its controls."
+    "infrared": {
+      "screenSummary": {
+        "playArea": "The play area shows a molecule in 3D and its infrared transmittance spectrum. Each dip is a normal mode of vibration.",
+        "controlArea": "The control area chooses the molecule, substitutes isotopes, sets the line width and toggles the normal-mode sticks and functional-group regions.",
+        "interactionHint": "Focus the spectrum and use the arrow keys to step through the peaks; the molecule vibrates in the selected mode."
+      },
+      "currentDetails": "{{molecule}}: {{count}} normal modes. {{selection}}",
+      "noSelection": "No peak is selected.",
+      "peak": "{{mode}} at {{wavenumber}} wavenumbers, {{intensity}} kilometres per mole.",
+      "spectrum": "Infrared spectrum",
+      "spectrumHelp": "Click a dip, or use the arrow keys, to select a vibration."
     },
-    "currentDetails": "The simulation is in its initial state.",
-    "controls": {
-      "exampleControl": "Example control"
+    "nmr": {
+      "screenSummary": {
+        "playArea": "The play area shows a molecule in 3D with its hydrogens lettered by environment, its proton NMR spectrum, a zoom on one signal, and a table of signals.",
+        "controlArea": "The control area chooses the molecule and the spectrometer frequency, and toggles a D₂O shake, the TMS reference and the integral.",
+        "interactionHint": "Focus the spectrum and use the arrow keys to step through the signals; the matching hydrogens are ringed."
+      },
+      "currentDetails": "{{molecule}}: {{count}} signals at {{field}} megahertz. {{selection}}",
+      "noSelection": "No signal is selected.",
+      "signal": "Signal {{label}}: {{count}} protons at {{shift}} ppm, {{multiplicity}}.",
+      "spectrum": "Proton NMR spectrum",
+      "spectrumHelp": "Click a peak, or use the arrow keys, to select a signal."
+    },
+    "uvVis": {
+      "screenSummary": {
+        "playArea": "The play area shows a conjugated molecule with one π orbital drawn as red and blue lobes, its π energy levels filled with electrons, and the predicted and measured absorption bands with the colour each would give.",
+        "controlArea": "The control area chooses the molecule and the model: Hückel or particle in a box.",
+        "interactionHint": "Compare the predicted and measured wavelengths along a family, for example the cyanine dyes with each model."
+      },
+      "currentDetails": "{{molecule}}, {{model}} model: predicted {{predicted}} nanometres, measured {{measured}} nanometres.",
+      "noPrediction": "no prediction",
+      "orbital": "Orbital {{number}} of {{count}}, {{occupancy}} electrons{{role}}.",
+      "levels": "π energy levels",
+      "levelsHelp": "Use the arrow keys to choose the orbital drawn on the molecule."
+    },
+    "unknowns": {
+      "screenSummary": {
+        "playArea": "The play area shows the infrared and proton NMR spectra of an unknown molecule, its formula, degree of unsaturation and molecular ion, and buttons for the candidate isomers.",
+        "controlArea": "The control area chooses the level and starts a new unknown.",
+        "interactionHint": "Read the spectra, then press the button of the molecule you think it is."
+      },
+      "currentDetails": "Level {{level}}. Formula {{formula}}, {{count}} candidates. Score {{score}} of {{rounds}}. {{status}}",
+      "irDescription": "Infrared transmittance spectrum of the unknown.",
+      "nmrDescription": "Proton NMR spectrum of the unknown, with its integral."
     }
   },
   "preferences": {
     "title": "Simulation",
-    "exampleToggle": "Example Toggle"
+    "absorbance": "Plot infrared spectra as absorbance"
+  },
+  "molecules": {
+    "water": "water",
+    "carbonDioxide": "carbon dioxide",
+    "hydrogenChloride": "hydrogen chloride",
+    "methane": "methane",
+    "ammonia": "ammonia",
+    "formaldehyde": "formaldehyde",
+    "ethanol": "ethanol",
+    "dimethylEther": "dimethyl ether",
+    "1Propanol": "1-propanol",
+    "2Propanol": "2-propanol",
+    "ethylMethylEther": "ethyl methyl ether",
+    "allylAlcohol": "allyl alcohol",
+    "methylVinylEther": "methyl vinyl ether",
+    "14Dioxane": "1,4-dioxane",
+    "acetaldehyde": "acetaldehyde",
+    "acetone": "acetone",
+    "propanal": "propanal",
+    "2Butanone": "2-butanone",
+    "aceticAcid": "acetic acid",
+    "butanoicAcid": "butanoic acid",
+    "ethylAcetate": "ethyl acetate",
+    "methylPropanoate": "methyl propanoate",
+    "acetonitrile": "acetonitrile",
+    "acetamide": "acetamide",
+    "ethylamine": "ethylamine",
+    "chloroethane": "chloroethane",
+    "benzene": "benzene",
+    "toluene": "toluene",
+    "phenol": "phenol",
+    "benzaldehyde": "benzaldehyde",
+    "ethylbenzene": "ethylbenzene",
+    "oXylene": "o-xylene",
+    "mXylene": "m-xylene",
+    "pXylene": "p-xylene",
+    "ethene": "ethene (ethylene)",
+    "13Butadiene": "1,3-butadiene",
+    "135Hexatriene": "1,3,5-hexatriene",
+    "1357Octatetraene": "1,3,5,7-octatetraene",
+    "betaCarotene": "β-carotene",
+    "naphthalene": "naphthalene",
+    "anthracene": "anthracene",
+    "tetracene": "tetracene",
+    "pentacene": "pentacene",
+    "azulene": "azulene",
+    "trimethineCyanine": "trimethine cyanine",
+    "pentamethineCyanine": "pentamethine cyanine",
+    "heptamethineCyanine": "heptamethine cyanine",
+    "nonamethineCyanine": "nonamethine cyanine"
+  },
+  "families": {
+    "small": "Small molecules",
+    "alcoholsEthers": "Alcohols & ethers",
+    "carbonyls": "Aldehydes & ketones",
+    "acidsEsters": "Acids & esters",
+    "nitrogenHalogen": "N & Cl compounds",
+    "aromatics": "Aromatics",
+    "polyenes": "Polyenes",
+    "acenes": "Acenes & azulene",
+    "cyanines": "Cyanine dyes"
+  },
+  "viewer": {
+    "accessibleName": "Molecule viewer",
+    "helpText": "Arrow keys rotate, plus and minus zoom, N and P step through atoms."
+  },
+  "keyboardHelp": {
+    "viewerSection": "Molecule Viewer",
+    "spectrumSection": "Spectrum",
+    "rotate": "Rotate molecule",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "resetView": "Reset view",
+    "nextAtom": "Next atom",
+    "previousAtom": "Previous atom",
+    "pickAtom": "Select atom",
+    "nextPeak": "Next peak",
+    "previousPeak": "Previous peak",
+    "clearPeak": "Clear peak selection",
+    "levelsSection": "Energy Levels",
+    "higherOrbital": "Higher orbital",
+    "lowerOrbital": "Lower orbital"
+  },
+  "controls": {
+    "family": "Family",
+    "molecule": "Molecule"
+  },
+  "infrared": {
+    "wavenumberAxis": "Wavenumber (cm⁻¹)",
+    "transmittanceAxis": "Transmittance (%)",
+    "isotopes": "Isotopes",
+    "isotopeSchemes": {
+      "natural": "Most abundant",
+      "exchangeDeuterium": "D on O and N (D₂O shake)",
+      "allDeuterium": "All H → D",
+      "carbon13": "All ¹²C → ¹³C",
+      "oxygen18": "All ¹⁶O → ¹⁸O",
+      "chlorine37": "³⁵Cl → ³⁷Cl"
+    },
+    "lineWidth": "Line width",
+    "showModes": "Normal modes",
+    "showRegions": "Group regions",
+    "regions": {
+      "oh": "O–H, N–H",
+      "ch": "C–H",
+      "tripleBond": "C≡N, C≡C",
+      "carbonyl": "C=O",
+      "fingerprint": "fingerprint"
+    },
+    "stretch": "{{bond}} stretch",
+    "bend": "{{angle}} bend",
+    "wavenumber": "{{value}} cm⁻¹",
+    "intensity": "Intensity: {{value}} km/mol",
+    "reducedMass": "Reduced mass: {{value}} u",
+    "inactive": "IR-inactive: the dipole does not change",
+    "selectHint": "Click a dip in the spectrum to watch that vibration.",
+    "modeCount": "{{count}} normal modes (3N − {{external}})",
+    "method": "B3LYP/def2-SVP, scaled ×{{scale}}",
+    "absorbanceAxis": "Absorbance"
+  },
+  "nmr": {
+    "shiftAxis": "Chemical shift δ (ppm)",
+    "intensityAxis": "Intensity",
+    "zoomAxis": "δ − δ(signal) (ppm)",
+    "field": "Spectrometer",
+    "fieldValue": "{{value}} MHz",
+    "d2oShake": "D₂O shake",
+    "tms": "TMS reference",
+    "integral": "Integral",
+    "signals": "Signals",
+    "signalRow": "{{label}}   δ {{shift}}   {{count}}H   {{multiplicity}}",
+    "couplingValue": "J = {{j}} Hz",
+    "broad": "broad, exchanges with D₂O",
+    "zoomTitle": "Signal {{label}} at {{field}} MHz",
+    "zoomHint": "Select a signal to zoom in on it.",
+    "selectHint": "Click a peak, a row or an atom.",
+    "multiplicities": {
+      "s": "singlet",
+      "d": "doublet",
+      "t": "triplet",
+      "q": "quartet",
+      "quint": "quintet",
+      "sext": "sextet",
+      "sept": "septet",
+      "dd": "doublet of doublets",
+      "dt": "doublet of triplets",
+      "td": "triplet of doublets",
+      "qd": "quartet of doublets",
+      "m": "multiplet"
+    }
+  },
+  "uvVis": {
+    "wavelengthAxis": "Wavelength (nm)",
+    "absorbanceAxis": "Absorbance",
+    "model": "Model",
+    "hueckel": "Hückel",
+    "box": "Particle in a box",
+    "orbitals": "π orbitals",
+    "homo": "HOMO",
+    "lumo": "LUMO",
+    "energyHueckel": "E − α (|β|)",
+    "energyBox": "E (eV)",
+    "predicted": "Predicted λmax: {{value}} nm",
+    "measured": "Measured λmax: {{value}} nm",
+    "gapHueckel": "HOMO→LUMO gap Δx = {{gap}} |β|",
+    "gapBox": "HOMO→LUMO gap = {{gap}} eV",
+    "calibration": "E = {{a}} + {{b}}·Δx eV, fitted to this family",
+    "boxLength": "L = {{length}} Å, {{electrons}} π electrons, no fitted constants",
+    "notLinear": "The box model needs an unbranched chain.",
+    "predictedColor": "Predicted",
+    "measuredColor": "Observed",
+    "colorHeading": "Colour in white light",
+    "orbitalHint": "Click a level to draw that orbital on the molecule."
+  },
+  "unknowns": {
+    "question": "Which molecule is it?",
+    "newUnknown": "New unknown",
+    "level": "Level",
+    "levelValue": "{{level}}",
+    "score": "Score: {{score}} / {{rounds}}",
+    "formula": "Formula: {{formula}}",
+    "unsaturation": "Degree of unsaturation: {{value}}",
+    "ionCluster": "Molecular ion",
+    "ionPeak": "{{mz}}  ({{relative}} %)",
+    "correct": "Correct — {{name}}.",
+    "incorrect": "Not {{name}}. Look again.",
+    "irTitle": "Infrared",
+    "nmrTitle": "¹H NMR, 300 MHz",
+    "noFamilies": "No isomer family has its infrared data yet."
   }
 }

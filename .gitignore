@@ -40,3 +40,7 @@ Thumbs.db
 
 # CI / local npm audit artifact (must not be linted)
 audit.json
+
+# Offline quantum-chemistry pipeline (scripts/qm)
+.venv/
+__pycache__/

@@ -1,25 +1,43 @@
-# SceneryStack Template
+# Spectroscopy Lab
 
 [![CI](../../actions/workflows/ci.yml/badge.svg)](../../actions/workflows/ci.yml)
 
-A reusable SceneryStack simulation template for one or N screens, built with
-[SceneryStack](https://scenerystack.org/), Vite 8, TypeScript 7, and Biome 2.
+Read infrared, ¹H NMR and UV-Vis spectra against a 3D molecule: click a peak and the atoms behind
+it light up, the molecule vibrates in that mode, or the orbital that absorbs is drawn on it. Built
+with [SceneryStack](https://scenerystack.org/); runs offline as a Progressive Web App.
 
 ## Features
 
-- SceneryStack scaffold with model/view separation (`rename` + `scaffold-screens` for one or N screens)
-- English, Spanish, and French localization via `StringManager`
-- Default and projector color profiles
-- Progressive Web App (installable, offline-capable)
-- Git hooks for Biome pre-commit checks
-- Shared GitHub Actions CI via `OpenLyceum/Baton`
+- **Infrared.** 34 molecules with B3LYP/def2-SVP Hessians computed for this sim. The browser runs
+  the normal-mode analysis itself, so isotope substitution (a D₂O shake, all H → D, ¹³C, ¹⁸O, ³⁷Cl)
+  recomputes the spectrum live. Click a band to animate its mode; functional-group regions,
+  normal-mode sticks, line width, and transmittance or absorbance (Preferences).
+- **¹H NMR.** Equivalent protons from the molecular graph, chemical shifts from additivity
+  rules, first-order n + 1 splitting with Pascal intensities, integration, a D₂O shake, and a
+  spectrometer slider (60–600 MHz) with a zoom that shows multiplets narrowing on the ppm scale.
+- **UV-Vis.** Hückel and particle-in-a-box (Kuhn) models for polyenes, acenes and cyanine dyes:
+  energy-level diagram, π orbitals drawn as lobes on the molecule, predicted vs measured λmax,
+  and the colour each would give in white light.
+- **Unknowns.** Identify an isomer from its formula, degree of unsaturation, molecular-ion
+  cluster, IR and NMR spectra, over three levels.
+- **Accessible:** keyboard operation throughout (rotate the molecule, step through atoms, peaks,
+  signals and orbitals, each announced), live screen summaries, keyboard-help dialogs.
+- English, French and Spanish; default and projector colour profiles; installable PWA.
 
 ## Quick Start
 
 ```bash
 npm install
-npm run icons    # generate PNG icons from public/icons/icon.svg
 npm start        # dev server → http://localhost:5173
+```
+
+Molecule data is committed; regenerating it is optional and needs Python 3:
+
+```bash
+python3 -I scripts/qm/fetch_structures.py      # PubChem 3D conformers → scripts/qm/structures/
+python3 -I scripts/qm/export_geometry.py       # geometry-only library files (NMR, UV-Vis)
+python3 -m venv scripts/qm/.venv && scripts/qm/.venv/bin/pip install -r scripts/qm/requirements.txt
+scripts/qm/.venv/bin/python -I scripts/qm/compute_vibrations.py   # B3LYP Hessians (hours)
 ```
 
 ## Scripts
@@ -39,8 +57,6 @@ npm start        # dev server → http://localhost:5173
 | `npm run format` | Auto-format all files |
 | `npm run fix` | Lint + auto-fix |
 | `npm run icons` | Regenerate PNG icons from `public/icons/icon.svg` |
-| `npm run rename` | Sim-level fork/rename (`--id`, `--name`) |
-| `npm run scaffold-screens` | Emit N fleet-named screen packages from `sim-screen/` (`--shared-model` optional) |
 | `npm run release` | `check && lint && build && test`, then version patch + push tags |
 | `npm run clean` | Remove `dist/` |
 
@@ -55,6 +71,7 @@ New sims start at `version: "0.0.0"` in `package.json`. Bump only when cutting a
 | [TypeScript](https://www.typescriptlang.org/) | ^7 | Type-safe JavaScript |
 | [Biome](https://biomejs.dev/) | ^2.5 | Linting + formatting |
 | [vite-plugin-pwa](https://vite-pwa-org.netlify.app/) | ^2 | PWA + service worker |
+| [PySCF](https://pyscf.org/) + [geomeTRIC](https://github.com/leeping/geomeTRIC) | 2.14 / 1.1 | Offline B3LYP Hessians (dev-only, `scripts/qm/`) |
 
 ## License
 

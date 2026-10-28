@@ -1,108 +1,79 @@
-# AGENTS.md — SceneryStack Template
+# AGENTS.md — Spectroscopy Lab
 
 Sim-specific context for AI assistants. General SceneryStack guidance: [OpenLyceum/.github/AGENTS.md](https://github.com/OpenLyceum/.github/blob/main/AGENTS.md).
 
 ## Project
 
-Reusable SceneryStack template (one or N screens) and **canonical accessibility reference** for
-OpenLyceum sims. Prefer `Baton/scripts/create-sim.sh` (or GitHub **Use this template** +
-`npm run rename` + `npm run scaffold-screens`) to fork it. For multi-screen sims, see
-[`doc/multi-screen.md`](doc/multi-screen.md).
+Read infrared, ¹H NMR and UV-Vis spectra against a 3D molecule: click a peak and the atoms
+behind it light up (or the molecule vibrates in that mode); click an atom and its peak lights up.
+Four screens:
+
+| Screen | Model |
+|---|---|
+| Infrared | In-browser normal-mode analysis of an offline B3LYP Hessian; isotope substitution re-diagonalises with new masses |
+| NMR | Topological equivalence, additivity shift rules, first-order n + 1 splitting, field slider with multiplet zoom, D₂O shake |
+| UV-Vis | Hückel (per-family linear calibration) and Kuhn particle-in-a-box; energy levels, orbital lobes, perceived colour |
+| Unknowns | Identify an isomer from formula, unsaturation, molecular ion, IR and NMR; three levels |
+
+Physics and every constant: [`doc/model.md`](doc/model.md). Architecture: [`doc/implementation-notes.md`](doc/implementation-notes.md).
+
+### The one thing to understand first
+
+**The QM is offline; the physics is live.** `scripts/qm/compute_vibrations.py` (PySCF, B3LYP/
+def2-SVP) ships each molecule's optimised geometry, bond orders (from the PubChem SDF), Cartesian
+**Hessian** and **dipole derivatives** — not frequencies. `NormalModeAnalysis.ts` mass-weights the
+Hessian, projects out translations/rotations, diagonalises (`math/symmetricEigen.ts`, Jacobi) and
+computes IR intensities, so changing an isotope only changes masses. Never hand-edit
+`library/data/*.json`; rerun the script.
 
 ## Key files
 
 | File | Purpose |
 |---|---|
-| `src/SimColors.ts` | All `ProfileColorProperty` instances |
-| `src/SimConstants.ts` | Named numeric constants (layout px, physics SI units) |
-| `src/SimNamespace.ts` | Namespace for color property names |
-| `src/i18n/StringManager.ts` | Singleton localized string accessor |
-| `src/sim-screen/SimScreen.ts` | Screen wrapper |
-| `src/sim-screen/model/SimModel.ts` | Simulation state and logic |
-| `src/sim-screen/view/SimScreenView.ts` | Visual nodes, layout, `screenSummaryContent` + `pdomOrder` |
-| `src/sim-screen/view/SimScreenSummaryContent.ts` | Accessible screen summary (reference a11y pattern) |
-| `src/sim-screen/view/SimKeyboardHelpContent.ts` | Basic keyboard actions + commented slider/time-control sections |
-| `src/common/SimPanel.ts` | Pre-themed `Panel` wrapper (uses `SimColors` automatically) |
-| `src/common/SimButtonOptions.ts` | Flat button-appearance option bundles + light-control-surface combo-box options |
-| `src/common/SimControlOptions.ts` | Shared slider, number-control, and checkbox sizing/theme options |
-| `src/common/TimeModel.ts` | Composable play/pause + elapsed-time model for animated sims |
-| `scripts/generate-icons.ts` | PNG icons from `public/icons/icon.svg` |
-| `scripts/rename-sim.ts` | Sim-level fork/rename (metadata, Colors, Constants, Panel, Button/Control options, Preferences) |
-| `scripts/scaffold-screens.ts` | Emit N screen packages + wire main/strings/icons |
-
-## Common components
-
-### SimPanel
-
-Every control panel and info box in the sim should use `SimPanel` so that
-default/projector color switching is automatic:
-
-```typescript
-import { SimPanel } from "../../common/SimPanel.js";
-const panel = new SimPanel(content);              // uses SimColors defaults
-const panel = new SimPanel(content, { xMargin: 20 }); // override any PanelOption
-```
-
-### TimeModel
-
-For simulations with animation, compose `TimeModel` into your screen model:
-
-```typescript
-import { TimeModel } from "../../common/TimeModel.js";
-
-export class MyModel implements TModel {
-  public readonly timer = new TimeModel();   // starts paused; pass true to auto-play
-
-  public step(dt: number): void {
-    this.timer.step(dt);
-    // use this.timer.timeProperty.value for physics
-  }
-  public reset(): void { this.timer.reset(); /* … */ }
-}
-```
-
-Wire the view to `TimeControlNode` from `scenerystack/scenery-phet` binding on
-`model.timer.isPlayingProperty`.
-
-### SimButtonOptions
-
-SceneryStack's push/round buttons default to a 3-D/beveled look; every button in the sim
-should be flat instead. Spread these into the relevant options object:
-
-```typescript
-import { FLAT_RESET_ALL_BUTTON_OPTIONS, FLAT_RECTANGULAR_BUTTON_OPTIONS } from "../../common/SimButtonOptions.js";
-
-const resetAllButton = new ResetAllButton({ ...FLAT_RESET_ALL_BUTTON_OPTIONS, listener: () => {...} });
-const exampleButton = new RectangularPushButton({ ...FLAT_RECTANGULAR_BUTTON_OPTIONS, content, listener });
-```
-
-`FLAT_PLAY_PAUSE_STEP_BUTTON_OPTIONS` spreads into `TimeControlNode`'s `playPauseStepButtonOptions`;
-`TIME_CONTROL_SPEED_RADIO_OPTIONS` fixes `TimeControlNode`'s speed-radio label color, which
-otherwise defaults to black text on the sim's dark default-mode panels. `SIM_COMBO_BOX_OPTIONS`
-themes a `ComboBox`'s button/list chrome to the light control surface below; pair item labels
-with `LIGHT_SURFACE_TEXT_FILL` (not `SimColors.textColorProperty`, which is for panel-fill text).
-
-`SimColors.ts` backs this with a "light control surfaces" section —
-`controlSurfaceColorProperty`, `controlSurfaceDisabledColorProperty`,
-`controlSurfaceTextColorProperty` — identical white/dark-text values in both default and
-projector profiles, so any component that must stay light regardless of theme (combo boxes,
-flat buttons, editable fields) keeps readable contrast automatically.
+| `scripts/qm/molecules.json` | Molecule catalogue: id, PubChem CID, expected formula (checked on fetch) |
+| `scripts/qm/fetch_structures.py` | PubChem 3D SDF → `scripts/qm/structures/` |
+| `scripts/qm/compute_vibrations.py` | SDF → optimise → Hessian + dipole derivatives → `src/common/model/library/data/<id>.json` |
+| `scripts/qm/export_geometry.py` | Geometry-only `library/structures/<id>.json` for all molecules + generated streptocyanines |
+| **Pure model** (`src/common/model/`) | **no Scenery imports except axon in `MoleculeViewModel`/`MoleculeChooser`; unit-tested** |
+| `Molecule.ts` | Molecule type + JSON loader/validator, neighbour lists |
+| `Isotopes.ts` | AME2020 isotope masses (most abundant first) |
+| `math/symmetricEigen.ts` | Cyclic Jacobi eigen-solver (dot's `EigenvalueDecomposition.getV()` throws in scenerystack 3.0) |
+| `vibrations/NormalModeAnalysis.ts` | Mass-weighting, Eckart projection, modes, intensities (km/mol), reduced masses |
+| `vibrations/ModeCharacter.ts` | "C=O stretch" / "H–C–H bend" from an energy-weighted internal-coordinate analysis |
+| `SpectrumCurve.ts` | Lorentzian broadening of stick spectra |
+| `library/SpectroscopyLibrary.ts` | Library entries + families; lazy `import.meta.glob` of the data files |
+| `MoleculeViewModel.ts` | Viewer state: molecule, camera, hover, highlights, labels, animated displacement, orbital lobes |
+| `MoleculeChooser.ts` | Family → molecule choice with one selection Property per family (ComboBox needs values from its own items) |
+| `structure/` | `Elements`, `Geometry`, `Rotation3` copied from MolScope |
+| **View** (`src/common/view/`) | |
+| `MoleculeRenderer.ts` / `MoleculeViewerNode.ts` | Ball-and-stick canvas renderer + input, trimmed from MolScope (no cartoons, cells, console) |
+| `SpectrumChartNode.ts` | bamboo chart: curve, sticks, shaded regions, cursor; click-to-pick, arrow keys step peaks |
+| `MoleculeChooserNode.ts` / `ControlFactory.ts` | Family/molecule combo boxes; themed control builders |
+| `MoleculeGraph.ts` | Aromatic-ring perception, Morgan symmetry classes, bond-order and functional-group helpers |
+| `MoleculeThumbnailNode.ts` | Still ball-and-stick picture (Unknowns answer buttons) |
+| `src/infrared/` | IR model (isotope schemes, peaks, transmittance/absorbance) and view |
+| `src/nmr/model/ChemicalShiftRules.ts` / `ProtonSpectrum.ts` | Shift additivity rules; environments, ³J couplings, multiplets |
+| `src/nmr/model/NMRModel.ts` | Field, D₂O, TMS, integral, zoom; `fullSpectrum`/`integralTrace` reused by Unknowns |
+| `src/uv-vis/model/PiSystem.ts` | π atoms/electrons, Hückel matrix, Kuhn box, orbital lobes |
+| `src/uv-vis/model/UVVisModel.ts` | Measured λmax table (with sources), per-family Hückel calibration, band + colour |
+| `src/uv-vis/model/PerceivedColor.ts` | CIE 1931 (Wyman–Sloan–Shirley fit) → white-balanced sRGB |
+| `src/unknowns/model/` | `MolecularFormula.ts` (Hill formula, unsaturation, M/M+1/M+2), `UnknownsModel.ts` (families, scoring) |
 
 ## Accessibility
 
-This template is the **canonical accessibility reference** for OpenLyceum sims. It ships with
-the three required layers wired up: PDOM names, a `SimScreenSummaryContent`, and an explicit
-`pdomOrder` + `SimKeyboardHelpContent`. A11y strings live under the `a11y` key in each locale
-JSON, exposed via `StringManager.getA11yStrings()`. When building a real sim, make
-`currentDetailsContent` a live `DerivedProperty` over model state and add `accessibleName`s to
-every interactive node. Full convention and checklist: [Baton/ACCESSIBILITY.md](https://github.com/OpenLyceum/Baton/blob/main/ACCESSIBILITY.md).
+- The viewer is a focusable `div` (arrows rotate, +/− zoom, Home resets, N/P walk atoms with an
+  announcement, Enter/Space picks). The spectrum chart is focusable too: arrow keys step through
+  peaks (announced via `addAccessibleResponse`), Escape clears. Keys live in
+  `SpectroscopyLabHotkeyData.ts` and feed both listeners and the keyboard-help dialog.
+- Screen summaries have a **live** current-details paragraph naming the molecule and selected peak.
 
 ## Compliance carve-outs
 
-A clean fork of this template rarely needs compliance carve-outs — root `SimConstants.ts`,
-`*Colors.ts`, `*Namespace.ts`, standard screen layout, and full a11y wiring pass Baton's
-compliance check out of the box. Document carve-outs in the forked sim's `AGENTS.md` only when
-you introduce a deliberate deviation (nested constants, hardcoded interaction fills, etc.).
+- **Data colours outside `SpectroscopyLabColors.ts`.** Atom colours are CPK data
+  (`common/model/AtomStyle.ts`, Jmol's table in `structure/Elements.ts`), as in MolScope.
+- **`src/common/model/library/data/` and `scripts/qm/structures/`** are generated data, excluded
+  from Biome in `biome.json`.
+- **`scripts/qm/`** is a dev-only Python pipeline with its own gitignored `.venv`; CI never runs it.
 
 ### Template-owned files (drift-checked)
 
@@ -138,7 +109,11 @@ Fleet-standard Vitest layout (keep when forking):
 |---|---|
 | `vitest.config.ts` | `happy-dom` environment; `setupFiles: ["./tests/setup.ts"]`; `execArgv: ["--expose-gc"]` |
 | `tests/setup.ts` | Canvas / AudioContext mocks + `init({ name: "…" })` before SceneryStack imports |
-| `tests/TimeModel.test.ts` | Sample model unit tests — replace with real physics tests |
+| `tests/common/normal-modes.test.ts` | NMA against B3LYP data + experiment: mode counts, fundamentals, CO₂ selection rule, D₂O and ³⁷Cl shifts |
+| `tests/infrared/infrared-model.test.ts` | Mode naming, isotope schemes (D₂O shake), transmittance curve |
+| `tests/nmr/*.test.ts` | 14 molecules vs literature shifts/multiplicities; field narrowing, D₂O, picking, integration |
+| `tests/uv-vis/pi-system.test.ts` | Hückel levels, cyanine box λ, calibration re-derived by least squares, colours |
+| `tests/unknowns/unknowns.test.ts` | Formula, unsaturation, ion cluster, isomer families, scoring |
 | `tests/memory-leak.test.ts` | Lists the sim's disposables for `describeDisposalLeaks()` (collected after dispose, repeated cycles; opt-in double dispose) |
 | `tests/helpers/memoryLeak.ts` | Template-owned leak harness: `describeDisposalLeaks`, `forceGC`, `createAndDispose` |
 | `tests/fuzz/fuzz.spec.ts` | Optional Playwright fuzz smoke: pointer `?fuzz` + keyboard `?fuzzBoard` (template-owned; add sim-specific specs as separate files) |
@@ -178,72 +153,6 @@ npm run lint && npm run check && npm run build && npm test
 
 `src/init.ts` reads `version` from `package.json`, so the patch bump shows up in the About dialog
 without a second edit.
-
-## Customizing a new sim from this template
-
-### Recommended: Baton create-sim
-
-```sh
-Baton/scripts/create-sim.sh --repo Friction --name "Friction" --screens Intro,Lab --shared-model --onboard
-```
-
-### Manual: GitHub template + rename + scaffold
-
-```sh
-npm install
-npm run rename -- --id friction --name "Friction"
-npm run scaffold-screens -- --screens Intro,Lab --shared-model
-# omit --screens for one screen named after the sim; omit --shared-model for independent models
-npm run fix     # required: both scripts reorder imports, which Biome then sorts
-npm run check
-```
-
-`rename` updates package id and metadata, display name, and every sim-level `Sim*`
-(Colors, Constants, Namespace, Panel, ButtonOptions, ControlOptions, Preferences, query parameters).
-`scaffold-screens` owns screen folders (fleet naming: `src/intro/`, not `intro-screen/`).
-After both steps no `Sim*` identifier should remain — `rg -n '\bSim[A-Z_]|\bSIM_[A-Z_]' src` to confirm.
-
-### Manual checklist (if not using the scripts)
-
-1. **Rename** — replace `scenerystack-template` / `SceneryStack Template` / `Sim` prefix in `init.ts`, `brand.ts`, `package.json` (name, description, keywords, repository.url), Colors/Constants/Namespace/Panel/ButtonOptions/ControlOptions/Preferences
-2. **Screens** — run `scaffold-screens` or mirror `sim-screen/` into kebab folders
-3. **Locale** — add `strings_XX.json`, register in `StringManager`, add locale to `init.ts` `availableLocales`
-4. **Icon** — edit `public/icons/icon.svg`, run `npm run icons`; match theme color in `index.html` / `vite.config.ts`.
-   Once `assets/screenshot.png` exists (Baton `generate-screenshots.sh`), `npm run icons -- --screenshots-from-assets`
-   replaces the placeholder PWA screenshots
-5. **Colors** — edit `*Colors.ts` (`default` + `projector` profiles per property), one
-   `new ProfileColorProperty(Namespace, name, { default, projector })` per entry — no local helper
-6. **Description** — write a real one-sentence `package.json` `description`; `index.html` and the
-   PWA manifest read it (`%SIM_DESCRIPTION%`), so there is nothing else to edit
-7. **Placeholders** — delete the `exampleToggle` preference and the `exampleControl` a11y string;
-   delete `src/common/TimeModel.ts` (and `tests/TimeModel.test.ts`) if the sim has no clock
-8. **Verify** — `Baton/scripts/check-template-drift.sh --fix <Sim>` (drops `rename` /
-   `scaffold-screens`, which are template-only) and `COMPLIANCE_STRICT=1 Baton/scripts/check-repo-compliance.sh .`
-
-## Multi-screen sims
-
-Full guide: [`doc/multi-screen.md`](doc/multi-screen.md)
-
-Summary:
-- Prefer `npm run scaffold-screens -- --screens Intro,Lab` (add `--shared-model` for a root model)
-- Or create a screen folder mirroring `src/sim-screen/` for each screen (kebab names, no `-screen` suffix)
-- Add screen-name keys to all locale JSON files; nest `a11y` per screen
-- Expose new getters in `StringManager.getScreenNames()` / `get{Screen}A11yStrings()`
-- Shared state: `--shared-model` → `common/model/SharedModel.ts` composed per screen (rename to a domain type)
-- Add `src/common/{SimName}ScreenIcons.ts` with `create{Screen}Icon()` factories; wire `homeScreenIcon` + `navigationBarIcon` on each Screen
-- Register all screens in the `screens` array in `main.ts`
-
-## Using this template beyond a direct copy
-
-| Approach | When to use |
-|---|---|
-| **`Baton/scripts/create-sim.sh`** | Agents / fleet — create repo, rename, scaffold N screens |
-| **GitHub template** ("Use this template") | Humans starting a sim in the browser |
-| `npm run rename` + `scaffold-screens` | Same, after cloning the template |
-| **npm workspace / monorepo** | Managing a suite of sims with shared tooling |
-| **`Baton/scripts/check-template-drift.sh`** | Keeping forks in sync with template improvements |
-
-See `doc/multi-screen.md` → "Using this template beyond a direct copy" for details.
 
 ## PWA
 

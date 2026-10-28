@@ -1,0 +1,269 @@
+{
+  "comment": "Library molecules. cid = PubChem compound id (3D conformer is fetched); formula is checked against PubChem to catch a wrong cid. vibrations=false skips the B3LYP Hessian (UV-Vis-only molecules).",
+  "molecules": [
+    {
+      "id": "water",
+      "cid": 962,
+      "formula": "H2O",
+      "vibrations": true
+    },
+    {
+      "id": "carbon-dioxide",
+      "cid": 280,
+      "formula": "CO2",
+      "vibrations": true
+    },
+    {
+      "id": "hydrogen-chloride",
+      "cid": 313,
+      "formula": "ClH",
+      "vibrations": true
+    },
+    {
+      "id": "methane",
+      "cid": 297,
+      "formula": "CH4",
+      "vibrations": true
+    },
+    {
+      "id": "ammonia",
+      "cid": 222,
+      "formula": "H3N",
+      "vibrations": true
+    },
+    {
+      "id": "formaldehyde",
+      "cid": 712,
+      "formula": "CH2O",
+      "vibrations": true
+    },
+    {
+      "id": "ethanol",
+      "cid": 702,
+      "formula": "C2H6O",
+      "vibrations": true
+    },
+    {
+      "id": "dimethyl-ether",
+      "cid": 8254,
+      "formula": "C2H6O",
+      "vibrations": true
+    },
+    {
+      "id": "1-propanol",
+      "cid": 1031,
+      "formula": "C3H8O",
+      "vibrations": true
+    },
+    {
+      "id": "2-propanol",
+      "cid": 3776,
+      "formula": "C3H8O",
+      "vibrations": true
+    },
+    {
+      "id": "ethyl-methyl-ether",
+      "cid": 10903,
+      "formula": "C3H8O",
+      "vibrations": true
+    },
+    {
+      "id": "acetone",
+      "cid": 180,
+      "formula": "C3H6O",
+      "vibrations": true
+    },
+    {
+      "id": "propanal",
+      "cid": 527,
+      "formula": "C3H6O",
+      "vibrations": true
+    },
+    {
+      "id": "allyl-alcohol",
+      "cid": 7858,
+      "formula": "C3H6O",
+      "vibrations": true
+    },
+    {
+      "id": "methyl-vinyl-ether",
+      "cid": 7861,
+      "formula": "C3H6O",
+      "vibrations": true
+    },
+    {
+      "id": "ethyl-acetate",
+      "cid": 8857,
+      "formula": "C4H8O2",
+      "vibrations": true
+    },
+    {
+      "id": "methyl-propanoate",
+      "cid": 11124,
+      "formula": "C4H8O2",
+      "vibrations": true
+    },
+    {
+      "id": "butanoic-acid",
+      "cid": 264,
+      "formula": "C4H8O2",
+      "vibrations": true
+    },
+    {
+      "id": "1-4-dioxane",
+      "cid": 31275,
+      "formula": "C4H8O2",
+      "vibrations": true
+    },
+    {
+      "id": "ethylbenzene",
+      "cid": 7500,
+      "formula": "C8H10",
+      "vibrations": true
+    },
+    {
+      "id": "o-xylene",
+      "cid": 7237,
+      "formula": "C8H10",
+      "vibrations": true
+    },
+    {
+      "id": "m-xylene",
+      "cid": 7929,
+      "formula": "C8H10",
+      "vibrations": true
+    },
+    {
+      "id": "p-xylene",
+      "cid": 7809,
+      "formula": "C8H10",
+      "vibrations": true
+    },
+    {
+      "id": "acetic-acid",
+      "cid": 176,
+      "formula": "C2H4O2",
+      "vibrations": true
+    },
+    {
+      "id": "acetaldehyde",
+      "cid": 177,
+      "formula": "C2H4O",
+      "vibrations": true
+    },
+    {
+      "id": "acetonitrile",
+      "cid": 6342,
+      "formula": "C2H3N",
+      "vibrations": true
+    },
+    {
+      "id": "acetamide",
+      "cid": 178,
+      "formula": "C2H5NO",
+      "vibrations": true
+    },
+    {
+      "id": "ethylamine",
+      "cid": 6341,
+      "formula": "C2H7N",
+      "vibrations": true
+    },
+    {
+      "id": "chloroethane",
+      "cid": 6337,
+      "formula": "C2H5Cl",
+      "vibrations": true
+    },
+    {
+      "id": "2-butanone",
+      "cid": 6569,
+      "formula": "C4H8O",
+      "vibrations": true
+    },
+    {
+      "id": "benzene",
+      "cid": 241,
+      "formula": "C6H6",
+      "vibrations": true
+    },
+    {
+      "id": "toluene",
+      "cid": 1140,
+      "formula": "C7H8",
+      "vibrations": true
+    },
+    {
+      "id": "phenol",
+      "cid": 996,
+      "formula": "C6H6O",
+      "vibrations": true
+    },
+    {
+      "id": "benzaldehyde",
+      "cid": 240,
+      "formula": "C7H6O",
+      "vibrations": true
+    },
+    {
+      "id": "ethene",
+      "cid": 6325,
+      "formula": "C2H4",
+      "vibrations": false
+    },
+    {
+      "id": "1-3-butadiene",
+      "cid": 7845,
+      "formula": "C4H6",
+      "vibrations": false
+    },
+    {
+      "id": "1-3-5-hexatriene",
+      "cid": 16695,
+      "formula": "C6H8",
+      "vibrations": false
+    },
+    {
+      "id": "1-3-5-7-octatetraene",
+      "cid": 5463164,
+      "formula": "C8H10",
+      "vibrations": false
+    },
+    {
+      "id": "beta-carotene",
+      "cid": 5280489,
+      "formula": "C40H56",
+      "vibrations": false
+    },
+    {
+      "id": "naphthalene",
+      "cid": 931,
+      "formula": "C10H8",
+      "vibrations": false
+    },
+    {
+      "id": "anthracene",
+      "cid": 8418,
+      "formula": "C14H10",
+      "vibrations": false
+    },
+    {
+      "id": "tetracene",
+      "cid": 7080,
+      "formula": "C18H12",
+      "vibrations": false
+    },
+    {
+      "id": "pentacene",
+      "cid": 8671,
+      "formula": "C22H14",
+      "vibrations": false
+    },
+    {
+      "id": "azulene",
+      "cid": 9231,
+      "formula": "C10H8",
+      "vibrations": false
+    }
+  ]
+}

@@ -1,21 +1,250 @@
 {
-  "title": "Plantilla de Simulación",
+  "title": "Laboratorio de espectroscopía",
   "screens": {
-    "sim": "Simulación"
+    "infrared": "Infrarrojo",
+    "nmr": "RMN",
+    "uvVis": "UV-Vis",
+    "unknowns": "Incógnitas"
   },
   "a11y": {
-    "screenSummary": {
-      "playArea": "El área de juego muestra el contenido principal de la simulación.",
-      "controlArea": "El área de control tiene un botón Restablecer todo que devuelve la simulación a su estado inicial.",
-      "interactionHint": "Explora la simulación interactuando con sus controles."
+    "infrared": {
+      "screenSummary": {
+        "playArea": "El área de juego muestra una molécula en 3D y su espectro de transmitancia infrarroja. Cada mínimo es un modo normal de vibración.",
+        "controlArea": "El área de control elige la molécula, sustituye isótopos, ajusta la anchura de línea y muestra los modos normales y las regiones de grupos funcionales.",
+        "interactionHint": "Enfoca el espectro y usa las flechas para recorrer los picos; la molécula vibra en el modo seleccionado."
+      },
+      "currentDetails": "{{molecule}}: {{count}} modos normales. {{selection}}",
+      "noSelection": "No hay ningún pico seleccionado.",
+      "peak": "{{mode}} a {{wavenumber}} números de onda, {{intensity}} kilómetros por mol.",
+      "spectrum": "Espectro infrarrojo",
+      "spectrumHelp": "Haz clic en un mínimo o usa las flechas para elegir una vibración."
     },
-    "currentDetails": "La simulación está en su estado inicial.",
-    "controls": {
-      "exampleControl": "Control de ejemplo"
+    "nmr": {
+      "screenSummary": {
+        "playArea": "El área de juego muestra una molécula en 3D con sus hidrógenos marcados por entorno, su espectro de RMN de protón, una ampliación de una señal y una tabla de señales.",
+        "controlArea": "El área de control elige la molécula y la frecuencia del espectrómetro, y activa la agitación con D₂O, la referencia TMS y la integral.",
+        "interactionHint": "Enfoca el espectro y usa las flechas para recorrer las señales; los hidrógenos correspondientes se rodean."
+      },
+      "currentDetails": "{{molecule}}: {{count}} señales a {{field}} megahercios. {{selection}}",
+      "noSelection": "No hay ninguna señal seleccionada.",
+      "signal": "Señal {{label}}: {{count}} protones a {{shift}} ppm, {{multiplicity}}.",
+      "spectrum": "Espectro de RMN de protón",
+      "spectrumHelp": "Haz clic en un pico o usa las flechas para elegir una señal."
+    },
+    "uvVis": {
+      "screenSummary": {
+        "playArea": "El área de juego muestra una molécula conjugada con un orbital π dibujado en lóbulos rojos y azules, sus niveles de energía π llenos de electrones, y las bandas de absorción predicha y medida con el color de cada una.",
+        "controlArea": "El área de control elige la molécula y el modelo: Hückel o partícula en una caja.",
+        "interactionHint": "Compara las longitudes de onda predichas y medidas en una familia, por ejemplo las cianinas con cada modelo."
+      },
+      "currentDetails": "{{molecule}}, modelo {{model}}: {{predicted}} nanómetros predichos, {{measured}} nanómetros medidos.",
+      "noPrediction": "sin predicción",
+      "orbital": "Orbital {{number}} de {{count}}, {{occupancy}} electrones{{role}}.",
+      "levels": "Niveles de energía π",
+      "levelsHelp": "Usa las flechas para elegir el orbital dibujado en la molécula."
+    },
+    "unknowns": {
+      "screenSummary": {
+        "playArea": "El área de juego muestra los espectros infrarrojo y de RMN de protón de una molécula desconocida, su fórmula, su grado de insaturación y su ion molecular, y botones para los isómeros candidatos.",
+        "controlArea": "El área de control elige el nivel e inicia una nueva incógnita.",
+        "interactionHint": "Lee los espectros y luego pulsa el botón de la molécula que creas que es."
+      },
+      "currentDetails": "Nivel {{level}}. Fórmula {{formula}}, {{count}} candidatos. Puntuación {{score}} de {{rounds}}. {{status}}",
+      "irDescription": "Espectro de transmitancia infrarroja de la incógnita.",
+      "nmrDescription": "Espectro de RMN de protón de la incógnita, con su integral."
     }
   },
   "preferences": {
     "title": "Simulación",
-    "exampleToggle": "Ejemplo de alternancia"
+    "absorbance": "Representar los espectros infrarrojos como absorbancia"
+  },
+  "molecules": {
+    "water": "agua",
+    "carbonDioxide": "dióxido de carbono",
+    "hydrogenChloride": "cloruro de hidrógeno",
+    "methane": "metano",
+    "ammonia": "amoníaco",
+    "formaldehyde": "formaldehído",
+    "ethanol": "etanol",
+    "dimethylEther": "éter dimetílico",
+    "1Propanol": "1-propanol",
+    "2Propanol": "2-propanol",
+    "ethylMethylEther": "metoxietano",
+    "allylAlcohol": "alcohol alílico",
+    "methylVinylEther": "éter metilvinílico",
+    "14Dioxane": "1,4-dioxano",
+    "acetaldehyde": "acetaldehído",
+    "acetone": "acetona",
+    "propanal": "propanal",
+    "2Butanone": "2-butanona",
+    "aceticAcid": "ácido acético",
+    "butanoicAcid": "ácido butanoico",
+    "ethylAcetate": "acetato de etilo",
+    "methylPropanoate": "propanoato de metilo",
+    "acetonitrile": "acetonitrilo",
+    "acetamide": "acetamida",
+    "ethylamine": "etilamina",
+    "chloroethane": "cloroetano",
+    "benzene": "benceno",
+    "toluene": "tolueno",
+    "phenol": "fenol",
+    "benzaldehyde": "benzaldehído",
+    "ethylbenzene": "etilbenceno",
+    "oXylene": "o-xileno",
+    "mXylene": "m-xileno",
+    "pXylene": "p-xileno",
+    "ethene": "eteno (etileno)",
+    "13Butadiene": "1,3-butadieno",
+    "135Hexatriene": "1,3,5-hexatrieno",
+    "1357Octatetraene": "1,3,5,7-octatetraeno",
+    "betaCarotene": "β-caroteno",
+    "naphthalene": "naftaleno",
+    "anthracene": "antraceno",
+    "tetracene": "tetraceno",
+    "pentacene": "pentaceno",
+    "azulene": "azuleno",
+    "trimethineCyanine": "cianina trimetínica",
+    "pentamethineCyanine": "cianina pentametínica",
+    "heptamethineCyanine": "cianina heptametínica",
+    "nonamethineCyanine": "cianina nonametínica"
+  },
+  "families": {
+    "small": "Moléculas pequeñas",
+    "alcoholsEthers": "Alcoholes y éteres",
+    "carbonyls": "Aldehídos y cetonas",
+    "acidsEsters": "Ácidos y ésteres",
+    "nitrogenHalogen": "Compuestos de N y Cl",
+    "aromatics": "Aromáticos",
+    "polyenes": "Polienos",
+    "acenes": "Acenos y azuleno",
+    "cyanines": "Colorantes de cianina"
+  },
+  "viewer": {
+    "accessibleName": "Visor de moléculas",
+    "helpText": "Las flechas giran, más y menos acercan, N y P recorren los átomos."
+  },
+  "keyboardHelp": {
+    "viewerSection": "Visor de moléculas",
+    "spectrumSection": "Espectro",
+    "rotate": "Girar la molécula",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "resetView": "Restablecer la vista",
+    "nextAtom": "Átomo siguiente",
+    "previousAtom": "Átomo anterior",
+    "pickAtom": "Seleccionar átomo",
+    "nextPeak": "Pico siguiente",
+    "previousPeak": "Pico anterior",
+    "clearPeak": "Borrar la selección del pico",
+    "levelsSection": "Niveles de energía",
+    "higherOrbital": "Orbital más alto",
+    "lowerOrbital": "Orbital más bajo"
+  },
+  "controls": {
+    "family": "Familia",
+    "molecule": "Molécula"
+  },
+  "infrared": {
+    "wavenumberAxis": "Número de onda (cm⁻¹)",
+    "transmittanceAxis": "Transmitancia (%)",
+    "isotopes": "Isótopos",
+    "isotopeSchemes": {
+      "natural": "Los más abundantes",
+      "exchangeDeuterium": "D en O y N (agitación con D₂O)",
+      "allDeuterium": "Todos los H → D",
+      "carbon13": "Todos los ¹²C → ¹³C",
+      "oxygen18": "Todos los ¹⁶O → ¹⁸O",
+      "chlorine37": "³⁵Cl → ³⁷Cl"
+    },
+    "lineWidth": "Anchura de línea",
+    "showModes": "Modos normales",
+    "showRegions": "Regiones de grupos",
+    "regions": {
+      "oh": "O–H, N–H",
+      "ch": "C–H",
+      "tripleBond": "C≡N, C≡C",
+      "carbonyl": "C=O",
+      "fingerprint": "huella dactilar"
+    },
+    "stretch": "tensión {{bond}}",
+    "bend": "flexión {{angle}}",
+    "wavenumber": "{{value}} cm⁻¹",
+    "intensity": "Intensidad: {{value}} km/mol",
+    "reducedMass": "Masa reducida: {{value}} u",
+    "inactive": "Inactivo en IR: el dipolo no cambia",
+    "selectHint": "Haz clic en un mínimo del espectro para ver esa vibración.",
+    "modeCount": "{{count}} modos normales (3N − {{external}})",
+    "method": "B3LYP/def2-SVP, escalado ×{{scale}}",
+    "absorbanceAxis": "Absorbancia"
+  },
+  "nmr": {
+    "shiftAxis": "Desplazamiento químico δ (ppm)",
+    "intensityAxis": "Intensidad",
+    "zoomAxis": "δ − δ(señal) (ppm)",
+    "field": "Espectrómetro",
+    "fieldValue": "{{value}} MHz",
+    "d2oShake": "Agitación con D₂O",
+    "tms": "Referencia TMS",
+    "integral": "Integral",
+    "signals": "Señales",
+    "signalRow": "{{label}}   δ {{shift}}   {{count}}H   {{multiplicity}}",
+    "couplingValue": "J = {{j}} Hz",
+    "broad": "ancha, intercambia con D₂O",
+    "zoomTitle": "Señal {{label}} a {{field}} MHz",
+    "zoomHint": "Elige una señal para ampliarla.",
+    "selectHint": "Haz clic en un pico, una fila o un átomo.",
+    "multiplicities": {
+      "s": "singlete",
+      "d": "doblete",
+      "t": "triplete",
+      "q": "cuadruplete",
+      "quint": "quintuplete",
+      "sext": "sextuplete",
+      "sept": "septuplete",
+      "dd": "doblete de dobletes",
+      "dt": "doblete de tripletes",
+      "td": "triplete de dobletes",
+      "qd": "cuadruplete de dobletes",
+      "m": "multiplete"
+    }
+  },
+  "uvVis": {
+    "wavelengthAxis": "Longitud de onda (nm)",
+    "absorbanceAxis": "Absorbancia",
+    "model": "Modelo",
+    "hueckel": "Hückel",
+    "box": "Partícula en una caja",
+    "orbitals": "Orbitales π",
+    "homo": "HOMO",
+    "lumo": "LUMO",
+    "energyHueckel": "E − α (|β|)",
+    "energyBox": "E (eV)",
+    "predicted": "λmax predicho: {{value}} nm",
+    "measured": "λmax medido: {{value}} nm",
+    "gapHueckel": "Brecha HOMO→LUMO Δx = {{gap}} |β|",
+    "gapBox": "Brecha HOMO→LUMO = {{gap}} eV",
+    "calibration": "E = {{a}} + {{b}}·Δx eV, ajustado a esta familia",
+    "boxLength": "L = {{length}} Å, {{electrons}} electrones π, sin constantes ajustadas",
+    "notLinear": "El modelo de la caja necesita una cadena sin ramificar.",
+    "predictedColor": "Predicho",
+    "measuredColor": "Observado",
+    "colorHeading": "Color con luz blanca",
+    "orbitalHint": "Haz clic en un nivel para dibujar ese orbital en la molécula."
+  },
+  "unknowns": {
+    "question": "¿Qué molécula es?",
+    "newUnknown": "Nueva incógnita",
+    "level": "Nivel",
+    "levelValue": "{{level}}",
+    "score": "Puntuación: {{score}} / {{rounds}}",
+    "formula": "Fórmula: {{formula}}",
+    "unsaturation": "Grado de insaturación: {{value}}",
+    "ionCluster": "Ion molecular",
+    "ionPeak": "{{mz}}  ({{relative}} %)",
+    "correct": "Correcto: {{name}}.",
+    "incorrect": "No es {{name}}. Mira otra vez.",
+    "irTitle": "Infrarrojo",
+    "nmrTitle": "RMN de ¹H, 300 MHz",
+    "noFamilies": "Ninguna familia de isómeros tiene aún sus datos infrarrojos."
   }
 }

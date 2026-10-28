@@ -21,7 +21,7 @@ import { version } from "../package.json";
 init({
   // Internal identifier used by SceneryStack for URL parameters and phetmarks.
   // Use kebab-case matching the package.json "name" field.
-  name: "scenerystack-template",
+  name: "spectroscopy-lab",
 
   // Displayed in the About dialog (Help menu → About). Single source of truth is
   // package.json, so `npm version` / `npm run release` can never leave it stale.

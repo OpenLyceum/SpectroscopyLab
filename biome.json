@@ -8,7 +8,18 @@
     }
   },
   "files": {
-    "includes": ["**/*.ts", "**/*.js", "**/*.json", "**/*.html", "!dist", "!node_modules", "!.claude"]
+    "includes": [
+      "**/*.ts",
+      "**/*.js",
+      "**/*.json",
+      "**/*.html",
+      "!dist",
+      "!node_modules",
+      "!.claude",
+      "!src/common/model/library/data",
+      "!src/common/model/library/structures",
+      "!scripts/qm/structures"
+    ]
   },
   "formatter": {
     "enabled": true,

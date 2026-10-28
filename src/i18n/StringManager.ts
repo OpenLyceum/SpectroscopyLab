@@ -50,25 +50,22 @@ const stringProperties = LocalizedString.getNestedStringProperties({
  * Keep this in sync with the `a11y` key in `strings_en.json` — a locale key
  * rename that is not mirrored here fails at the getter return (not silently).
  */
-export type SimA11yStrings = {
+export type SpectroscopyLabA11yStrings = {
   readonly screenSummary: {
     readonly playAreaStringProperty: ReadOnlyProperty<string>;
     readonly controlAreaStringProperty: ReadOnlyProperty<string>;
     readonly interactionHintStringProperty: ReadOnlyProperty<string>;
   };
   readonly currentDetailsStringProperty: ReadOnlyProperty<string>;
-  readonly controls: {
-    readonly exampleControlStringProperty: ReadOnlyProperty<string>;
-  };
 };
 
 /**
  * Explicit Preferences → Simulation labels from {@link StringManager.getPreferences}.
- * Same sync rule as {@link SimA11yStrings}.
+ * Same sync rule as {@link SpectroscopyLabA11yStrings}.
  */
-export type SimPreferenceStrings = {
+export type SpectroscopyLabPreferenceStrings = {
   readonly titleStringProperty: ReadOnlyProperty<string>;
-  readonly exampleToggleStringProperty: ReadOnlyProperty<string>;
+  readonly absorbanceStringProperty: ReadOnlyProperty<string>;
 };
 
 /**
@@ -103,34 +100,88 @@ export class StringManager {
    * Each property updates automatically when the locale changes.
    */
   public getScreenNames(): {
-    readonly simStringProperty: ReadOnlyProperty<string>;
+    readonly infraredStringProperty: ReadOnlyProperty<string>;
+    readonly nmrStringProperty: ReadOnlyProperty<string>;
+    readonly uvVisStringProperty: ReadOnlyProperty<string>;
+    readonly unknownsStringProperty: ReadOnlyProperty<string>;
   } {
     return {
-      simStringProperty: stringProperties.screens.simStringProperty,
+      infraredStringProperty: stringProperties.screens.infraredStringProperty,
+      nmrStringProperty: stringProperties.screens.nmrStringProperty,
+      uvVisStringProperty: stringProperties.screens.uvVisStringProperty,
+      unknownsStringProperty: stringProperties.screens.unknownsStringProperty,
     };
   }
 
-  /**
-   * Accessibility (Interactive Description) StringProperties.
-   *
-   * Returns the reactive `a11y` string tree used by the parallel DOM:
-   *   - `screenSummary.*` — play-area / control-area overview and an interaction
-   *     hint, read by `SimScreenSummaryContent`.
-   *   - `currentDetails` — a paragraph describing the simulation's current state.
-   *     In a real sim, derive a live version from model Properties (see
-   *     LunarLander's ScreenSummaryContent for the canonical pattern).
-   *
-   * Add `accessibleName` / `accessibleHelpText` strings for individual controls
-   * to the `a11y` group too, then read them through this same nested tree.
-   */
-  public getA11yStrings(): SimA11yStrings {
-    return stringProperties.a11y;
+  /** Accessibility strings for the Infrared screen. */
+  public getInfraredA11yStrings() {
+    return stringProperties.a11y.infrared;
+  }
+
+  /** Accessibility strings for the NMR screen. */
+  public getNMRA11yStrings() {
+    return stringProperties.a11y.nmr;
+  }
+
+  /** Accessibility strings for the UV-Vis screen. */
+  public getUVVisA11yStrings() {
+    return stringProperties.a11y.uvVis;
+  }
+
+  /** Accessibility strings for the Unknowns screen. */
+  public getUnknownsA11yStrings() {
+    return stringProperties.a11y.unknowns;
+  }
+
+  /** Display names of the library molecules, keyed by {@link nameKey} of the id. */
+  public getMoleculeNames() {
+    return stringProperties.molecules;
+  }
+
+  /** Display names of the molecule families. */
+  public getFamilyNames() {
+    return stringProperties.families;
+  }
+
+  /** Accessible name and help text of the 3D molecule viewer. */
+  public getViewerStrings() {
+    return stringProperties.viewer;
+  }
+
+  /** Keyboard-help dialog labels (also used by SpectroscopyLabHotkeyData). */
+  public getKeyboardHelpStrings() {
+    return stringProperties.keyboardHelp;
+  }
+
+  /** Labels shared by several screens' control panels. */
+  public getControlStrings() {
+    return stringProperties.controls;
+  }
+
+  /** Visible text of the Unknowns screen. */
+  public getUnknownsStrings() {
+    return stringProperties.unknowns;
+  }
+
+  /** Visible text of the UV-Vis screen. */
+  public getUVVisStrings() {
+    return stringProperties.uvVis;
+  }
+
+  /** Visible text of the NMR screen. */
+  public getNMRStrings() {
+    return stringProperties.nmr;
+  }
+
+  /** Visible text of the Infrared screen. */
+  public getInfraredStrings() {
+    return stringProperties.infrared;
   }
 
   /**
    * Simulation-specific preference labels shown in Preferences → Simulation.
    */
-  public getPreferences(): SimPreferenceStrings {
+  public getPreferences() {
     return stringProperties.preferences;
   }
 }
