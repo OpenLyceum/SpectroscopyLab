@@ -10,48 +10,53 @@
     "infrared": {
       "screenSummary": {
         "playArea": "The play area shows a molecule in 3D and its infrared transmittance spectrum. Each dip is a normal mode of vibration.",
-        "controlArea": "The control area chooses the molecule, substitutes isotopes, sets the line width and toggles the normal-mode sticks and functional-group regions.",
+        "controlArea": "The control area chooses the molecule, substitutes isotopes, sets the line width and toggles the normal-mode sticks and functional-group regions. For hydrogen chloride it also shows the rotational fine structure of the gas, with a temperature slider.",
         "interactionHint": "Focus the spectrum and use the arrow keys to step through the peaks; the molecule vibrates in the selected mode."
       },
       "currentDetails": "{{molecule}}: {{count}} normal modes. {{selection}}",
       "noSelection": "No peak is selected.",
       "peak": "{{mode}} at {{wavenumber}} wavenumbers, {{intensity}} kilometres per mole.",
       "spectrum": "Infrared spectrum",
-      "spectrumHelp": "Click a dip, or use the arrow keys, to select a vibration."
+      "spectrumHelp": "Click a dip, or use the arrow keys, to select a vibration.",
+      "fineSpectrum": "High-resolution rotation–vibration spectrum"
     },
     "nmr": {
       "screenSummary": {
-        "playArea": "The play area shows a molecule in 3D with its hydrogens lettered by environment, its proton NMR spectrum, a zoom on one signal, and a table of signals.",
-        "controlArea": "The control area chooses the molecule and the spectrometer frequency, and toggles a D₂O shake, the TMS reference and the integral.",
+        "playArea": "The play area shows a molecule in 3D with its hydrogens lettered (or carbons numbered) by environment, its proton or carbon-13 NMR spectrum, a zoom on one signal, and a table of signals.",
+        "controlArea": "The control area chooses the molecule, the observed nucleus and the spectrometer frequency. For protons it toggles a D₂O shake, the TMS reference, the integral and the exact second-order simulation; for carbon it chooses a decoupled, DEPT or coupled spectrum.",
         "interactionHint": "Focus the spectrum and use the arrow keys to step through the signals; the matching hydrogens are ringed."
       },
       "currentDetails": "{{molecule}}: {{count}} signals at {{field}} megahertz. {{selection}}",
       "noSelection": "No signal is selected.",
       "signal": "Signal {{label}}: {{count}} protons at {{shift}} ppm, {{multiplicity}}.",
       "spectrum": "Proton NMR spectrum",
-      "spectrumHelp": "Click a peak, or use the arrow keys, to select a signal."
+      "spectrumHelp": "Click a peak, or use the arrow keys, to select a signal.",
+      "carbonSignal": "Carbon {{label}}: {{count}} × {{type}} at {{shift}} ppm.",
+      "carbonSpectrum": "Carbon-13 NMR spectrum"
     },
     "uvVis": {
       "screenSummary": {
         "playArea": "The play area shows a conjugated molecule with one π orbital drawn as red and blue lobes, its π energy levels filled with electrons, and the predicted and measured absorption bands with the colour each would give.",
-        "controlArea": "The control area chooses the molecule and the model: Hückel or particle in a box.",
+        "controlArea": "The control area chooses the molecule and the model, Hückel or particle in a box, and turns on the Beer–Lambert mode with concentration and path-length sliders.",
         "interactionHint": "Compare the predicted and measured wavelengths along a family, for example the cyanine dyes with each model."
       },
       "currentDetails": "{{molecule}}, {{model}} model: predicted {{predicted}} nanometres, measured {{measured}} nanometres.",
       "noPrediction": "no prediction",
       "orbital": "Orbital {{number}} of {{count}}, {{occupancy}} electrons{{role}}.",
       "levels": "π energy levels",
-      "levelsHelp": "Use the arrow keys to choose the orbital drawn on the molecule."
+      "levelsHelp": "Use the arrow keys to choose the orbital drawn on the molecule.",
+      "quantitativeDetails": "At {{concentration}} micromoles per litre in a {{pathLength}} centimetre cell, the spectrometer reads absorbance {{absorbance}} at the maximum."
     },
     "unknowns": {
       "screenSummary": {
-        "playArea": "The play area shows the infrared and proton NMR spectra of an unknown molecule, its formula, degree of unsaturation and molecular ion, and buttons for the candidate isomers.",
-        "controlArea": "The control area chooses the level and starts a new unknown.",
+        "playArea": "The play area shows the infrared and proton or carbon-13 NMR spectra of an unknown molecule, its formula, degree of unsaturation and molecular ion, and buttons for the candidate isomers.",
+        "controlArea": "The control area chooses the level, starts a new unknown, and switches the NMR spectrum between proton and carbon-13.",
         "interactionHint": "Read the spectra, then press the button of the molecule you think it is."
       },
       "currentDetails": "Level {{level}}. Formula {{formula}}, {{count}} candidates. Score {{score}} of {{rounds}}. {{status}}",
       "irDescription": "Infrared transmittance spectrum of the unknown.",
-      "nmrDescription": "Proton NMR spectrum of the unknown, with its integral."
+      "nmrDescription": "Proton NMR spectrum of the unknown, with its integral.",
+      "carbonDescription": "Proton-decoupled carbon-13 NMR spectrum of the unknown: one line per kind of carbon."
     }
   },
   "preferences": {
@@ -175,7 +180,17 @@
     "selectHint": "Click a dip in the spectrum to watch that vibration.",
     "modeCount": "{{count}} normal modes (3N − {{external}})",
     "method": "B3LYP/def2-SVP, scaled ×{{scale}}",
-    "absorbanceAxis": "Absorbance"
+    "absorbanceAxis": "Absorbance",
+    "fineStructure": "Rotational fine structure (gas, high resolution)",
+    "temperature": "Temperature: {{value}} K",
+    "temperatureName": "Temperature",
+    "lineTitle": "{{isotopologue}} {{branch}}({{j}}): J {{j}} → {{upper}} — {{wavenumber}} cm⁻¹",
+    "bandTitle": "{{isotopologue}} rotation–vibration band",
+    "rotationalConstants": "B₀ = {{b0}} cm⁻¹, B₁ = {{b1}} cm⁻¹ → r = {{r}} Å",
+    "bandConstants": "Band origin ν₀ = {{origin}} cm⁻¹ → k = {{k}} N/m",
+    "fineHint": "No Q branch: ΔJ = 0 is forbidden. Click a line to zoom in.",
+    "isotopologueHint": "Each line has a weaker {{minor}} partner ({{percent}} %) just below it.",
+    "lineZoom": "Zoom: {{width}} cm⁻¹ around the line"
   },
   "nmr": {
     "shiftAxis": "Chemical shift δ (ppm)",
@@ -206,7 +221,22 @@
       "td": "triplet of doublets",
       "qd": "quartet of doublets",
       "m": "multiplet"
-    }
+    },
+    "nucleus": "Nucleus",
+    "proton": "¹H",
+    "carbon": "¹³C",
+    "secondOrder": "Exact spin simulation (second order)",
+    "spectrumType": "Spectrum",
+    "carbonSpectrumTypes": {
+      "decoupled": "¹H-decoupled",
+      "dept135": "DEPT-135",
+      "dept90": "DEPT-90",
+      "coupled": "¹H-coupled"
+    },
+    "carbonFrequency": "¹³C at {{value}} MHz",
+    "carbonRow": "{{label}}   δ {{shift}}   {{type}}   ×{{count}}",
+    "carbonCoupling": "¹J(C–H) = {{j}} Hz",
+    "quaternary": "no H: weak line, absent from DEPT"
   },
   "uvVis": {
     "wavelengthAxis": "Wavelength (nm)",
@@ -229,7 +259,19 @@
     "predictedColor": "Predicted",
     "measuredColor": "Observed",
     "colorHeading": "Colour in white light",
-    "orbitalHint": "Click a level to draw that orbital on the molecule."
+    "orbitalHint": "Click a level to draw that orbital on the molecule.",
+    "quantitative": "Beer–Lambert (absolute absorbance)",
+    "concentration": "c = {{value}} µmol/L",
+    "concentrationName": "Concentration",
+    "pathLength": "b = {{value}} cm",
+    "pathLengthName": "Path length",
+    "calibrationTitle": "Calibration at λmax",
+    "epsilon": "ε = {{value}} L mol⁻¹ cm⁻¹ ({{wavelength}} nm)",
+    "absorbanceReadout": "A = εbc = {{ideal}}; reads {{measured}}",
+    "transmittanceReadout": "T = 10⁻ᴬ = {{value}} %",
+    "strayLight": "0.1 % stray light caps readings near A = 3.",
+    "concentrationAxis": "c (µmol/L)",
+    "peakAbsorbanceAxis": "A(λmax)"
   },
   "unknowns": {
     "question": "Which molecule is it?",
@@ -245,6 +287,7 @@
     "incorrect": "Not {{name}}. Look again.",
     "irTitle": "Infrared",
     "nmrTitle": "¹H NMR, 300 MHz",
-    "noFamilies": "No isomer family has its infrared data yet."
+    "noFamilies": "No isomer family has its infrared data yet.",
+    "carbonTitle": "¹³C NMR (¹H-decoupled), 75 MHz"
   }
 }

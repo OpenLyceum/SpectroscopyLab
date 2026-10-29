@@ -7,7 +7,7 @@
 import { describe, expect, it } from "vitest";
 import { loadMolecule } from "../../src/common/model/library/SpectroscopyLibrary.js";
 import { MoleculeGraph } from "../../src/common/model/MoleculeGraph.js";
-import { NMRModel, spectrumSticks } from "../../src/nmr/model/NMRModel.js";
+import { NMRModel, Nucleus, spectrumSticks } from "../../src/nmr/model/NMRModel.js";
 import { protonEnvironments } from "../../src/nmr/model/ProtonSpectrum.js";
 
 async function ethanolModel(): Promise<NMRModel> {
@@ -42,7 +42,7 @@ describe("NMR model", () => {
     expect(model.selectedSignal?.atoms).toHaveLength(2);
     const methylHydrogen = model.environmentsProperty.value.find((e) => e.atoms.length === 3)?.atoms[0] ?? -1;
     model.selectAtom(methylHydrogen);
-    expect(model.selectedSignal?.multiplicity).toBe("t");
+    expect(model.environmentsProperty.value[model.selectedSignalProperty.value ?? -1]?.multiplicity).toBe("t");
     model.selectNear(7, 0.05);
     expect(model.selectedSignal).toBeNull();
   });
@@ -59,5 +59,26 @@ describe("NMR model", () => {
     );
     expect(sharp.reduce((sum, s) => sum + s.height, 0)).toBeCloseTo(5, 10);
     expect(total).toBeGreaterThan(5);
+  });
+
+  it("switches to ¹³C: signals are carbons, and clicking a hydrogen selects its carbon", async () => {
+    const model = await ethanolModel();
+    model.nucleusProperty.value = Nucleus.CARBON;
+    expect(model.signals).toHaveLength(2);
+    const methylHydrogen = model.environmentsProperty.value.find((e) => e.atoms.length === 3)?.atoms[0] ?? -1;
+    model.selectAtom(methylHydrogen);
+    const carbon = model.carbonEnvironmentsProperty.value[model.selectedSignalProperty.value ?? -1];
+    expect(carbon?.hydrogens).toBe(3);
+    model.selectNear(carbon?.shift ?? 0, 0.5);
+    expect(model.selectedSignal).toBe(carbon);
+    expect(model.viewer.highlightedAtomsProperty.value).toEqual(carbon?.atoms);
+  });
+
+  it("uses exact lines by default and first-order lines when asked", async () => {
+    const model = await ethanolModel();
+    model.fieldProperty.value = 60;
+    const exact = model.linesProperty.value.length;
+    model.secondOrderProperty.value = false;
+    expect(model.linesProperty.value.length).toBeLessThan(exact);
   });
 });

@@ -2,7 +2,8 @@
  * NMRScreenSummaryContent.ts
  *
  * The accessible screen summary for the NMR screen. Its current-details paragraph is live: it
- * names the molecule, counts its signals at the current field and describes the selected one.
+ * names the molecule, counts the signals of the observed nucleus at the current field and describes
+ * the selected one.
  */
 
 import { DerivedProperty } from "scenerystack/axon";
@@ -22,18 +23,21 @@ export class NMRScreenSummaryContent extends ScreenSummaryContent {
       [
         model.viewer.moleculeProperty,
         model.environmentsProperty,
+        model.carbonEnvironmentsProperty,
+        model.nucleusProperty,
         model.selectedSignalProperty,
         model.fieldProperty,
         a11y.currentDetailsStringProperty,
         a11y.noSelectionStringProperty,
         a11y.signalStringProperty,
+        a11y.carbonSignalStringProperty,
       ],
       () => {
         const molecule = model.viewer.molecule;
         const signal = model.selectedSignal;
         return StringUtils.fillIn(a11y.currentDetailsStringProperty.value, {
           molecule: molecule ? moleculeName(molecule.id) : "",
-          count: model.environmentsProperty.value.length,
+          count: model.signals.length,
           field: toFixed(model.fieldProperty.value, 0),
           selection: signal ? describeSignal(signal) : a11y.noSelectionStringProperty.value,
         });

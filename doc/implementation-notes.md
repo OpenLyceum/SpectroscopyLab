@@ -37,6 +37,15 @@ keys step through peaks and follow screen direction on inverted axes. The node c
 `mutate(options)` only after its children exist, so layout options see real bounds. Axis titles
 re-lay out when the lazily built tick labels change size.
 
+## Dynamic chart axes
+
+`SpectrumChartNode` takes optional `xRangeProperty`, `yRangeProperty` and `xTickSpacingProperty`.
+bamboo's grid, ticks, labels and line plots follow `ChartTransform.changedEmitter` on their own; the
+node redraws its own overlays (regions, sticks, cursor) on the same emitter. Uses: the HCl band
+window follows the isotopologue's origin, the line zoom follows the selected line, DEPT-135 needs a
+negative half, the UV-Vis absorbance axis switches to the absolute scale, and the Beer–Lambert
+calibration axis rescales to each molecule's ε.
+
 ## Numerics
 
 - `math/symmetricEigen.ts`: cyclic Jacobi. dot's `EigenvalueDecomposition.getV()` throws in
@@ -44,6 +53,10 @@ re-lay out when the lazily built tick labels change size.
   orthonormal vectors for degenerate eigenvalues (benzene's MOs, CO₂'s bend).
 - The projected Hessian's external modes are found by overlap with the translation/rotation
   space, not by "smallest six", so soft torsions are never mistaken for rotations.
+- `SpinSystem.ts` builds each block of the spin Hamiltonian over product states with a fixed
+  number of β spins (bit set = β), diagonalises it with `symmetricEigen`, and forms the per-signal
+  I⁻ amplitudes as V_lowerᵀ · S_g · V_upper. A 9-spin system (butanoic acid at 60 MHz) takes a few
+  ms, so the field slider recomputes it live.
 - NMR curves sample 6500 points over 13 ppm. The sharp-line HWHM is never narrower than 1.2
   sample spacings, with heights rescaled to keep areas, so lines at 600 MHz never fall between samples.
 
@@ -51,10 +64,10 @@ re-lay out when the lazily built tick labels change size.
 
 | Screen | Model | View highlights |
 |---|---|---|
-| Infrared | `InfraredModel`: chooser, isotope scheme, peaks (DerivedProperty over molecule + scheme), absorbance/transmittance curves | Two charts toggled by the absorbance preference; isotope items hidden unless they change a mass |
-| NMR | `NMRModel`: field, D₂O, TMS, integral, environments, zoom curve | `SignalTableNode` rows select signals; zoom chart on Δδ |
-| UV-Vis | `UVVisModel`: Hückel/box, selected orbital, prediction, colours | `EnergyLevelDiagramNode` (click or arrow keys select the orbital drawn); visible strip in the chart |
-| Unknowns | `UnknownsModel`: level, score, wrong guesses, `buildUnknown()` | Candidate buttons with `MoleculeThumbnailNode`; ion-cluster bars |
+| Infrared | `InfraredModel`: chooser, isotope scheme, peaks (DerivedProperty over molecule + scheme), absorbance/transmittance curves; fine structure (temperature, lines, selected line by branch/J/isotopologue so it survives temperature changes) | Two charts toggled by the absorbance preference, two more for the fine structure; temperature slider replaces line width; line zoom inside the info panel |
+| NMR | `NMRModel`: nucleus, field, D₂O, TMS, integral, exact/first-order lines, ¹³C environments and spectrum type, zoom curves | ¹H and ¹³C charts (and zooms) swap with the nucleus; `SignalTableNode` takes row text, so one table serves both; option rows swap in one slot |
+| UV-Vis | `UVVisModel`: Hückel/box, selected orbital, prediction, colours; Beer–Lambert (ε, b, c as a fraction of a per-molecule maximum, stray-light readings, calibration curves) | `EnergyLevelDiagramNode` (click or arrow keys select the orbital drawn); visible strip in the chart; calibration panel below the results |
+| Unknowns | `UnknownsModel`: level, score, wrong guesses, NMR nucleus, `buildUnknown()` (¹H exact and ¹³C decoupled) | Candidate buttons with `MoleculeThumbnailNode`; ion-cluster bars; ¹H/¹³C radio above the NMR chart |
 
 ## Accessibility
 

@@ -7,6 +7,9 @@
  *
  * Isotope substitution only changes masses, so it re-runs the normal-mode analysis on the same
  * Hessian — exactly the Born–Oppenheimer statement that isotopes share one potential surface.
+ *
+ * For HCl a high-resolution mode replaces the single band by its rotational fine structure
+ * (RotationalFineStructure.ts): P and R branches whose envelope depends on the temperature.
  */
 
 import { BooleanProperty, DerivedProperty, NumberProperty, Property, type TReadOnlyProperty } from "scenerystack/axon";
@@ -21,6 +24,17 @@ import { MoleculeViewModel } from "../../common/model/MoleculeViewModel.js";
 import { lorentzianSum, type SampledCurve, type StickPeak } from "../../common/model/SpectrumCurve.js";
 import { describeMode, type ModeCharacter } from "../../common/model/vibrations/ModeCharacter.js";
 import { analyzeNormalModes, type NormalMode } from "../../common/model/vibrations/NormalModeAnalysis.js";
+import {
+  DEFAULT_TEMPERATURE,
+  type FineStructure,
+  fineAbsorbance,
+  fineStructure,
+  fineZoomAbsorbance,
+  hasFineStructure,
+  LINE_ZOOM_HALF_WIDTH,
+  type RotationalLine,
+  TEMPERATURE_RANGE,
+} from "./RotationalFineStructure.js";
 
 /** The molecule shown first: three modes, all IR-active, easy to see. */
 const INITIAL_MOLECULE = "water";
@@ -49,6 +63,13 @@ export const IsotopeScheme = {
 } as const;
 export type IsotopeSchemeValue = (typeof IsotopeScheme)[keyof typeof IsotopeScheme];
 
+/** Identifies a rotational line across changes of temperature (which add or drop weak lines). */
+export type RotationalLineKey = {
+  readonly branch: RotationalLine["branch"];
+  readonly j: number;
+  readonly isotopologue: number;
+};
+
 export type InfraredPeak = NormalMode & {
   /** Index into the mode list. */
   readonly index: number;
@@ -66,6 +87,25 @@ export class InfraredModel implements TModel {
   public readonly showRegionsProperty: BooleanProperty;
   /** Index into peaksProperty of the selected (animating) mode, or null. */
   public readonly selectedPeakProperty: Property<number | null>;
+  /** Show the rotational fine structure instead of the band (only where hasFineStructure). */
+  public readonly fineStructureProperty: BooleanProperty;
+  /** Gas temperature for the fine structure, K. */
+  public readonly temperatureProperty: NumberProperty;
+  public readonly selectedLineProperty: Property<RotationalLineKey | null>;
+
+  /** Whether the current molecule offers a fine-structure view. */
+  public readonly fineStructureAvailableProperty: TReadOnlyProperty<boolean>;
+  /** True while the fine structure is shown. */
+  public readonly fineStructureShownProperty: TReadOnlyProperty<boolean>;
+  public readonly fineProperty: TReadOnlyProperty<FineStructure | null>;
+  public readonly fineRangeProperty: TReadOnlyProperty<Range>;
+  public readonly fineAbsorbanceProperty: TReadOnlyProperty<SampledCurve>;
+  public readonly fineTransmittanceProperty: TReadOnlyProperty<SampledCurve>;
+  public readonly selectedLineDataProperty: TReadOnlyProperty<RotationalLine | null>;
+  /** ±LINE_ZOOM_HALF_WIDTH around the selected line (or the band origin). */
+  public readonly lineZoomRangeProperty: TReadOnlyProperty<Range>;
+  public readonly lineZoomAbsorbanceProperty: TReadOnlyProperty<SampledCurve>;
+  public readonly lineZoomTransmittanceProperty: TReadOnlyProperty<SampledCurve>;
 
   public readonly peaksProperty: TReadOnlyProperty<readonly InfraredPeak[]>;
   /** Plot as absorbance (a Preferences option) rather than percent transmittance. */
@@ -83,6 +123,9 @@ export class InfraredModel implements TModel {
     this.showSticksProperty = new BooleanProperty(false);
     this.showRegionsProperty = new BooleanProperty(true);
     this.selectedPeakProperty = new Property<number | null>(null);
+    this.fineStructureProperty = new BooleanProperty(false);
+    this.temperatureProperty = new NumberProperty(DEFAULT_TEMPERATURE, { range: TEMPERATURE_RANGE });
+    this.selectedLineProperty = new Property<RotationalLineKey | null>(null);
 
     this.peaksProperty = new DerivedProperty(
       [this.viewer.moleculeProperty, this.isotopeSchemeProperty],
@@ -96,8 +139,45 @@ export class InfraredModel implements TModel {
       transmittanceFromAbsorbance(absorbance),
     );
 
+    this.fineStructureAvailableProperty = new DerivedProperty([this.viewer.moleculeProperty], hasFineStructure);
+    this.fineStructureShownProperty = DerivedProperty.and([
+      this.fineStructureProperty,
+      this.fineStructureAvailableProperty,
+    ]);
+    this.fineProperty = new DerivedProperty(
+      [this.viewer.moleculeProperty, this.isotopeSchemeProperty, this.temperatureProperty],
+      (molecule, scheme, temperature) =>
+        molecule && hasFineStructure(molecule)
+          ? fineStructure(molecule, isotopeMasses(molecule, scheme), temperature)
+          : null,
+    );
+    this.fineRangeProperty = new DerivedProperty([this.fineProperty], (fine) => fine?.range ?? IR_RANGE);
+    this.fineAbsorbanceProperty = new DerivedProperty([this.fineProperty], (fine) =>
+      fine ? fineAbsorbance(fine, PEAK_ABSORBANCE) : EMPTY_CURVE,
+    );
+    this.fineTransmittanceProperty = new DerivedProperty([this.fineAbsorbanceProperty], transmittanceFromAbsorbance);
+    this.selectedLineDataProperty = new DerivedProperty([this.fineProperty, this.selectedLineProperty], (fine, key) =>
+      fine && key ? (fine.lines.find((line) => sameLine(line, key)) ?? null) : null,
+    );
+    this.lineZoomRangeProperty = new DerivedProperty(
+      [this.selectedLineDataProperty, this.fineProperty],
+      (line, fine) => {
+        const centre = line?.wavenumber ?? fine?.isotopologues[0]?.origin ?? 0;
+        return new Range(centre - LINE_ZOOM_HALF_WIDTH, centre + LINE_ZOOM_HALF_WIDTH);
+      },
+    );
+    this.lineZoomAbsorbanceProperty = new DerivedProperty(
+      [this.fineProperty, this.lineZoomRangeProperty],
+      (fine, range) => (fine ? fineZoomAbsorbance(fine, range.getCenter(), PEAK_ABSORBANCE) : EMPTY_CURVE),
+    );
+    this.lineZoomTransmittanceProperty = new DerivedProperty(
+      [this.lineZoomAbsorbanceProperty],
+      transmittanceFromAbsorbance,
+    );
+
     this.chooser.moleculeIdProperty.link((id) => {
       this.selectedPeakProperty.value = null;
+      this.selectedLineProperty.value = null;
       loadMolecule(id).then(
         (molecule) => {
           // Ignore a load that finishes after the user has already moved on.
@@ -112,6 +192,19 @@ export class InfraredModel implements TModel {
     });
     this.isotopeSchemeProperty.lazyLink(() => {
       this.selectedPeakProperty.value = null;
+      this.selectedLineProperty.value = null;
+    });
+    this.fineStructureShownProperty.lazyLink(() => {
+      this.selectedPeakProperty.value = null;
+      this.selectedLineProperty.value = null;
+    });
+    // A selected rotational line still belongs to the one stretching mode, so the molecule vibrates.
+    this.selectedLineProperty.link((key) => {
+      if (key || this.selectedPeakProperty.value === null) {
+        const stretch = key ? this.peaksProperty.value[0] : undefined;
+        this.viewer.displacementProperty.value = stretch ? stretch.displacements : null;
+        this.viewer.highlightedAtomsProperty.value = stretch ? stretch.character.atoms : [];
+      }
     });
     this.selectedPeakProperty.link((index) => {
       const peak = index === null ? undefined : this.peaksProperty.value[index];
@@ -133,8 +226,24 @@ export class InfraredModel implements TModel {
     );
   }
 
+  /** Rotational lines strong enough to see (≥ 1 % of the strongest), in increasing wavenumber. */
+  public visibleLines(): RotationalLine[] {
+    return (this.fineProperty.value?.lines ?? []).filter((line) => line.intensity >= VISIBLE_FRACTION);
+  }
+
   /** Selects the strongest visible peak within `tolerance` cm⁻¹ of `wavenumber`; clears if none. */
   public selectNear(wavenumber: number, tolerance: number): void {
+    if (this.fineStructureShownProperty.value) {
+      let line: RotationalLine | null = null;
+      for (const candidate of this.visibleLines()) {
+        const distance = Math.abs(candidate.wavenumber - wavenumber);
+        if (distance <= tolerance && (!line || distance < Math.abs(line.wavenumber - wavenumber))) {
+          line = candidate;
+        }
+      }
+      this.selectedLineProperty.value = line ? lineKey(line) : null;
+      return;
+    }
     let best: InfraredPeak | null = null;
     for (const peak of this.visiblePeaks()) {
       if (Math.abs(peak.wavenumber - wavenumber) <= tolerance && (!best || peak.intensity > best.intensity)) {
@@ -146,6 +255,16 @@ export class InfraredModel implements TModel {
 
   /** Moves the selection to the next (+1) or previous (−1) visible peak by wavenumber. */
   public stepSelection(direction: 1 | -1): void {
+    if (this.fineStructureShownProperty.value) {
+      const lines = this.visibleLines();
+      const key = this.selectedLineProperty.value;
+      const current = key ? lines.findIndex((line) => sameLine(line, key)) : -1;
+      const next =
+        current < 0 ? (direction > 0 ? 0 : lines.length - 1) : (current + direction + lines.length) % lines.length;
+      const nextLine = lines[next];
+      this.selectedLineProperty.value = nextLine ? lineKey(nextLine) : null;
+      return;
+    }
     const peaks = this.visiblePeaks();
     if (peaks.length === 0) {
       return;
@@ -162,6 +281,9 @@ export class InfraredModel implements TModel {
     this.showSticksProperty.reset();
     this.showRegionsProperty.reset();
     this.selectedPeakProperty.reset();
+    this.fineStructureProperty.reset();
+    this.temperatureProperty.reset();
+    this.selectedLineProperty.reset();
     this.chooser.reset();
     this.viewer.reset();
   }
@@ -169,6 +291,16 @@ export class InfraredModel implements TModel {
   public step(dt: number): void {
     this.viewer.step(dt);
   }
+}
+
+const EMPTY_CURVE: SampledCurve = { x: new Float64Array(0), y: new Float64Array(0) };
+
+function lineKey(line: RotationalLine): RotationalLineKey {
+  return { branch: line.branch, j: line.j, isotopologue: line.isotopologue };
+}
+
+function sameLine(line: RotationalLine, key: RotationalLineKey): boolean {
+  return line.branch === key.branch && line.j === key.j && line.isotopologue === key.isotopologue;
 }
 
 /** Isotope masses for a scheme; "exchange" deuterates only H on O or N, as shaking with D₂O does. */

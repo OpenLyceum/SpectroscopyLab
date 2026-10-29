@@ -11,7 +11,7 @@ import { ScreenSummaryContent } from "scenerystack/sim";
 import { nameKey } from "../../common/model/library/SpectroscopyLibrary.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import type { InfraredModel } from "../model/InfraredModel.js";
-import { describePeak } from "./InfraredScreenView.js";
+import { describeLine, describePeak } from "./InfraredScreenView.js";
 
 export class InfraredScreenSummaryContent extends ScreenSummaryContent {
   public constructor(model: InfraredModel) {
@@ -25,6 +25,8 @@ export class InfraredScreenSummaryContent extends ScreenSummaryContent {
         model.viewer.moleculeProperty,
         model.peaksProperty,
         model.selectedPeakProperty,
+        model.selectedLineDataProperty,
+        model.fineStructureShownProperty,
         a11y.currentDetailsStringProperty,
         a11y.noSelectionStringProperty,
         a11y.peakStringProperty,
@@ -32,10 +34,13 @@ export class InfraredScreenSummaryContent extends ScreenSummaryContent {
       () => {
         const molecule = model.viewer.molecule;
         const peak = model.selectedPeak;
+        const line = model.fineStructureShownProperty.value ? model.selectedLineDataProperty.value : null;
+        const species = line ? model.fineProperty.value?.isotopologues[line.isotopologue] : undefined;
+        const selection = line && species ? describeLine(line, species.label) : peak ? describePeak(peak) : null;
         return StringUtils.fillIn(a11y.currentDetailsStringProperty.value, {
           molecule: molecule ? (names[`${nameKey(molecule.id)}StringProperty`]?.value ?? molecule.id) : "",
           count: model.peaksProperty.value.length,
-          selection: peak ? describePeak(peak) : a11y.noSelectionStringProperty.value,
+          selection: selection ?? a11y.noSelectionStringProperty.value,
         });
       },
     );

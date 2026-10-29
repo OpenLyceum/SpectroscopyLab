@@ -35,10 +35,10 @@ const selectedXProperty = new Property<number | null>(null);
 const sticksVisibleProperty = new Property(true);
 const halfWidthProperty = new NumberProperty(10);
 const strings = StringManager.getInstance().getInfraredStrings();
-const environmentsProperty = new Property([
-  { label: "a", atoms: [3, 4], shift: 3.65, exchangeable: false, couplings: [{ j: 7, count: 3 }], multiplicity: "q" },
-]);
+const signalRowsProperty = new Property([{ main: "a   δ 3.65   2H   q", detail: "J = 7.0 Hz" }]);
 const selectedSignalProperty = new Property<number | null>(0);
+const xRangeProperty = new Property(new Range(400, 4000));
+const yRangeProperty = new Property(new Range(-1, 1));
 const predictionProperty = new Property<Prediction | null>({
   gap: 1.236,
   wavelength: 225,
@@ -67,7 +67,7 @@ describeDisposalLeaks([
         280,
       ),
   },
-  { name: "SignalTableNode", create: () => new SignalTableNode(environmentsProperty, selectedSignalProperty, 200) },
+  { name: "SignalTableNode", create: () => new SignalTableNode(signalRowsProperty, selectedSignalProperty, 200) },
   { name: "MoleculeThumbnailNode", create: () => new MoleculeThumbnailNode(water, new Bounds2(0, 0, 100, 80)) },
   { name: "MoleculeChooserNode", create: () => new MoleculeChooserNode(chooser, new Node(), 300) },
   {
@@ -88,6 +88,8 @@ describeDisposalLeaks([
         sticksVisibleProperty,
         regions: [{ min: 1650, max: 1780, labelStringProperty: strings.regions.carbonylStringProperty }],
         regionsVisibleProperty: sticksVisibleProperty,
+        xRangeProperty,
+        yRangeProperty,
         selectedXProperty,
         pick: () => undefined,
         step: () => undefined,

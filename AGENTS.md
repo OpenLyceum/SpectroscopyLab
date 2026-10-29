@@ -4,16 +4,16 @@ Sim-specific context for AI assistants. General SceneryStack guidance: [OpenLyce
 
 ## Project
 
-Read infrared, ¹H NMR and UV-Vis spectra against a 3D molecule: click a peak and the atoms
+Read infrared, ¹H/¹³C NMR and UV-Vis spectra against a 3D molecule: click a peak and the atoms
 behind it light up (or the molecule vibrates in that mode); click an atom and its peak lights up.
 Four screens:
 
 | Screen | Model |
 |---|---|
-| Infrared | In-browser normal-mode analysis of an offline B3LYP Hessian; isotope substitution re-diagonalises with new masses |
-| NMR | Topological equivalence, additivity shift rules, first-order n + 1 splitting, field slider with multiplet zoom, D₂O shake |
-| UV-Vis | Hückel (per-family linear calibration) and Kuhn particle-in-a-box; energy levels, orbital lobes, perceived colour |
-| Unknowns | Identify an isomer from formula, unsaturation, molecular ion, IR and NMR; three levels |
+| Infrared | In-browser normal-mode analysis of an offline B3LYP Hessian; isotope substitution re-diagonalises with new masses; HCl rotation–vibration fine structure (P/R branches, temperature, ³⁵Cl/³⁷Cl) |
+| NMR | ¹H: topological equivalence, additivity shift rules, exact spin-Hamiltonian (second-order) or first-order lines, field slider with multiplet zoom, D₂O shake. ¹³C: additivity shifts, decoupled / DEPT-135 / DEPT-90 / coupled |
+| UV-Vis | Hückel (per-family linear calibration) and Kuhn particle-in-a-box; energy levels, orbital lobes, perceived colour; Beer–Lambert mode with calibration plot and stray light |
+| Unknowns | Identify an isomer from formula, unsaturation, molecular ion, IR and ¹H or ¹³C NMR; three levels |
 
 Physics and every constant: [`doc/model.md`](doc/model.md). Architecture: [`doc/implementation-notes.md`](doc/implementation-notes.md).
 
@@ -47,15 +47,18 @@ computes IR intensities, so changing an isotope only changes masses. Never hand-
 | `structure/` | `Elements`, `Geometry`, `Rotation3` copied from MolScope |
 | **View** (`src/common/view/`) | |
 | `MoleculeRenderer.ts` / `MoleculeViewerNode.ts` | Ball-and-stick canvas renderer + input, trimmed from MolScope (no cartoons, cells, console) |
-| `SpectrumChartNode.ts` | bamboo chart: curve, sticks, shaded regions, cursor; click-to-pick, arrow keys step peaks |
+| `SpectrumChartNode.ts` | bamboo chart: curve, sticks, shaded regions, cursor; click-to-pick, arrow keys step peaks; optional x/y range and x tick Properties |
 | `MoleculeChooserNode.ts` / `ControlFactory.ts` | Family/molecule combo boxes; themed control builders |
 | `MoleculeGraph.ts` | Aromatic-ring perception, Morgan symmetry classes, bond-order and functional-group helpers |
 | `MoleculeThumbnailNode.ts` | Still ball-and-stick picture (Unknowns answer buttons) |
 | `src/infrared/` | IR model (isotope schemes, peaks, transmittance/absorbance) and view |
+| `src/infrared/model/RotationalFineStructure.ts` | Diatomic P/R lines from ν₀ (Hessian), B (B3LYP r_e), measured α_e; isotopologues at natural abundance |
 | `src/nmr/model/ChemicalShiftRules.ts` / `ProtonSpectrum.ts` | Shift additivity rules; environments, ³J couplings, multiplets |
-| `src/nmr/model/NMRModel.ts` | Field, D₂O, TMS, integral, zoom; `fullSpectrum`/`integralTrace` reused by Unknowns |
+| `src/nmr/model/SpinSystem.ts` | Exact ¹H lines: spin Hamiltonian per coupled group, block-diagonal by Iz; first-order fallback above 9 spins |
+| `src/nmr/model/CarbonSpectrum.ts` | ¹³C environments, additivity shifts, decoupled/DEPT/coupled lines |
+| `src/nmr/model/NMRModel.ts` | Nucleus, field, D₂O, TMS, integral, zoom; `fullSpectrum`/`carbonSpectrum`/`integralTrace` reused by Unknowns |
 | `src/uv-vis/model/PiSystem.ts` | π atoms/electrons, Hückel matrix, Kuhn box, orbital lobes |
-| `src/uv-vis/model/UVVisModel.ts` | Measured λmax table (with sources), per-family Hückel calibration, band + colour |
+| `src/uv-vis/model/UVVisModel.ts` | Measured λmax and approximate ε tables (with sources), per-family Hückel calibration, band + colour, Beer–Lambert with stray light |
 | `src/uv-vis/model/PerceivedColor.ts` | CIE 1931 (Wyman–Sloan–Shirley fit) → white-balanced sRGB |
 | `src/unknowns/model/` | `MolecularFormula.ts` (Hill formula, unsaturation, M/M+1/M+2), `UnknownsModel.ts` (families, scoring) |
 
@@ -111,8 +114,10 @@ Fleet-standard Vitest layout (keep when forking):
 | `tests/setup.ts` | Canvas / AudioContext mocks + `init({ name: "…" })` before SceneryStack imports |
 | `tests/common/normal-modes.test.ts` | NMA against B3LYP data + experiment: mode counts, fundamentals, CO₂ selection rule, D₂O and ³⁷Cl shifts |
 | `tests/infrared/infrared-model.test.ts` | Mode naming, isotope schemes (D₂O shake), transmittance curve |
-| `tests/nmr/*.test.ts` | 14 molecules vs literature shifts/multiplicities; field narrowing, D₂O, picking, integration |
+| `tests/infrared/fine-structure.test.ts` | HCl P/R lines: no Q branch, 2B spacing, branch convergence, ³⁷Cl partners, DCl ratios, thermal envelope |
+| `tests/nmr/*.test.ts` | 14 molecules vs literature ¹H shifts/multiplicities; field narrowing, D₂O, picking, integration; exact spin systems (AB quartet, roofing, high-field limit); 23 molecules vs literature ¹³C shifts, DEPT, coupled multiplets |
 | `tests/uv-vis/pi-system.test.ts` | Hückel levels, cyanine box λ, calibration re-derived by least squares, colours |
+| `tests/uv-vis/beer-lambert.test.ts` | A = εbc, stray-light saturation, per-molecule concentration range, colour vs concentration |
 | `tests/unknowns/unknowns.test.ts` | Formula, unsaturation, ion cluster, isomer families, scoring |
 | `tests/memory-leak.test.ts` | Lists the sim's disposables for `describeDisposalLeaks()` (collected after dispose, repeated cycles; opt-in double dispose) |
 | `tests/helpers/memoryLeak.ts` | Template-owned leak harness: `describeDisposalLeaks`, `forceGC`, `createAndDispose` |

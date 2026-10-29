@@ -2,7 +2,7 @@
 
 [![CI](../../actions/workflows/ci.yml/badge.svg)](../../actions/workflows/ci.yml)
 
-Read infrared, ¹H NMR and UV-Vis spectra against a 3D molecule: click a peak and the atoms behind
+Read infrared, ¹H and ¹³C NMR and UV-Vis spectra against a 3D molecule: click a peak and the atoms behind
 it light up, the molecule vibrates in that mode, or the orbital that absorbs is drawn on it. Built
 with [SceneryStack](https://scenerystack.org/); runs offline as a Progressive Web App.
 
@@ -11,15 +11,22 @@ with [SceneryStack](https://scenerystack.org/); runs offline as a Progressive We
 - **Infrared.** 34 molecules with B3LYP/def2-SVP Hessians computed for this sim. The browser runs
   the normal-mode analysis itself, so isotope substitution (a D₂O shake, all H → D, ¹³C, ¹⁸O, ³⁷Cl)
   recomputes the spectrum live. Click a band to animate its mode; functional-group regions,
-  normal-mode sticks, line width, and transmittance or absorbance (Preferences).
+  normal-mode sticks, line width, and transmittance or absorbance (Preferences). For HCl, a
+  high-resolution view shows the rotation–vibration fine structure: P and R branches with no Q
+  branch, a temperature slider that moves the envelope, and the H³⁷Cl partner of every line.
 - **¹H NMR.** Equivalent protons from the molecular graph, chemical shifts from additivity
-  rules, first-order n + 1 splitting with Pascal intensities, integration, a D₂O shake, and a
-  spectrometer slider (60–600 MHz) with a zoom that shows multiplets narrowing on the ppm scale.
+  rules, exact second-order line positions and intensities from the spin Hamiltonian (or the
+  first-order n + 1 rule for comparison), integration, a D₂O shake, and a spectrometer slider
+  (60–600 MHz) with a zoom that shows roofing at low field giving way to clean multiplets.
+- **¹³C NMR.** One line per kind of carbon, additivity shifts, and ¹H-decoupled, DEPT-135, DEPT-90
+  and ¹H-coupled spectra.
 - **UV-Vis.** Hückel and particle-in-a-box (Kuhn) models for polyenes, acenes and cyanine dyes:
   energy-level diagram, π orbitals drawn as lobes on the molecule, predicted vs measured λmax,
-  and the colour each would give in white light.
+  and the colour each would give in white light. A Beer–Lambert mode sets concentration and path
+  length, puts the spectrum on an absolute scale, and plots a calibration line that bends over
+  where stray light saturates the spectrometer.
 - **Unknowns.** Identify an isomer from its formula, degree of unsaturation, molecular-ion
-  cluster, IR and NMR spectra, over three levels.
+  cluster, IR and ¹H or ¹³C NMR spectra, over three levels.
 - **Accessible:** keyboard operation throughout (rotate the molecule, step through atoms, peaks,
   signals and orbitals, each announced), live screen summaries, keyboard-help dialogs.
 - English, French and Spanish; default and projector colour profiles; installable PWA.
