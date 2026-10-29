@@ -8,6 +8,9 @@
  * Spectroscopists plot IR wavenumber and NMR chemical shift decreasing to the right, so the x axis
  * can be inverted. Clicking the plot calls `pick` with the model x and a tolerance of a few pixels;
  * when focused, arrow keys step between peaks and Escape clears, via `step` and `clear`.
+ *
+ * The axis ranges may follow Properties (`xRangeProperty`, `yRangeProperty`) — the IR fine-structure
+ * window tracks the band of the current isotopologue, and DEPT-135 needs a negative half.
  */
 
 import { Multilink, type TReadOnlyProperty } from "scenerystack/axon";
@@ -47,6 +50,11 @@ type SelfOptions = {
   chartHeight: number;
   xRange: Range;
   yRange: Range;
+  /** When given, the axis follows it (initial value replaces xRange / yRange). */
+  xRangeProperty?: TReadOnlyProperty<Range> | null;
+  yRangeProperty?: TReadOnlyProperty<Range> | null;
+  /** When given, the x grid, ticks and labels follow it (for an x range that changes scale). */
+  xTickSpacingProperty?: TReadOnlyProperty<number> | null;
   /** Plot x decreasing to the right (IR wavenumber, NMR shift). */
   xInverted?: boolean;
   xTickSpacing: number;
@@ -85,6 +93,9 @@ export class SpectrumChartNode extends Node {
         xInverted: false,
         xTickDecimals: 0,
         yTickDecimals: 0,
+        xRangeProperty: null,
+        yRangeProperty: null,
+        xTickSpacingProperty: null,
         sticksProperty: null,
         secondaryCurveProperty: null,
         secondaryVisibleProperty: null,
@@ -102,8 +113,8 @@ export class SpectrumChartNode extends Node {
     const chartTransform = new ChartTransform({
       viewWidth: options.chartWidth,
       viewHeight: options.chartHeight,
-      modelXRange: options.xRange,
-      modelYRange: options.yRange,
+      modelXRange: options.xRangeProperty?.value ?? options.xRange,
+      modelYRange: options.yRangeProperty?.value ?? options.yRange,
       modelXRangeInverted: options.xInverted,
     });
 
@@ -112,11 +123,12 @@ export class SpectrumChartNode extends Node {
       stroke: SpectroscopyLabColors.chartAxisColorProperty,
       cursor: "pointer",
     });
+    const xGridLines = new GridLineSet(chartTransform, Orientation.HORIZONTAL, options.xTickSpacing, {
+      stroke: SpectroscopyLabColors.chartGridColorProperty,
+    });
     const gridLines = new Node({
       children: [
-        new GridLineSet(chartTransform, Orientation.HORIZONTAL, options.xTickSpacing, {
-          stroke: SpectroscopyLabColors.chartGridColorProperty,
-        }),
+        xGridLines,
         new GridLineSet(chartTransform, Orientation.VERTICAL, options.yTickSpacing, {
           stroke: SpectroscopyLabColors.chartGridColorProperty,
         }),
@@ -125,24 +137,31 @@ export class SpectrumChartNode extends Node {
     });
 
     const regionLayer = new Node({ pickable: false });
-    for (const region of options.regions) {
-      const left = chartTransform.modelToViewX(region.min);
-      const right = chartTransform.modelToViewX(region.max);
-      const x = Math.min(left, right);
-      const width = Math.abs(right - left);
+    const regionNodes = options.regions.map((region) => {
+      const rectangle = new Rectangle(0, 0, 1, options.chartHeight, {
+        fill: SpectroscopyLabColors.regionFillColorProperty,
+      });
       const label = new Text(region.labelStringProperty, {
         font: REGION_FONT,
         fill: SpectroscopyLabColors.regionTextColorProperty,
-        maxWidth: Math.max(width + 24, 40),
       });
-      label.boundsProperty.link(() => {
-        label.centerX = x + width / 2;
-        label.top = 3;
-      });
-      regionLayer.addChild(
-        new Rectangle(x, 0, width, options.chartHeight, { fill: SpectroscopyLabColors.regionFillColorProperty }),
-      );
+      regionLayer.addChild(rectangle);
       regionLayer.addChild(label);
+      return { region, rectangle, label };
+    });
+    const layoutRegions = () => {
+      for (const { region, rectangle, label } of regionNodes) {
+        const left = chartTransform.modelToViewX(region.min);
+        const right = chartTransform.modelToViewX(region.max);
+        const width = Math.abs(right - left);
+        rectangle.setRect(Math.min(left, right), 0, width, options.chartHeight);
+        label.maxWidth = Math.max(width + 24, 40);
+        label.centerX = Math.min(left, right) + width / 2;
+        label.top = 3;
+      }
+    };
+    for (const { label } of regionNodes) {
+      label.boundsProperty.link(layoutRegions);
     }
 
     const plot = new LinePlot(chartTransform, [], {
@@ -243,22 +262,23 @@ export class SpectrumChartNode extends Node {
         )
       : null;
 
-    const yMin = options.yRange.min;
-    const ySpan = options.yRange.getLength();
+    const drawSticks = () => {
+      const visible = options.sticksVisibleProperty?.value ?? true;
+      const yMin = chartTransform.modelYRange.min;
+      const ySpan = chartTransform.modelYRange.getLength();
+      const shape = new Shape();
+      for (const stick of visible ? (options.sticksProperty?.value ?? []) : []) {
+        const x = chartTransform.modelToViewX(stick.position);
+        const baseline = options.sticksFromTop ? yMin + ySpan : yMin;
+        const tip = options.sticksFromTop ? baseline - stick.height * ySpan : baseline + stick.height * ySpan;
+        shape.moveTo(x, chartTransform.modelToViewY(baseline)).lineTo(x, chartTransform.modelToViewY(tip));
+      }
+      sticks.shape = shape;
+    };
     const sticksMultilink = options.sticksProperty
       ? Multilink.multilinkAny(
           [options.sticksProperty, ...(options.sticksVisibleProperty ? [options.sticksVisibleProperty] : [])],
-          () => {
-            const visible = options.sticksVisibleProperty?.value ?? true;
-            const shape = new Shape();
-            for (const stick of visible ? (options.sticksProperty?.value ?? []) : []) {
-              const x = chartTransform.modelToViewX(stick.position);
-              const baseline = options.sticksFromTop ? yMin + ySpan : yMin;
-              const tip = options.sticksFromTop ? baseline - stick.height * ySpan : baseline + stick.height * ySpan;
-              shape.moveTo(x, chartTransform.modelToViewY(baseline)).lineTo(x, chartTransform.modelToViewY(tip));
-            }
-            sticks.shape = shape;
-          },
+          drawSticks,
         )
       : null;
 
@@ -276,15 +296,34 @@ export class SpectrumChartNode extends Node {
     };
     options.selectedXProperty.link(cursorListener);
 
+    // ── Ranges ──────────────────────────────────────────────────────────────────
+    const transformListener = () => {
+      layoutRegions();
+      if (options.sticksProperty) {
+        drawSticks();
+      }
+      cursorListener(options.selectedXProperty.value);
+    };
+    chartTransform.changedEmitter.addListener(transformListener);
+    const xRangeListener = (range: Range) => chartTransform.setModelXRange(range);
+    const yRangeListener = (range: Range) => chartTransform.setModelYRange(range);
+    options.xRangeProperty?.link(xRangeListener);
+    options.yRangeProperty?.link(yRangeListener);
+    const xSpacingListener = (spacing: number) => {
+      xGridLines.setSpacing(spacing);
+      xTicks.setSpacing(spacing);
+      xLabels.setSpacing(spacing);
+    };
+    options.xTickSpacingProperty?.link(xSpacingListener);
+
     // ── Input ───────────────────────────────────────────────────────────────────
-    const tolerance = Math.abs(chartTransform.viewToModelDeltaX(PICK_TOLERANCE));
     background.addInputListener({
       down: (event: PressListenerEvent) => {
         if (!event.canStartPress()) {
           return;
         }
         const local = background.globalToParentPoint(event.pointer.point);
-        options.pick(chartTransform.viewToModelX(local.x), tolerance);
+        options.pick(chartTransform.viewToModelX(local.x), Math.abs(chartTransform.viewToModelDeltaX(PICK_TOLERANCE)));
         this.focus();
       },
     });
@@ -315,6 +354,13 @@ export class SpectrumChartNode extends Node {
       secondaryMultilink?.dispose();
       options.regionsVisibleProperty?.unlink(regionsListener);
       options.selectedXProperty.unlink(cursorListener);
+      options.xRangeProperty?.unlink(xRangeListener);
+      options.yRangeProperty?.unlink(yRangeListener);
+      options.xTickSpacingProperty?.unlink(xSpacingListener);
+      chartTransform.changedEmitter.removeListener(transformListener);
+      for (const { label } of regionNodes) {
+        label.boundsProperty.unlink(layoutRegions);
+      }
       keyboardListener.dispose();
       for (const node of [xLabels, yLabels]) {
         node.boundsProperty.unlink(layoutAxisLabels);

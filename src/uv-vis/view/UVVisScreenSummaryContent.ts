@@ -25,13 +25,25 @@ export class UVVisScreenSummaryContent extends ScreenSummaryContent {
         model.predictionProperty,
         model.measuredWavelengthProperty,
         model.electronicModelProperty,
+        model.quantitativeProperty,
+        model.concentrationProperty,
+        model.pathLengthProperty,
+        model.measuredPeakAbsorbanceProperty,
         a11y.currentDetailsStringProperty,
         a11y.noPredictionStringProperty,
+        a11y.quantitativeDetailsStringProperty,
       ],
       () => {
         const prediction = model.predictionProperty.value;
         const measured = model.measuredWavelengthProperty.value;
-        return StringUtils.fillIn(a11y.currentDetailsStringProperty.value, {
+        const quantitative = model.quantitativeProperty.value
+          ? ` ${StringUtils.fillIn(a11y.quantitativeDetailsStringProperty.value, {
+              concentration: toFixed(model.concentrationProperty.value, 1),
+              pathLength: toFixed(model.pathLengthProperty.value, 1),
+              absorbance: toFixed(model.measuredPeakAbsorbanceProperty.value, 2),
+            })}`
+          : "";
+        return `${StringUtils.fillIn(a11y.currentDetailsStringProperty.value, {
           molecule: uvMoleculeName(model),
           model:
             model.electronicModelProperty.value === ElectronicModel.BOX
@@ -39,7 +51,7 @@ export class UVVisScreenSummaryContent extends ScreenSummaryContent {
               : strings.hueckelStringProperty.value,
           predicted: prediction ? toFixed(prediction.wavelength, 0) : a11y.noPredictionStringProperty.value,
           measured: measured === null ? "" : toFixed(measured, 0),
-        });
+        })}${quantitative}`;
       },
     );
 

@@ -67,3 +67,17 @@ describe("Unknowns game", () => {
     expect(Math.max(...unknown.nmrSpectrum.y)).toBeCloseTo(1, 6);
   });
 });
+
+describe("¹³C clue", () => {
+  it("shows one line per kind of carbon plus TMS (o-xylene: 4 + 1)", async () => {
+    const unknown = await buildUnknown("o-xylene", ["o-xylene", "m-xylene", "p-xylene", "ethylbenzene"]);
+    const y = unknown.carbonSpectrum.y;
+    let peaks = 0;
+    for (let i = 1; i < y.length - 1; i++) {
+      if ((y[i] ?? 0) > 0.1 && (y[i] ?? 0) >= (y[i - 1] ?? 0) && (y[i] ?? 0) > (y[i + 1] ?? 0)) {
+        peaks++;
+      }
+    }
+    expect(peaks).toBe(5);
+  });
+});

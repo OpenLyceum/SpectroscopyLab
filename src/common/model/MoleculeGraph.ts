@@ -124,9 +124,14 @@ function key(a: number, b: number): string {
   return a < b ? `${a}-${b}` : `${b}-${a}`;
 }
 
-/** Six-rings whose bonds alternate 1/2 around the ring (a Kekulé benzene), each reported once. */
+/**
+ * Six-rings whose bonds alternate 1/2 around the ring (a Kekulé benzene), each reported once. A
+ * fused ring need not alternate in the Kekulé form drawn — naphthalene's second ring has a single
+ * bond on each side of the shared one — so a ring sharing a bond with an aromatic ring is aromatic
+ * too when each of its other atoms has a double bond inside it.
+ */
 function findAromaticRings(graph: MoleculeGraph): number[][] {
-  const rings: number[][] = [];
+  const candidates: number[][] = [];
   const seen = new Set<string>();
   const walk = (path: number[]) => {
     const last = path[path.length - 1] ?? 0;
@@ -136,14 +141,9 @@ function findAromaticRings(graph: MoleculeGraph): number[][] {
         return;
       }
       const id = [...path].sort((a, b) => a - b).join(",");
-      if (seen.has(id)) {
-        return;
-      }
-      const orders = path.map((atom, i) => graph.order(atom, path[(i + 1) % 6] ?? atom));
-      const alternating = orders.every((o, i) => o === (i % 2 === 0 ? orders[0] : 3 - (orders[0] ?? 0)));
-      if (alternating && orders.includes(2) && orders.includes(1)) {
+      if (!seen.has(id)) {
         seen.add(id);
-        rings.push([...path]);
+        candidates.push([...path]);
       }
       return;
     }
@@ -156,6 +156,36 @@ function findAromaticRings(graph: MoleculeGraph): number[][] {
   for (let start = 0; start < graph.atomCount; start++) {
     if (graph.symbol(start) !== "H") {
       walk([start]);
+    }
+  }
+
+  const ringOrders = (ring: readonly number[]) => ring.map((atom, i) => graph.order(atom, ring[(i + 1) % 6] ?? atom));
+  const rings = candidates.filter((ring) => {
+    const orders = ringOrders(ring);
+    const alternating = orders.every((o, i) => o === (i % 2 === 0 ? orders[0] : 3 - (orders[0] ?? 0)));
+    return alternating && orders.includes(2) && orders.includes(1);
+  });
+  const aromatic = new Set(rings.flat());
+  for (let added = true; added; ) {
+    added = false;
+    for (const ring of candidates) {
+      if (rings.includes(ring)) {
+        continue;
+      }
+      const shared = ring.filter((atom) => aromatic.has(atom));
+      const othersDoubled = ring.every(
+        (atom, i) =>
+          aromatic.has(atom) ||
+          graph.order(atom, ring[(i + 1) % 6] ?? atom) === 2 ||
+          graph.order(atom, ring[(i + 5) % 6] ?? atom) === 2,
+      );
+      if (shared.length >= 2 && othersDoubled && ringOrders(ring).every((o) => o === 1 || o === 2)) {
+        rings.push(ring);
+        for (const atom of ring) {
+          aromatic.add(atom);
+        }
+        added = true;
+      }
     }
   }
   return rings;

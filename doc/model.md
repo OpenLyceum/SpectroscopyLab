@@ -10,7 +10,9 @@ quantum chemistry, and that is computed offline.
   dyes Me₂N–(CH)ₚ–NMe₂⁺ are generated as planar all-trans chains (C–C 1.39 Å, 120°), the geometry
   Kuhn's model assumes.
 - **Aromaticity:** six-rings of alternating single/double bonds are re-marked aromatic (order 1.5),
-  so the Kekulé form PubChem drew does not split equivalent ring positions.
+  so the Kekulé form PubChem drew does not split equivalent ring positions. A six-ring sharing a
+  bond with an aromatic ring is aromatic too when its other atoms each have a ring double bond
+  (naphthalene's second ring need not alternate in the form drawn).
 - **Equivalence:** colour refinement (Morgan's algorithm) on the bonding graph gives topological
   symmetry classes. Diastereotopic protons count as equivalent (a known limitation).
 
@@ -35,6 +37,24 @@ D₂O shake moves the O–H stretch from ~3650 to ~2700 cm⁻¹ (ratio ≈ 1/√
 **Limitations:** gas-phase harmonic frequencies, so no hydrogen-bond broadening of O–H, and no
 overtones or combination bands.
 
+### Rotational fine structure (HCl)
+
+`RotationalFineStructure.ts`. At high resolution the v = 0 → 1 band of a gas-phase diatomic splits
+into rotational lines with ΔJ = ±1 (no Q branch for ¹Σ):
+R(J) = ν₀ + F₁(J+1) − F₀(J), P(J) = ν₀ + F₁(J−1) − F₀(J), F_v(J) = B_v J(J+1) − D J²(J+1)².
+
+- ν₀: the scaled B3LYP harmonic wavenumber for the current masses (2853 cm⁻¹ for H³⁵Cl; experiment
+  2886), so isotope schemes move the band (DCl × 0.717).
+- B_e = 16.8576 / (μ r_e²) cm⁻¹ (μ in u, r_e in Å) from the B3LYP bond length (1.290 Å vs 1.275).
+- α_e: the harmonic Hessian has no vibration–rotation coupling, so α_e = 0.3072 cm⁻¹ (H³⁵Cl, Huber &
+  Herzberg 1979), scaled as μ^(−3/2) to other isotopologues; B_v = B_e − α_e(v + ½).
+- D = 4B_e³/ν₀² (Kratzer).
+- Intensity ∝ abundance × ν × S × exp(−hcF₀(J)/kT)/Q, Hönl–London S = J + 1 (R) or J (P).
+- Isotopologues: an atom left at its most abundant isotope also appears as its common minor
+  isotope at natural abundance (³⁵Cl 75.76 %, ³⁷Cl 24.24 %), so every line has an H³⁷Cl partner
+  ~2 cm⁻¹ lower. Lorentzian HWHM 0.3 cm⁻¹ (a high-resolution FTIR; the Doppler width is ~0.003).
+- Readouts: r from B, and the harmonic force constant k = μ(2πcν₀)².
+
 ## ¹H NMR
 
 - **Shifts** (`ChemicalShiftRules.ts`): sp³ C–H base values (CH₃ 0.86, CH₂ 1.25, CH 1.50 ppm)
@@ -49,8 +69,40 @@ overtones or combination bands.
   A symmetry class whose members couple differently (the cis/trans =CH₂ protons) is split in two.
 - **Field:** line positions are computed in Hz and divided by the spectrometer frequency, so J is
   constant in Hz and multiplets narrow tenfold in ppm from 60 to 600 MHz.
+- **Exact (second-order) spectrum** (`SpinSystem.ts`, the default): non-exchanging protons are
+  grouped into coupled spin systems (connected by a non-zero ³J, couplings between equivalent
+  protons included). For each, H = Σ νᵢIzᵢ + Σ JᵢⱼIᵢ·Iⱼ (Hz) is block-diagonalised by total Iz and
+  each block diagonalised (Jacobi). Lines are transitions between neighbouring blocks at Eₐ − E_b
+  with intensity |⟨b|ΣI⁻ᵢ|a⟩|² / 2^(N−1), so a system's lines sum to its proton count; each line is
+  attributed to the signal whose spins contribute the largest amplitude. Lines of one signal within
+  0.1 Hz are merged and lines under 10⁻⁴ protons dropped. Systems of more than 9 spins (a 10-spin
+  block is 252 × 252) fall back to first order. The result reproduces the AB quartet exactly,
+  roofing and extra lines at 60 MHz, and the n + 1 rule at 600 MHz. The first-order option shows
+  the n + 1 rule for comparison.
 - **Spectrum:** Lorentzians (HWHM 0.8 Hz; 12 Hz for exchanging O–H/N–H, with equal area), the
   integral as a running sum from the downfield end, and optional TMS at 0 ppm.
+
+## ¹³C NMR
+
+`CarbonSpectrum.ts`. One line per carbon symmetry class (o-, m-, p-xylene: 4, 5, 3).
+
+- **sp³ C:** −2.3 ppm (methane) + Grant–Paul alkyl increments 9.1 / 9.4 / −2.5 for carbons 1, 2,
+  3 bonds away, walking only through sp³ carbons; a functional group met on the walk adds its own
+  α/β/γ increment and stops the walk (OH 48/10/−5, OR 58/8/−4, ester O 53.5/6/−4, N 29/11/−5,
+  Cl 31/11/−4, CHO and COR 32, COOH and COOR 23, CONH₂ 25, C≡N 4, aryl 23, vinyl 20). Each carbon
+  across an α ether O adds 4, across an amine N 10; saturated six-ring carbons −5.
+- **Aromatic C:** 128.5 + ipso/ortho/meta/para increments for CH₃, other alkyl, OH and CHO; fused
+  acenes use 133 (fusion C), 128 (next to one) and 126.
+- **Alkene C:** 123.3 + same-carbon / other-carbon increments (alkyl 10.6/−7.9 plus 7.2/−1.8 per
+  further carbon, CH₂OH 14.2/−8.4, vinyl or aryl 13.6/−7, OR 29.4/−38.9, NR₂ 28/−32).
+- **Carbonyl C:** ketone 206.6, aldehyde 200.5 (aromatic 192.4), acid 177.5, ester 171, amide 172.7,
+  plus 2–3.5 per carbon β to the carbonyl; CO₂ 124.9, nitrile C 116.9.
+- Tests hold 23 molecules to within 5 ppm of literature values (typically within 3; 1,4-dioxane is
+  the worst at ~5).
+- **Spectrum types:** ¹H-decoupled singlets (quaternary carbons drawn at 0.35 height: little NOE,
+  long T₁); DEPT-135 (CH, CH₃ up; CH₂ down; C absent); DEPT-90 (CH only); ¹H-coupled, each carbon
+  split n + 1 by its own hydrogens with ¹J = 125 (sp³), 156 (alkene), 159 (aromatic), 172
+  (aldehyde) Hz, long-range couplings ignored. ¹³C is observed at the ¹H frequency / 3.9767.
 
 ## UV-Vis
 
@@ -71,11 +123,20 @@ overtones or combination bands.
   Sloan–Shirley analytic fit) to white-balanced sRGB.
 - **Measured λmax:** Jaffé & Orchin (1962), NIST WebBook (polyenes, acene ¹Lₐ bands); Malhotra &
   Whiting (1960) for streptocyanines.
+- **Beer–Lambert mode:** A(λ) = ε·b·c × the band shape, with ε at λmax from `MOLAR_ABSORPTIVITY`
+  (approximate literature values, ±30 %: butadiene 21 000 and β-carotene 139 000 are textbook
+  values; the acenes are log ε 3.75–4.20; hexatriene, octatetraene and the cyanines are estimates
+  following the growth of ε with chain length). The spectrometer reading includes 0.1 % stray
+  light, A_read = −log₁₀((10^−A + s)/(1 + s)), so readings saturate near 3 and the calibration plot
+  (A at λmax against c) bends over above A ≈ 2. The perceived colour uses the true absorbance, so it
+  deepens with concentration and path length. The concentration slider runs to the 1–2–5 step at
+  or above 4 / (ε · 1 cm), so dyes with ε ≈ 10⁵ and azulene (ε ≈ 350) are both usable.
 
 ## Unknowns
 
 Isomer families (one formula each) by level: C₂H₆O and C₃H₈O (alcohol vs ether); C₃H₆O and C₄H₈O₂
 (carbonyls, esters, acid, cyclic ether); C₈H₁₀ (substitution patterns). The student sees the
 formula, the degree of unsaturation (2C + 2 + N − H − X)/2, the molecular-ion cluster (M+1 from
-¹³C at 1.08 % per carbon, M+2 from ¹⁸O and ³⁷Cl), the IR spectrum and the 300 MHz ¹H NMR spectrum.
+¹³C at 1.08 % per carbon, M+2 from ¹⁸O and ³⁷Cl), the IR spectrum and the 300 MHz ¹H NMR spectrum
+(exact, as on the NMR screen), switchable to the ¹H-decoupled ¹³C spectrum at 75 MHz.
 Only families with every member's IR data computed are offered.

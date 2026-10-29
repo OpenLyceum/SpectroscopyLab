@@ -3,7 +3,8 @@
  *
  * The Unknowns game. Each round hides one molecule of an isomer family — every candidate has the
  * same formula, so the formula and molecular ion only narrow the field — and shows its IR and
- * ¹H NMR spectra. The student picks the structure; a first-try answer scores a point.
+ * ¹H NMR spectra, and on request its ¹³C spectrum, whose line count tells the xylenes apart. The
+ * student picks the structure; a first-try answer scores a point.
  *
  * Level 1 has two or three candidates with very different functional groups (alcohol vs ether);
  * level 2 adds carbonyl and ester isomers; level 3 is the C₈H₁₀ aromatics, told apart by ring
@@ -18,7 +19,8 @@ import type { Molecule } from "../../common/model/Molecule.js";
 import { MoleculeGraph } from "../../common/model/MoleculeGraph.js";
 import type { SampledCurve } from "../../common/model/SpectrumCurve.js";
 import { computePeaks, IsotopeScheme, transmittanceCurve } from "../../infrared/model/InfraredModel.js";
-import { fullSpectrum, integralTrace } from "../../nmr/model/NMRModel.js";
+import { CarbonSpectrumType, carbonEnvironments, carbonLines } from "../../nmr/model/CarbonSpectrum.js";
+import { carbonSpectrum, fullSpectrum, integralTrace, Nucleus, type NucleusValue } from "../../nmr/model/NMRModel.js";
 import { protonEnvironments } from "../../nmr/model/ProtonSpectrum.js";
 
 /** Isomer families by level. */
@@ -44,6 +46,8 @@ export type Unknown = {
   readonly irSpectrum: SampledCurve;
   readonly nmrSpectrum: SampledCurve;
   readonly nmrIntegral: SampledCurve;
+  /** ¹H-decoupled ¹³C spectrum at the same field. */
+  readonly carbonSpectrum: SampledCurve;
 };
 
 export const GuessResult = {
@@ -62,6 +66,8 @@ export class UnknownsModel implements TModel {
   /** Candidate ids already guessed wrong this round. */
   public readonly wrongGuessesProperty: Property<readonly string[]>;
   public readonly resultProperty: Property<GuessResultValue>;
+  /** Which NMR spectrum is shown. */
+  public readonly nucleusProperty: Property<NucleusValue>;
 
   public constructor() {
     this.levelProperty = new NumberProperty(1, { numberType: "Integer" });
@@ -70,6 +76,7 @@ export class UnknownsModel implements TModel {
     this.unknownProperty = new Property<Unknown | null>(null);
     this.wrongGuessesProperty = new Property<readonly string[]>([]);
     this.resultProperty = new Property<GuessResultValue>(GuessResult.NONE);
+    this.nucleusProperty = new Property<NucleusValue>(Nucleus.PROTON);
 
     this.levelProperty.link(() => this.newUnknown());
   }
@@ -132,6 +139,7 @@ export class UnknownsModel implements TModel {
   public reset(): void {
     this.scoreProperty.reset();
     this.roundsProperty.reset();
+    this.nucleusProperty.reset();
     if (this.levelProperty.value === 1) {
       this.newUnknown();
     }
@@ -146,13 +154,15 @@ export class UnknownsModel implements TModel {
 /** The spectra a student is given for one unknown. */
 export async function buildUnknown(targetId: string, candidates: readonly string[]): Promise<Unknown> {
   const target = await loadMolecule(targetId);
-  const environments = protonEnvironments(new MoleculeGraph(target));
-  const nmr = fullSpectrum(environments, NMR_FIELD, true);
+  const graph = new MoleculeGraph(target);
+  const environments = protonEnvironments(graph);
+  const carbon = carbonLines(carbonEnvironments(graph), CarbonSpectrumType.DECOUPLED, NMR_FIELD);
   return {
     target,
     candidates,
     irSpectrum: transmittanceCurve(computePeaks(target, IsotopeScheme.NATURAL), IR_HALF_WIDTH),
-    nmrSpectrum: nmr,
-    nmrIntegral: integralTrace(fullSpectrum(environments, NMR_FIELD, false)),
+    nmrSpectrum: fullSpectrum(environments, NMR_FIELD, true, graph),
+    nmrIntegral: integralTrace(fullSpectrum(environments, NMR_FIELD, false, graph)),
+    carbonSpectrum: carbonSpectrum(carbon, NMR_FIELD, true),
   };
 }

@@ -2,8 +2,8 @@
  * UnknownsScreenView.ts
  *
  * Layout: the candidate structures as buttons (top left) above the formula, degree of
- * unsaturation, molecular-ion cluster and game controls; the unknown's IR and ¹H NMR spectra on
- * the right. A wrong guess crosses that candidate out; the right one is framed in green.
+ * unsaturation, molecular-ion cluster and game controls; the unknown's IR and ¹H (or ¹³C) NMR
+ * spectra on the right. A wrong guess crosses that candidate out; the right one is framed in green.
  */
 
 import { DerivedProperty, Multilink, Property, type TReadOnlyProperty } from "scenerystack/axon";
@@ -28,7 +28,7 @@ import { MoleculeThumbnailNode } from "../../common/view/MoleculeThumbnailNode.j
 import { SpectrumChartNode } from "../../common/view/SpectrumChartNode.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import { IR_RANGE } from "../../infrared/model/InfraredModel.js";
-import { SHIFT_RANGE } from "../../nmr/model/NMRModel.js";
+import { CARBON_SHIFT_RANGE, Nucleus, type NucleusValue, SHIFT_RANGE } from "../../nmr/model/NMRModel.js";
 import { moleculeName } from "../../nmr/view/NMRScreenView.js";
 import SpectroscopyLabColors from "../../SpectroscopyLabColors.js";
 import { SCREEN_VIEW_MARGIN } from "../../SpectroscopyLabConstants.js";
@@ -293,6 +293,7 @@ export class UnknownsScreenView extends ScreenView {
     const irCurve = curve((u) => u.irSpectrum);
     const nmrCurve = curve((u) => u.nmrSpectrum);
     const nmrIntegral = curve((u) => u.nmrIntegral);
+    const carbonCurve = curve((u) => u.carbonSpectrum);
     const noSelection = new Property<number | null>(null);
     const showIntegral = new Property(true);
     const chartOptions = {
@@ -338,8 +339,45 @@ export class UnknownsScreenView extends ScreenView {
       accessibleName: strings.nmrTitleStringProperty,
       accessibleParagraph: a11y.nmrDescriptionStringProperty,
     });
+    const carbonChart = new SpectrumChartNode({
+      ...chartOptions,
+      chartWidth: CHART_WIDTH,
+      chartHeight: CHART_HEIGHT,
+      xRange: CARBON_SHIFT_RANGE,
+      yRange: new Range(0, 1.08),
+      xInverted: true,
+      xTickSpacing: 20,
+      yTickSpacing: 0.25,
+      yTickDecimals: 2,
+      xLabelStringProperty: nmrStrings.shiftAxisStringProperty,
+      yLabelStringProperty: nmrStrings.intensityAxisStringProperty,
+      curveProperty: carbonCurve,
+      selectedXProperty: noSelection,
+      tagName: "div",
+      accessibleName: strings.carbonTitleStringProperty,
+      accessibleParagraph: a11y.carbonDescriptionStringProperty,
+    });
+    const nucleusListener = (nucleus: NucleusValue) => {
+      nmrChart.visible = nucleus === Nucleus.PROTON;
+      carbonChart.visible = nucleus === Nucleus.CARBON;
+    };
+    model.nucleusProperty.link(nucleusListener);
+    const nmrTitleProperty = new DerivedProperty(
+      [model.nucleusProperty, strings.nmrTitleStringProperty, strings.carbonTitleStringProperty],
+      (nucleus, proton, carbon) => (nucleus === Nucleus.CARBON ? carbon : proton),
+    );
+    const nucleusRadio = radioGroup<NucleusValue>(
+      model.nucleusProperty,
+      [
+        { value: Nucleus.PROTON, label: nmrStrings.protonStringProperty },
+        { value: Nucleus.CARBON, label: nmrStrings.carbonStringProperty },
+      ],
+      nmrStrings.nucleusStringProperty,
+      40,
+      "horizontal",
+    );
     const title = (text: TReadOnlyProperty<string>) =>
-      new Text(text, { font: TITLE_FONT, fill: SpectroscopyLabColors.textColorProperty });
+      new Text(text, { font: TITLE_FONT, fill: SpectroscopyLabColors.textColorProperty, maxWidth: CHART_WIDTH - 120 });
     const spectra = new VBox({
       align: "left",
       spacing: 6,
@@ -347,8 +385,8 @@ export class UnknownsScreenView extends ScreenView {
         title(strings.irTitleStringProperty),
         irChart,
         new Node({ children: [], localBounds: new Bounds2(0, 0, 1, 4) }),
-        title(strings.nmrTitleStringProperty),
-        nmrChart,
+        new HBox({ spacing: 24, children: [title(nmrTitleProperty), nucleusRadio] }),
+        new Node({ children: [nmrChart, carbonChart] }),
       ],
       right: this.layoutBounds.maxX - SCREEN_VIEW_MARGIN,
       top: this.layoutBounds.minY + 8,
@@ -363,7 +401,9 @@ export class UnknownsScreenView extends ScreenView {
     });
 
     this.children = [candidatesGroup, infoPanel, spectra, resetAllButton];
-    this.addChild(new Node({ pdomOrder: [irChart, nmrChart, infoPanel, grid, resetAllButton] }));
+    this.addChild(
+      new Node({ pdomOrder: [irChart, nucleusRadio, nmrChart, carbonChart, infoPanel, grid, resetAllButton] }),
+    );
 
     this.disposeUnknownsScreenView = () => {
       model.unknownProperty.unlink(unknownListener);
@@ -373,6 +413,9 @@ export class UnknownsScreenView extends ScreenView {
       irCurve.dispose();
       nmrCurve.dispose();
       nmrIntegral.dispose();
+      carbonCurve.dispose();
+      nmrTitleProperty.dispose();
+      model.nucleusProperty.unlink(nucleusListener);
     };
   }
 

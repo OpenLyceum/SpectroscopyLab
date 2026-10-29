@@ -10,48 +10,53 @@
     "infrared": {
       "screenSummary": {
         "playArea": "El área de juego muestra una molécula en 3D y su espectro de transmitancia infrarroja. Cada mínimo es un modo normal de vibración.",
-        "controlArea": "El área de control elige la molécula, sustituye isótopos, ajusta la anchura de línea y muestra los modos normales y las regiones de grupos funcionales.",
+        "controlArea": "El área de control elige la molécula, sustituye isótopos, ajusta el ancho de línea y muestra las barras de los modos normales y las regiones de grupos funcionales. Para el cloruro de hidrógeno también muestra la estructura fina rotacional del gas, con un control de temperatura.",
         "interactionHint": "Enfoca el espectro y usa las flechas para recorrer los picos; la molécula vibra en el modo seleccionado."
       },
       "currentDetails": "{{molecule}}: {{count}} modos normales. {{selection}}",
       "noSelection": "No hay ningún pico seleccionado.",
       "peak": "{{mode}} a {{wavenumber}} números de onda, {{intensity}} kilómetros por mol.",
       "spectrum": "Espectro infrarrojo",
-      "spectrumHelp": "Haz clic en un mínimo o usa las flechas para elegir una vibración."
+      "spectrumHelp": "Haz clic en un mínimo o usa las flechas para elegir una vibración.",
+      "fineSpectrum": "Espectro de rotación-vibración de alta resolución"
     },
     "nmr": {
       "screenSummary": {
-        "playArea": "El área de juego muestra una molécula en 3D con sus hidrógenos marcados por entorno, su espectro de RMN de protón, una ampliación de una señal y una tabla de señales.",
-        "controlArea": "El área de control elige la molécula y la frecuencia del espectrómetro, y activa la agitación con D₂O, la referencia TMS y la integral.",
+        "playArea": "El área de juego muestra una molécula en 3D con sus hidrógenos rotulados con letras (o sus carbonos numerados) según su entorno, su espectro de RMN de protón o de carbono 13, una ampliación de una señal y una tabla de señales.",
+        "controlArea": "El área de control elige la molécula, el núcleo observado y la frecuencia del espectrómetro. Para protones activa el intercambio con D₂O, la referencia TMS, la integral y la simulación exacta de segundo orden; para carbono elige un espectro desacoplado, DEPT o acoplado.",
         "interactionHint": "Enfoca el espectro y usa las flechas para recorrer las señales; los hidrógenos correspondientes se rodean."
       },
       "currentDetails": "{{molecule}}: {{count}} señales a {{field}} megahercios. {{selection}}",
       "noSelection": "No hay ninguna señal seleccionada.",
       "signal": "Señal {{label}}: {{count}} protones a {{shift}} ppm, {{multiplicity}}.",
       "spectrum": "Espectro de RMN de protón",
-      "spectrumHelp": "Haz clic en un pico o usa las flechas para elegir una señal."
+      "spectrumHelp": "Haz clic en un pico o usa las flechas para elegir una señal.",
+      "carbonSignal": "Carbono {{label}}: {{count}} × {{type}} a {{shift}} ppm.",
+      "carbonSpectrum": "Espectro de RMN de carbono 13"
     },
     "uvVis": {
       "screenSummary": {
         "playArea": "El área de juego muestra una molécula conjugada con un orbital π dibujado en lóbulos rojos y azules, sus niveles de energía π llenos de electrones, y las bandas de absorción predicha y medida con el color de cada una.",
-        "controlArea": "El área de control elige la molécula y el modelo: Hückel o partícula en una caja.",
+        "controlArea": "El área de control elige la molécula y el modelo, Hückel o partícula en una caja, y activa el modo Beer-Lambert con controles de concentración y de longitud del camino óptico.",
         "interactionHint": "Compara las longitudes de onda predichas y medidas en una familia, por ejemplo las cianinas con cada modelo."
       },
       "currentDetails": "{{molecule}}, modelo {{model}}: {{predicted}} nanómetros predichos, {{measured}} nanómetros medidos.",
       "noPrediction": "sin predicción",
       "orbital": "Orbital {{number}} de {{count}}, {{occupancy}} electrones{{role}}.",
       "levels": "Niveles de energía π",
-      "levelsHelp": "Usa las flechas para elegir el orbital dibujado en la molécula."
+      "levelsHelp": "Usa las flechas para elegir el orbital dibujado en la molécula.",
+      "quantitativeDetails": "A {{concentration}} micromoles por litro en una celda de {{pathLength}} centímetros, el espectrómetro lee una absorbancia de {{absorbance}} en el máximo."
     },
     "unknowns": {
       "screenSummary": {
-        "playArea": "El área de juego muestra los espectros infrarrojo y de RMN de protón de una molécula desconocida, su fórmula, su grado de insaturación y su ion molecular, y botones para los isómeros candidatos.",
-        "controlArea": "El área de control elige el nivel e inicia una nueva incógnita.",
+        "playArea": "El área de juego muestra los espectros infrarrojo y de RMN de protón o de carbono 13 de una molécula desconocida, su fórmula, su grado de insaturación y su ion molecular, y botones para los isómeros candidatos.",
+        "controlArea": "El área de control elige el nivel, inicia una nueva incógnita y cambia el espectro de RMN entre protón y carbono 13.",
         "interactionHint": "Lee los espectros y luego pulsa el botón de la molécula que creas que es."
       },
       "currentDetails": "Nivel {{level}}. Fórmula {{formula}}, {{count}} candidatos. Puntuación {{score}} de {{rounds}}. {{status}}",
       "irDescription": "Espectro de transmitancia infrarroja de la incógnita.",
-      "nmrDescription": "Espectro de RMN de protón de la incógnita, con su integral."
+      "nmrDescription": "Espectro de RMN de protón de la incógnita, con su integral.",
+      "carbonDescription": "Espectro de RMN de carbono 13 desacoplado de protón de la incógnita: una línea por cada tipo de carbono."
     }
   },
   "preferences": {
@@ -175,7 +180,17 @@
     "selectHint": "Haz clic en un mínimo del espectro para ver esa vibración.",
     "modeCount": "{{count}} modos normales (3N − {{external}})",
     "method": "B3LYP/def2-SVP, escalado ×{{scale}}",
-    "absorbanceAxis": "Absorbancia"
+    "absorbanceAxis": "Absorbancia",
+    "fineStructure": "Estructura fina rotacional (gas, alta resolución)",
+    "temperature": "Temperatura: {{value}} K",
+    "temperatureName": "Temperatura",
+    "lineTitle": "{{isotopologue}} {{branch}}({{j}}): J {{j}} → {{upper}} — {{wavenumber}} cm⁻¹",
+    "bandTitle": "Banda de rotación-vibración de {{isotopologue}}",
+    "rotationalConstants": "B₀ = {{b0}} cm⁻¹, B₁ = {{b1}} cm⁻¹ → r = {{r}} Å",
+    "bandConstants": "Origen de banda ν₀ = {{origin}} cm⁻¹ → k = {{k}} N/m",
+    "fineHint": "Sin rama Q: ΔJ = 0 está prohibido. Haga clic en una línea para ampliarla.",
+    "isotopologueHint": "Cada línea tiene justo debajo una compañera más débil de {{minor}} ({{percent}} %).",
+    "lineZoom": "Ampliación: {{width}} cm⁻¹ alrededor de la línea"
   },
   "nmr": {
     "shiftAxis": "Desplazamiento químico δ (ppm)",
@@ -206,7 +221,22 @@
       "td": "triplete de dobletes",
       "qd": "cuadruplete de dobletes",
       "m": "multiplete"
-    }
+    },
+    "nucleus": "Núcleo",
+    "proton": "¹H",
+    "carbon": "¹³C",
+    "secondOrder": "Simulación exacta de espines (segundo orden)",
+    "spectrumType": "Espectro",
+    "carbonSpectrumTypes": {
+      "decoupled": "Desacoplado de ¹H",
+      "dept135": "DEPT-135",
+      "dept90": "DEPT-90",
+      "coupled": "Acoplado a ¹H"
+    },
+    "carbonFrequency": "¹³C a {{value}} MHz",
+    "carbonRow": "{{label}}   δ {{shift}}   {{type}}   ×{{count}}",
+    "carbonCoupling": "¹J(C–H) = {{j}} Hz",
+    "quaternary": "sin H: línea débil, ausente en DEPT"
   },
   "uvVis": {
     "wavelengthAxis": "Longitud de onda (nm)",
@@ -229,7 +259,19 @@
     "predictedColor": "Predicho",
     "measuredColor": "Observado",
     "colorHeading": "Color con luz blanca",
-    "orbitalHint": "Haz clic en un nivel para dibujar ese orbital en la molécula."
+    "orbitalHint": "Haz clic en un nivel para dibujar ese orbital en la molécula.",
+    "quantitative": "Beer-Lambert (absorbancia absoluta)",
+    "concentration": "c = {{value}} µmol/L",
+    "concentrationName": "Concentración",
+    "pathLength": "b = {{value}} cm",
+    "pathLengthName": "Longitud del camino óptico",
+    "calibrationTitle": "Calibración a λmax",
+    "epsilon": "ε = {{value}} L mol⁻¹ cm⁻¹ ({{wavelength}} nm)",
+    "absorbanceReadout": "A = εbc = {{ideal}}; lectura {{measured}}",
+    "transmittanceReadout": "T = 10⁻ᴬ = {{value}} %",
+    "strayLight": "Un 0,1 % de luz parásita limita las lecturas a A ≈ 3.",
+    "concentrationAxis": "c (µmol/L)",
+    "peakAbsorbanceAxis": "A(λmax)"
   },
   "unknowns": {
     "question": "¿Qué molécula es?",
@@ -245,6 +287,7 @@
     "incorrect": "No es {{name}}. Mira otra vez.",
     "irTitle": "Infrarrojo",
     "nmrTitle": "RMN de ¹H, 300 MHz",
-    "noFamilies": "Ninguna familia de isómeros tiene aún sus datos infrarrojos."
+    "noFamilies": "Ninguna familia de isómeros tiene aún sus datos infrarrojos.",
+    "carbonTitle": "RMN de ¹³C (desacoplada de ¹H), 75 MHz"
   }
 }
