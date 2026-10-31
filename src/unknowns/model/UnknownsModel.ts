@@ -11,7 +11,7 @@
  * substitution patterns. A family is offered only when every member has its IR data computed.
  */
 
-import { NumberProperty, Property } from "scenerystack/axon";
+import { BooleanProperty, NumberProperty, Property } from "scenerystack/axon";
 import { dotRandom } from "scenerystack/dot";
 import type { TModel } from "scenerystack/joist";
 import { hasVibrationData, loadMolecule } from "../../common/model/library/SpectroscopyLibrary.js";
@@ -68,6 +68,10 @@ export class UnknownsModel implements TModel {
   public readonly resultProperty: Property<GuessResultValue>;
   /** Which NMR spectrum is shown. */
   public readonly nucleusProperty: Property<NucleusValue>;
+  /** True when building the round's spectra failed. */
+  public readonly loadErrorProperty: BooleanProperty;
+  private disposed = false;
+  private loadGeneration = 0;
 
   public constructor() {
     this.levelProperty = new NumberProperty(1, { numberType: "Integer" });
@@ -77,6 +81,7 @@ export class UnknownsModel implements TModel {
     this.wrongGuessesProperty = new Property<readonly string[]>([]);
     this.resultProperty = new Property<GuessResultValue>(GuessResult.NONE);
     this.nucleusProperty = new Property<NucleusValue>(Nucleus.PROTON);
+    this.loadErrorProperty = new BooleanProperty(false);
 
     this.levelProperty.link(() => this.newUnknown());
   }
@@ -94,12 +99,17 @@ export class UnknownsModel implements TModel {
 
   /** Starts a new round (the spectra are computed asynchronously). */
   public newUnknown(): void {
-    this.loadUnknown().catch(() => {
-      this.unknownProperty.value = null;
+    this.loadErrorProperty.value = false;
+    const generation = ++this.loadGeneration;
+    this.loadUnknown(generation).catch(() => {
+      if (!this.disposed && generation === this.loadGeneration) {
+        this.unknownProperty.value = null;
+        this.loadErrorProperty.value = true;
+      }
     });
   }
 
-  private async loadUnknown(): Promise<void> {
+  private async loadUnknown(generation: number): Promise<void> {
     const families = this.availableFamilies();
     const family = families.length > 0 ? families[dotRandom.nextInt(families.length)] : undefined;
     if (!family) {
@@ -112,7 +122,7 @@ export class UnknownsModel implements TModel {
     const targetId = choices[dotRandom.nextInt(choices.length)] ?? family[0] ?? "";
     const level = this.levelProperty.value;
     const unknown = await buildUnknown(targetId, family);
-    if (this.levelProperty.value === level) {
+    if (!this.disposed && generation === this.loadGeneration && this.levelProperty.value === level) {
       this.unknownProperty.value = unknown;
       this.wrongGuessesProperty.value = [];
       this.resultProperty.value = GuessResult.NONE;
@@ -148,6 +158,18 @@ export class UnknownsModel implements TModel {
 
   public step(_dt: number): void {
     // The game is turn-based; nothing animates.
+  }
+
+  public dispose(): void {
+    this.disposed = true;
+    this.levelProperty.dispose();
+    this.scoreProperty.dispose();
+    this.roundsProperty.dispose();
+    this.unknownProperty.dispose();
+    this.wrongGuessesProperty.dispose();
+    this.resultProperty.dispose();
+    this.nucleusProperty.dispose();
+    this.loadErrorProperty.dispose();
   }
 }
 

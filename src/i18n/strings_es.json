@@ -24,7 +24,7 @@
       "screenSummary": {
         "playArea": "El área de juego muestra una molécula en 3D con sus hidrógenos rotulados con letras (o sus carbonos numerados) según su entorno, su espectro de RMN de protón o de carbono 13, una ampliación de una señal y una tabla de señales.",
         "controlArea": "El área de control elige la molécula, el núcleo observado y la frecuencia del espectrómetro. Para protones activa el intercambio con D₂O, la referencia TMS, la integral y la simulación exacta de segundo orden; para carbono elige un espectro desacoplado, DEPT o acoplado.",
-        "interactionHint": "Enfoca el espectro y usa las flechas para recorrer las señales; los hidrógenos correspondientes se rodean."
+        "interactionHint": "Enfoca el espectro y usa las flechas para recorrer las señales, o activa una fila de la lista de señales. Los hidrógenos correspondientes se rodean."
       },
       "currentDetails": "{{molecule}}: {{count}} señales a {{field}} megahercios. {{selection}}",
       "noSelection": "No hay ninguna señal seleccionada.",
@@ -126,7 +126,8 @@
   },
   "viewer": {
     "accessibleName": "Visor de moléculas",
-    "helpText": "Las flechas giran, más y menos acercan, N y P recorren los átomos."
+    "helpText": "Las flechas giran, más y menos acercan, N y P recorren los átomos.",
+    "loadError": "No se ha podido cargar esta molécula."
   },
   "keyboardHelp": {
     "viewerSection": "Visor de moléculas",
@@ -288,6 +289,7 @@
     "irTitle": "Infrarrojo",
     "nmrTitle": "RMN de ¹H, 300 MHz",
     "noFamilies": "Ninguna familia de isómeros tiene aún sus datos infrarrojos.",
+    "loadError": "No se han podido cargar los espectros.",
     "carbonTitle": "RMN de ¹³C (desacoplada de ¹H), 75 MHz"
   }
 }

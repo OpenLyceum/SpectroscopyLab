@@ -362,7 +362,7 @@ export class SpectrumChartNode extends Node {
         label.boundsProperty.unlink(layoutRegions);
       }
       keyboardListener.dispose();
-      for (const node of [xLabels, yLabels]) {
+      for (const node of [xAxisLabel, yAxisLabel, xLabels, yLabels]) {
         node.boundsProperty.unlink(layoutAxisLabels);
       }
       for (const node of [xAxisLabel, yAxisLabel, ...regionLayer.children]) {

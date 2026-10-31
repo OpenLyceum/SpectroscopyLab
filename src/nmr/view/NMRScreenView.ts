@@ -10,7 +10,7 @@
  * at a time; their option rows swap in the control panel.
  */
 
-import { DerivedProperty, Multilink, type TReadOnlyProperty } from "scenerystack/axon";
+import { DerivedProperty, Multilink } from "scenerystack/axon";
 import { Bounds2, Range, toFixed } from "scenerystack/dot";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import { StringUtils } from "scenerystack/phetcommon";
@@ -25,7 +25,7 @@ import { CONTROL_FONT, checkbox, comboBox, label, radioGroup } from "../../commo
 import { MoleculeChooserNode } from "../../common/view/MoleculeChooserNode.js";
 import { MoleculeViewerNode } from "../../common/view/MoleculeViewerNode.js";
 import { SpectrumChartNode } from "../../common/view/SpectrumChartNode.js";
-import { StringManager } from "../../i18n/StringManager.js";
+import { lookupStringProperty, StringManager } from "../../i18n/StringManager.js";
 import SpectroscopyLabColors from "../../SpectroscopyLabColors.js";
 import { SCREEN_VIEW_MARGIN } from "../../SpectroscopyLabConstants.js";
 import {
@@ -386,7 +386,7 @@ export class NMRScreenView extends ScreenView {
     });
 
     this.children = [viewer, controls, chart, carbonChart, lowerRow, resetAllButton, listParent];
-    this.addChild(new Node({ pdomOrder: [this.viewerNode, chart, carbonChart, controls, resetAllButton] }));
+    this.addChild(new Node({ pdomOrder: [this.viewerNode, chart, carbonChart, table, controls, resetAllButton] }));
 
     this.disposeNMRScreenView = () => {
       model.selectedSignalProperty.unlink(announce);
@@ -411,11 +411,8 @@ export class NMRScreenView extends ScreenView {
 
 /** Localised multiplicity word ("quartet"), falling back to the code ("ddt"). */
 export function multiplicityWord(code: string): string {
-  const words = StringManager.getInstance().getNMRStrings().multiplicities as unknown as Record<
-    string,
-    TReadOnlyProperty<string>
-  >;
-  return words[code]?.value ?? code;
+  const words = StringManager.getInstance().getNMRStrings().multiplicities;
+  return lookupStringProperty(words, `${code}StringProperty`)?.value ?? code;
 }
 
 function isProton(signal: ProtonEnvironment | CarbonEnvironment): signal is ProtonEnvironment {
@@ -443,7 +440,6 @@ export function describeSignal(signal: ProtonEnvironment | CarbonEnvironment): s
 /** "a   δ 3.65   2H   q" over "J = 7.0 Hz". */
 function protonRow(environment: ProtonEnvironment): SignalRow {
   const strings = StringManager.getInstance().getNMRStrings();
-  const multiplicities = strings.multiplicities as unknown as Record<string, TReadOnlyProperty<string>>;
   return {
     main: StringUtils.fillIn(strings.signalRowStringProperty.value, {
       label: environment.label,
@@ -456,7 +452,7 @@ function protonRow(environment: ProtonEnvironment): SignalRow {
       : environment.couplings
           .map((c) => StringUtils.fillIn(strings.couplingValueStringProperty.value, { j: toFixed(c.j, 1) }))
           .join(", ") ||
-        (multiplicities[environment.multiplicity]?.value ?? ""),
+        (lookupStringProperty(strings.multiplicities, `${environment.multiplicity}StringProperty`)?.value ?? ""),
   };
 }
 
@@ -489,6 +485,6 @@ function describeAtom(model: NMRModel, index: number): string {
 
 /** The molecule's display name. */
 export function moleculeName(id: string): string {
-  const names = StringManager.getInstance().getMoleculeNames() as unknown as Record<string, TReadOnlyProperty<string>>;
-  return names[`${nameKey(id)}StringProperty`]?.value ?? id;
+  const names = StringManager.getInstance().getMoleculeNames();
+  return lookupStringProperty(names, `${nameKey(id)}StringProperty`)?.value ?? id;
 }

@@ -9,7 +9,7 @@
  * Trimmed from MolScope's ViewerModel: no script engine, selection language, styles or measurements.
  */
 
-import { Emitter, NumberProperty, Property } from "scenerystack/axon";
+import { BooleanProperty, Emitter, NumberProperty, Property } from "scenerystack/axon";
 import type { Molecule } from "./Molecule.js";
 import type { Vec3 } from "./structure/Geometry.js";
 import { Rotation3 } from "./structure/Rotation3.js";
@@ -46,6 +46,8 @@ export class MoleculeViewModel {
   public readonly orbitalLobesProperty: Property<readonly OrbitalLobe[] | null>;
   /** Vibration phase, radians; advanced by step() while a displacement is set. */
   public readonly vibrationPhaseProperty: NumberProperty;
+  /** True after a library load fails. The viewer draws a message instead of an empty stage. */
+  public readonly loadErrorProperty: BooleanProperty;
 
   /** Fires with the atom index when the user clicks or keyboard-picks an atom. */
   public readonly atomPickedEmitter = new Emitter<[number]>({ parameters: [{ valueType: "number" }] });
@@ -66,6 +68,7 @@ export class MoleculeViewModel {
     this.displacementProperty = new Property<Float64Array | null>(null);
     this.orbitalLobesProperty = new Property<readonly OrbitalLobe[] | null>(null);
     this.vibrationPhaseProperty = new NumberProperty(0);
+    this.loadErrorProperty = new BooleanProperty(false);
 
     this.moleculeProperty.lazyLink(() => {
       this.hoveredAtomProperty.value = null;
@@ -165,6 +168,21 @@ export class MoleculeViewModel {
     this.displacementProperty.reset();
     this.orbitalLobesProperty.reset();
     this.vibrationPhaseProperty.reset();
+    this.loadErrorProperty.reset();
     this.resetView();
+  }
+
+  public dispose(): void {
+    this.moleculeProperty.dispose();
+    this.rotationProperty.dispose();
+    this.zoomProperty.dispose();
+    this.hoveredAtomProperty.dispose();
+    this.highlightedAtomsProperty.dispose();
+    this.atomLabelsProperty.dispose();
+    this.displacementProperty.dispose();
+    this.orbitalLobesProperty.dispose();
+    this.vibrationPhaseProperty.dispose();
+    this.loadErrorProperty.dispose();
+    this.atomPickedEmitter.dispose();
   }
 }

@@ -45,15 +45,23 @@ describe("Infrared model", () => {
   });
 
   it("moves ethanol's O–H stretch to an O–D stretch near 2700 cm⁻¹", () => {
-    const highest = (scheme: (typeof IsotopeScheme)[keyof typeof IsotopeScheme]) =>
+    const labelled = (scheme: (typeof IsotopeScheme)[keyof typeof IsotopeScheme], label: string) =>
       computePeaks(ethanol, scheme)
-        .filter((p) => p.character.label === "O–H")
+        .filter((p) => p.character.label === label)
         .map((p) => p.wavenumber);
-    const oh = highest(IsotopeScheme.NATURAL);
-    const od = highest(IsotopeScheme.EXCHANGE_DEUTERIUM);
+    const oh = labelled(IsotopeScheme.NATURAL, "O–H");
+    const od = labelled(IsotopeScheme.EXCHANGE_DEUTERIUM, "O–D");
     expect(oh[0]).toBeGreaterThan(3500);
+    expect(od).toHaveLength(1);
+    expect(labelled(IsotopeScheme.EXCHANGE_DEUTERIUM, "O–H")).toHaveLength(0);
     expect(od[0]).toBeGreaterThan(2550);
     expect(od[0]).toBeLessThan(2800);
+  });
+
+  it("names fully deuterated water D–O–D and O–D", () => {
+    const peaks = computePeaks(water, IsotopeScheme.ALL_DEUTERIUM);
+    expect(peaks[0]?.character.label).toBe("D–O–D");
+    expect(peaks[2]?.character.label).toBe("O–D");
   });
 
   it("offers only isotope schemes that change a mass", () => {

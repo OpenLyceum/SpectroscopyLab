@@ -217,30 +217,42 @@ export function fineStructure(molecule: Molecule, masses: readonly number[], tem
   return { isotopologues: species, lines, range: new Range(centre - BAND_HALF_WIDTH, centre + BAND_HALF_WIDTH) };
 }
 
-/** Absorbance over the band window; the strongest line reaches `peakAbsorbance`. */
+/**
+ * Absorbance over the band window, scaled so the strongest point on the envelope reaches
+ * `peakAbsorbance` — the same convention as the low-resolution band, which normalises the summed
+ * curve rather than the sticks.
+ */
 export function fineAbsorbance(structure: FineStructure, peakAbsorbance: number): SampledCurve {
-  return absorbanceOn(structure.lines, structure.range.min, structure.range.max, BAND_SAMPLES, peakAbsorbance);
+  const curve = summedAbsorbance(structure.lines, structure.range.min, structure.range.max, BAND_SAMPLES);
+  return scaleAbsorbance(curve, peakAbsorbance, curveMaximum(curve));
 }
 
-/** Absorbance within ±LINE_ZOOM_HALF_WIDTH of `centre`, on the same scale as fineAbsorbance. */
+/** Absorbance within ±LINE_ZOOM_HALF_WIDTH of `centre`, on the same scale as {@link fineAbsorbance}. */
 export function fineZoomAbsorbance(structure: FineStructure, centre: number, peakAbsorbance: number): SampledCurve {
-  return absorbanceOn(
+  const full = summedAbsorbance(structure.lines, structure.range.min, structure.range.max, BAND_SAMPLES);
+  const zoom = summedAbsorbance(
     structure.lines,
     centre - LINE_ZOOM_HALF_WIDTH,
     centre + LINE_ZOOM_HALF_WIDTH,
     ZOOM_SAMPLES,
-    peakAbsorbance,
   );
+  return scaleAbsorbance(zoom, peakAbsorbance, curveMaximum(full));
 }
 
-function absorbanceOn(
-  lines: readonly RotationalLine[],
-  min: number,
-  max: number,
-  samples: number,
-  peakAbsorbance: number,
-): SampledCurve {
+function summedAbsorbance(lines: readonly RotationalLine[], min: number, max: number, samples: number): SampledCurve {
   const sticks: StickPeak[] = lines.map((line) => ({ position: line.wavenumber, height: line.intensity }));
-  const curve = lorentzianSum(sticks, min, max, samples, FINE_HALF_WIDTH);
-  return { x: curve.x, y: curve.y.map((a) => a * peakAbsorbance) };
+  return lorentzianSum(sticks, min, max, samples, FINE_HALF_WIDTH);
+}
+
+function curveMaximum(curve: SampledCurve): number {
+  let maximum = 0;
+  for (const value of curve.y) {
+    maximum = Math.max(maximum, value);
+  }
+  return maximum;
+}
+
+function scaleAbsorbance(curve: SampledCurve, peakAbsorbance: number, referenceMaximum: number): SampledCurve {
+  const scale = referenceMaximum > 0 ? peakAbsorbance / referenceMaximum : 0;
+  return { x: curve.x, y: curve.y.map((a) => scale * a) };
 }

@@ -28,6 +28,10 @@ export class SpectroscopyLabPreferencesModel {
   public reset(): void {
     this.absorbanceProperty.reset();
   }
+
+  public dispose(): void {
+    this.absorbanceProperty.dispose();
+  }
 }
 
 SpectroscopyLabNamespace.register("SpectroscopyLabPreferencesModel", SpectroscopyLabPreferencesModel);

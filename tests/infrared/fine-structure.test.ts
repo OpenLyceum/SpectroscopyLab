@@ -8,9 +8,11 @@
 import { describe, expect, it } from "vitest";
 import { loadMolecule } from "../../src/common/model/library/SpectroscopyLibrary.js";
 import type { Molecule } from "../../src/common/model/Molecule.js";
-import { IsotopeScheme, isotopeMasses } from "../../src/infrared/model/InfraredModel.js";
+import { IsotopeScheme, isotopeMasses, PEAK_ABSORBANCE } from "../../src/infrared/model/InfraredModel.js";
 import {
+  fineAbsorbance,
   fineStructure,
+  fineZoomAbsorbance,
   hasFineStructure,
   type RotationalLine,
 } from "../../src/infrared/model/RotationalFineStructure.js";
@@ -94,5 +96,18 @@ describe("HCl rotational fine structure", () => {
     expect(strongestJ(298)).toBeLessThan(strongestJ(1000));
     expect(strongestJ(298)).toBeGreaterThanOrEqual(2);
     expect(strongestJ(298)).toBeLessThanOrEqual(4);
+  });
+
+  it("scales the band so its strongest point is the peak absorbance, and the zoom keeps that scale", async () => {
+    const molecule = await hcl();
+    const fine = fineStructure(molecule, isotopeMasses(molecule, IsotopeScheme.NATURAL), 298);
+    const band = fineAbsorbance(fine, PEAK_ABSORBANCE);
+    expect(Math.max(...band.y)).toBeCloseTo(PEAK_ABSORBANCE, 6);
+    const strongest = fine.lines.reduce((best, candidate) => (candidate.intensity > best.intensity ? candidate : best));
+    const zoom = fineZoomAbsorbance(fine, strongest.wavenumber, PEAK_ABSORBANCE);
+    expect(Math.max(...zoom.y)).toBeCloseTo(PEAK_ABSORBANCE, 1);
+    const weak = fine.lines.reduce((best, candidate) => (candidate.intensity < best.intensity ? candidate : best));
+    const weakZoom = fineZoomAbsorbance(fine, weak.wavenumber, PEAK_ABSORBANCE);
+    expect(Math.max(...weakZoom.y)).toBeLessThan(PEAK_ABSORBANCE * 0.5);
   });
 });

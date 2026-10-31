@@ -68,6 +68,9 @@ const INITIAL_MOLECULE = "ethanol";
 
 export class NMRModel implements TModel {
   public readonly viewer = new MoleculeViewModel();
+  private disposed = false;
+  private loadGeneration = 0;
+  private readonly onAtomPicked = (atom: number) => this.selectAtom(atom);
   public readonly chooser: MoleculeChooser;
   public readonly nucleusProperty: Property<NucleusValue>;
   public readonly fieldProperty: NumberProperty;
@@ -158,15 +161,20 @@ export class NMRModel implements TModel {
 
     this.chooser.moleculeIdProperty.link((id) => {
       this.selectedSignalProperty.value = null;
+      this.viewer.loadErrorProperty.value = false;
+      const generation = ++this.loadGeneration;
       loadMolecule(id).then(
         (molecule) => {
-          if (this.chooser.moleculeIdProperty.value === id) {
+          if (!this.disposed && generation === this.loadGeneration && this.chooser.moleculeIdProperty.value === id) {
             this.viewer.moleculeProperty.value = molecule;
             this.updateLabels();
           }
         },
         () => {
-          this.viewer.moleculeProperty.value = null;
+          if (!this.disposed && generation === this.loadGeneration && this.chooser.moleculeIdProperty.value === id) {
+            this.viewer.moleculeProperty.value = null;
+            this.viewer.loadErrorProperty.value = true;
+          }
         },
       );
     });
@@ -182,7 +190,7 @@ export class NMRModel implements TModel {
     this.selectedSignalProperty.link(() => {
       this.viewer.highlightedAtomsProperty.value = this.selectedSignal?.atoms ?? [];
     });
-    this.viewer.atomPickedEmitter.addListener((atom) => this.selectAtom(atom));
+    this.viewer.atomPickedEmitter.addListener(this.onAtomPicked);
   }
 
   public get isCarbon(): boolean {
@@ -272,9 +280,47 @@ export class NMRModel implements TModel {
     this.updateLabels();
   }
 
+  public dispose(): void {
+    this.disposed = true;
+    this.viewer.atomPickedEmitter.removeListener(this.onAtomPicked);
+    for (const property of [
+      this.carbonZoomProperty,
+      this.carbonSpectrumProperty,
+      this.carbonLinesProperty,
+      this.carbonEnvironmentsProperty,
+      this.zoomProperty,
+      this.integralProperty,
+      this.spectrumProperty,
+      this.linesProperty,
+      this.environmentsProperty,
+      this.allEnvironmentsProperty,
+      this.graphProperty,
+    ]) {
+      disposeOwned(property);
+    }
+    this.viewer.dispose();
+    this.chooser.dispose();
+    for (const property of [
+      this.nucleusProperty,
+      this.fieldProperty,
+      this.d2oShakeProperty,
+      this.showTmsProperty,
+      this.showIntegralProperty,
+      this.secondOrderProperty,
+      this.carbonSpectrumTypeProperty,
+      this.selectedSignalProperty,
+    ]) {
+      property.dispose();
+    }
+  }
+
   public step(dt: number): void {
     this.viewer.step(dt);
   }
+}
+
+function disposeOwned(property: object): void {
+  (property as { dispose?: () => void }).dispose?.();
 }
 
 /** First-order lines of every signal as sticks on the ppm axis, with heights for equal-area broadening. */

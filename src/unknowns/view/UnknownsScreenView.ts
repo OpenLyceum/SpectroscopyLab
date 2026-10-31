@@ -151,8 +151,9 @@ export class UnknownsScreenView extends ScreenView {
       }
       const result = model.resultProperty.value;
       const lastWrong = model.wrongGuessesProperty.value.at(-1);
-      feedback.string =
-        result === GuessResult.CORRECT && unknown
+      feedback.string = model.loadErrorProperty.value
+        ? strings.loadErrorStringProperty.value
+        : result === GuessResult.CORRECT && unknown
           ? StringUtils.fillIn(strings.correctStringProperty.value, { name: moleculeName(unknown.target.id) })
           : result === GuessResult.INCORRECT && lastWrong
             ? StringUtils.fillIn(strings.incorrectStringProperty.value, { name: moleculeName(lastWrong) })
@@ -168,10 +169,16 @@ export class UnknownsScreenView extends ScreenView {
       }
     };
     const unknownListener = () => {
-      rebuildCandidates().catch(() => grid.removeAllChildren());
+      rebuildCandidates().catch(() => {
+        grid.removeAllChildren();
+        model.loadErrorProperty.value = true;
+      });
     };
     model.unknownProperty.link(unknownListener);
-    const marksMultilink = Multilink.multilink([model.wrongGuessesProperty, model.resultProperty], updateMarks);
+    const marksMultilink = Multilink.multilink(
+      [model.wrongGuessesProperty, model.resultProperty, model.loadErrorProperty],
+      updateMarks,
+    );
 
     // ── Formula, unsaturation, molecular ion, controls ─────────────────────────
     const formulaLine = new Text("", {

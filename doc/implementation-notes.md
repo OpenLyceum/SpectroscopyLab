@@ -50,7 +50,9 @@ calibration axis rescales to each molecule's ε.
 
 - `math/symmetricEigen.ts`: cyclic Jacobi. dot's `EigenvalueDecomposition.getV()` throws in
   scenerystack 3.0 (it calls `copy()` on a typed array). Jacobi is unconditionally stable and gives
-  orthonormal vectors for degenerate eigenvalues (benzene's MOs, CO₂'s bend).
+  orthonormal vectors for degenerate eigenvalues (benzene's MOs, CO₂'s bend). If the off-diagonal
+  norm is still above threshold after 400 sweeps it throws, rather than returning a half-diagonalised
+  matrix.
 - The projected Hessian's external modes are found by overlap with the translation/rotation
   space, not by "smallest six", so soft torsions are never mistaken for rotations.
 - `SpinSystem.ts` builds each block of the spin Hamiltonian over product states with a fixed

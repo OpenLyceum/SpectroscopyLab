@@ -27,6 +27,7 @@ import {
   Rectangle,
   RichText,
   type SceneryEvent,
+  Text,
   type TInputListener,
 } from "scenerystack/scenery";
 import { PhetFont } from "scenerystack/scenery-phet";
@@ -121,6 +122,7 @@ export class MoleculeViewerNode extends Node {
   private readonly tooltipLink: () => void;
   private readonly colorListener: () => void;
   private readonly keyboardListener: KeyboardListener<never[]>;
+  private readonly unlinkLoadError: () => void;
 
   /** Keyboard cursor through the atoms. */
   private atomCursor = -1;
@@ -154,7 +156,25 @@ export class MoleculeViewerNode extends Node {
     this.tooltipText.boundsProperty.link((b) => {
       tooltipBackground.setRect(b.minX - 5, b.minY - 3, b.width + 10, b.height + 6);
     });
-    this.children = [this.canvasNode, hitArea, this.tooltip];
+    const loadError = new Text(a11y.loadErrorStringProperty, {
+      font: new PhetFont(16),
+      fill: SpectroscopyLabColors.textColorProperty,
+      maxWidth: viewBounds.width - 24,
+      pickable: false,
+    });
+    const centerLoadError = () => {
+      loadError.center = viewBounds.center;
+    };
+    const showLoadError = () => {
+      loadError.visible = model.loadErrorProperty.value;
+    };
+    loadError.boundsProperty.link(centerLoadError);
+    model.loadErrorProperty.link(showLoadError);
+    this.children = [this.canvasNode, hitArea, loadError, this.tooltip];
+    this.unlinkLoadError = () => {
+      loadError.boundsProperty.unlink(centerLoadError);
+      model.loadErrorProperty.unlink(showLoadError);
+    };
 
     // Repaint on anything the renderer reads.
     const invalidate = () => this.canvasNode.invalidatePaint();
@@ -355,6 +375,7 @@ export class MoleculeViewerNode extends Node {
     this.model.hoveredAtomProperty.unlink(this.tooltipLink);
     this.model.rotationProperty.unlink(this.tooltipLink);
     this.keyboardListener.dispose();
+    this.unlinkLoadError();
     super.dispose();
     disposeSubtree(this.tooltip);
     this.tooltip.dispose();

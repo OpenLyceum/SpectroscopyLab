@@ -11,6 +11,7 @@ import { StringUtils } from "scenerystack/phetcommon";
 import { ScreenSummaryContent } from "scenerystack/sim";
 import { StringManager } from "../../i18n/StringManager.js";
 import { ElectronicModel, type UVVisModel } from "../model/UVVisModel.js";
+import { describeOrbital } from "./EnergyLevelDiagramNode.js";
 import { uvMoleculeName } from "./UVVisScreenView.js";
 
 export class UVVisScreenSummaryContent extends ScreenSummaryContent {
@@ -29,6 +30,7 @@ export class UVVisScreenSummaryContent extends ScreenSummaryContent {
         model.concentrationProperty,
         model.pathLengthProperty,
         model.measuredPeakAbsorbanceProperty,
+        model.selectedOrbitalProperty,
         a11y.currentDetailsStringProperty,
         a11y.noPredictionStringProperty,
         a11y.quantitativeDetailsStringProperty,
@@ -51,7 +53,7 @@ export class UVVisScreenSummaryContent extends ScreenSummaryContent {
               : strings.hueckelStringProperty.value,
           predicted: prediction ? toFixed(prediction.wavelength, 0) : a11y.noPredictionStringProperty.value,
           measured: measured === null ? "" : toFixed(measured, 0),
-        })}${quantitative}`;
+        })}${orbitalSentence(model)}${quantitative}`;
       },
     );
 
@@ -62,4 +64,13 @@ export class UVVisScreenSummaryContent extends ScreenSummaryContent {
       interactionHintContent: a11y.screenSummary.interactionHintStringProperty,
     });
   }
+}
+
+function orbitalSentence(model: UVVisModel): string {
+  const prediction = model.predictionProperty.value;
+  const index = model.selectedOrbitalProperty.value;
+  if (!prediction || index === null || !prediction.structure.orbitals[index]) {
+    return "";
+  }
+  return ` ${describeOrbital(index, prediction.structure)}`;
 }
