@@ -39,7 +39,7 @@ export const CARBON_SHIFT_RANGE = new Range(-5, 225);
 /** Window of the multiplet zoom, ppm either side of the signal centre. */
 export const ZOOM_HALF_WIDTH = 0.3;
 export const ZOOM_RANGE = new Range(-ZOOM_HALF_WIDTH, ZOOM_HALF_WIDTH);
-/** ¹³C zoom: wide enough for a ¹J-coupled quartet at 300 MHz. */
+/** Minimum ¹³C zoom; expanded when a selected multiplet extends beyond it. */
 export const CARBON_ZOOM_HALF_WIDTH = 6;
 export const CARBON_ZOOM_RANGE = new Range(-CARBON_ZOOM_HALF_WIDTH, CARBON_ZOOM_HALF_WIDTH);
 /** Spectrometer (¹H Larmor) frequency, MHz. */
@@ -50,6 +50,8 @@ const DEFAULT_FIELD = 300;
 const LINE_HALF_WIDTH_HZ = 0.8;
 const BROAD_HALF_WIDTH_HZ = 12;
 const CARBON_HALF_WIDTH_HZ = 1.5;
+/** Leave at least this margin beyond the carbon lines, ppm. */
+const CARBON_WINDOW_MARGIN = 1;
 const SPECTRUM_SAMPLES = 6500;
 const ZOOM_SAMPLES = 1500;
 /** The tallest line is drawn at this height; the integral trace tops out at INTEGRAL_HEIGHT. */
@@ -100,6 +102,9 @@ export class NMRModel implements TModel {
   /** Normalised so the tallest line has |height| 1; DEPT-135 CH₂ lines point down. */
   public readonly carbonSpectrumProperty: TReadOnlyProperty<SampledCurve>;
   public readonly carbonZoomProperty: TReadOnlyProperty<SampledCurve>;
+  /** Display windows follow the actual sampled domains, including low-field coupling lines. */
+  public readonly carbonRangeProperty: TReadOnlyProperty<Range>;
+  public readonly carbonZoomRangeProperty: TReadOnlyProperty<Range>;
 
   public constructor() {
     this.chooser = new MoleculeChooser(
@@ -156,7 +161,13 @@ export class NMRModel implements TModel {
     );
     this.carbonZoomProperty = new DerivedProperty(
       [this.carbonLinesProperty, this.carbonEnvironmentsProperty, this.selectedSignalProperty, this.fieldProperty],
-      (lines, environments, index, field) => carbonZoom(lines, index === null ? undefined : environments[index], field),
+      carbonZoom,
+    );
+    this.carbonRangeProperty = new DerivedProperty([this.carbonSpectrumProperty], (curve) =>
+      sampledRange(curve, CARBON_SHIFT_RANGE),
+    );
+    this.carbonZoomRangeProperty = new DerivedProperty([this.carbonZoomProperty], (curve) =>
+      sampledRange(curve, CARBON_ZOOM_RANGE),
     );
 
     this.chooser.moleculeIdProperty.link((id) => {
@@ -284,6 +295,8 @@ export class NMRModel implements TModel {
     this.disposed = true;
     this.viewer.atomPickedEmitter.removeListener(this.onAtomPicked);
     for (const property of [
+      this.carbonZoomRangeProperty,
+      this.carbonRangeProperty,
       this.carbonZoomProperty,
       this.carbonSpectrumProperty,
       this.carbonLinesProperty,
@@ -414,27 +427,45 @@ export function carbonSpectrum(lines: readonly CarbonLine[], field: number, tms:
   if (tms) {
     sticks.push({ position: 0, height: 1 });
   }
-  const spacing = CARBON_SHIFT_RANGE.getLength() / (SPECTRUM_SAMPLES - 1);
+  const range = new Range(
+    Math.min(CARBON_SHIFT_RANGE.min, ...lines.map((line) => line.position - CARBON_WINDOW_MARGIN)),
+    Math.max(CARBON_SHIFT_RANGE.max, ...lines.map((line) => line.position + CARBON_WINDOW_MARGIN)),
+  );
+  const spacing = range.getLength() / (SPECTRUM_SAMPLES - 1);
   const width = Math.max(CARBON_HALF_WIDTH_HZ / (field / PROTON_TO_CARBON_FREQUENCY), 1.2 * spacing);
+  return normalize(lorentzianSum(sticks, range.min, range.max, SPECTRUM_SAMPLES, width), PEAK_HEIGHT);
+}
+
+function carbonZoom(
+  lines: readonly CarbonLine[],
+  environments: readonly CarbonEnvironment[],
+  index: number | null,
+  field: number,
+): SampledCurve {
+  const environment = index === null ? undefined : environments[index];
+  if (!environment) {
+    return lorentzianSum([], CARBON_ZOOM_RANGE.min, CARBON_ZOOM_RANGE.max, ZOOM_SAMPLES, 1);
+  }
+  const halfWidth = Math.max(
+    CARBON_ZOOM_HALF_WIDTH,
+    ...lines
+      .filter((line) => line.environment === index)
+      .map((line) => Math.abs(line.position - environment.shift) + CARBON_WINDOW_MARGIN),
+  );
+  const range = new Range(-halfWidth, halfWidth);
+  const sticks = lines
+    .map((line) => ({ position: line.position - environment.shift, height: line.height }))
+    .filter((stick) => Math.abs(stick.position) < 2 * halfWidth);
+  const width = CARBON_HALF_WIDTH_HZ / (field / PROTON_TO_CARBON_FREQUENCY);
+  const spacing = range.getLength() / (ZOOM_SAMPLES - 1);
   return normalize(
-    lorentzianSum(sticks, CARBON_SHIFT_RANGE.min, CARBON_SHIFT_RANGE.max, SPECTRUM_SAMPLES, width),
+    lorentzianSum(sticks, range.min, range.max, ZOOM_SAMPLES, Math.max(width, 1.2 * spacing)),
     PEAK_HEIGHT,
   );
 }
 
-function carbonZoom(lines: readonly CarbonLine[], environment: CarbonEnvironment | undefined, field: number) {
-  if (!environment) {
-    return lorentzianSum([], CARBON_ZOOM_RANGE.min, CARBON_ZOOM_RANGE.max, ZOOM_SAMPLES, 1);
-  }
-  const sticks = lines
-    .map((line) => ({ position: line.position - environment.shift, height: line.height }))
-    .filter((stick) => Math.abs(stick.position) < 2 * CARBON_ZOOM_HALF_WIDTH);
-  const width = CARBON_HALF_WIDTH_HZ / (field / PROTON_TO_CARBON_FREQUENCY);
-  const spacing = CARBON_ZOOM_RANGE.getLength() / (ZOOM_SAMPLES - 1);
-  return normalize(
-    lorentzianSum(sticks, CARBON_ZOOM_RANGE.min, CARBON_ZOOM_RANGE.max, ZOOM_SAMPLES, Math.max(width, 1.2 * spacing)),
-    PEAK_HEIGHT,
-  );
+function sampledRange(curve: SampledCurve, fallback: Range): Range {
+  return new Range(curve.x[0] ?? fallback.min, curve.x.at(-1) ?? fallback.max);
 }
 
 /** Scales so the largest |y| is `height` (signed curves keep their sign). */

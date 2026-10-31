@@ -27,17 +27,27 @@ export class UnknownsScreenSummaryContent extends ScreenSummaryContent {
         model.roundsProperty,
         model.resultProperty,
         model.wrongGuessesProperty,
+        model.isLoadingProperty,
+        model.loadErrorProperty,
         a11y.currentDetailsStringProperty,
+        strings.loadingStringProperty,
+        strings.loadErrorStringProperty,
+        strings.correctStringProperty,
+        strings.incorrectStringProperty,
+        ...Object.values(StringManager.getInstance().getMoleculeNames()),
       ],
       () => {
         const unknown = model.unknownProperty.value;
         const lastWrong = model.wrongGuessesProperty.value.at(-1);
-        const status =
-          model.resultProperty.value === GuessResult.CORRECT && unknown
-            ? StringUtils.fillIn(strings.correctStringProperty.value, { name: moleculeName(unknown.target.id) })
-            : model.resultProperty.value === GuessResult.INCORRECT && lastWrong
-              ? StringUtils.fillIn(strings.incorrectStringProperty.value, { name: moleculeName(lastWrong) })
-              : "";
+        const status = model.isLoadingProperty.value
+          ? strings.loadingStringProperty.value
+          : model.loadErrorProperty.value
+            ? strings.loadErrorStringProperty.value
+            : model.resultProperty.value === GuessResult.CORRECT && unknown
+              ? StringUtils.fillIn(strings.correctStringProperty.value, { name: moleculeName(unknown.target.id) })
+              : model.resultProperty.value === GuessResult.INCORRECT && lastWrong
+                ? StringUtils.fillIn(strings.incorrectStringProperty.value, { name: moleculeName(lastWrong) })
+                : "";
         return StringUtils.fillIn(a11y.currentDetailsStringProperty.value, {
           level: model.levelProperty.value,
           formula: unknown ? formulaText(unknown.target) : "",

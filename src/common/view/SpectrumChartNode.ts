@@ -324,7 +324,9 @@ export class SpectrumChartNode extends Node {
         }
         const local = background.globalToParentPoint(event.pointer.point);
         options.pick(chartTransform.viewToModelX(local.x), Math.abs(chartTransform.viewToModelDeltaX(PICK_TOLERANCE)));
-        this.focus();
+        if (this.focusable) {
+          this.focus();
+        }
       },
     });
 

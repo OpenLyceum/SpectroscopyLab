@@ -14,7 +14,7 @@ import { HBox, Node, Rectangle, Text, VBox } from "scenerystack/scenery";
 import { PhetFont, ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
 import { RectangularPushButton } from "scenerystack/sun";
-import { loadMolecule } from "../../common/model/library/SpectroscopyLibrary.js";
+import { loadMolecule, nameKey } from "../../common/model/library/SpectroscopyLibrary.js";
 import { lorentzianSum, type SampledCurve } from "../../common/model/SpectrumCurve.js";
 import {
   FLAT_RECTANGULAR_BUTTON_OPTIONS,
@@ -26,7 +26,7 @@ import { label, pushButton, radioGroup } from "../../common/view/ControlFactory.
 import { disposeSubtree } from "../../common/view/disposeSubtree.js";
 import { MoleculeThumbnailNode } from "../../common/view/MoleculeThumbnailNode.js";
 import { SpectrumChartNode } from "../../common/view/SpectrumChartNode.js";
-import { StringManager } from "../../i18n/StringManager.js";
+import { lookupStringProperty, StringManager } from "../../i18n/StringManager.js";
 import { IR_RANGE } from "../../infrared/model/InfraredModel.js";
 import { CARBON_SHIFT_RANGE, Nucleus, type NucleusValue, SHIFT_RANGE } from "../../nmr/model/NMRModel.js";
 import { moleculeName } from "../../nmr/view/NMRScreenView.js";
@@ -63,6 +63,7 @@ export class UnknownsScreenView extends ScreenView {
     const a11y = StringManager.getInstance().getUnknownsA11yStrings();
     const irStrings = StringManager.getInstance().getInfraredStrings();
     const nmrStrings = StringManager.getInstance().getNMRStrings();
+    const moleculeNames = StringManager.getInstance().getMoleculeNames();
 
     // ── Candidates ──────────────────────────────────────────────────────────────
     const question = new Text(strings.questionStringProperty, {
@@ -100,7 +101,9 @@ export class UnknownsScreenView extends ScreenView {
       grid.removeAllChildren();
       buttons = molecules.map((molecule) => {
         const thumbnail = new MoleculeThumbnailNode(molecule, new Bounds2(0, 0, THUMB_WIDTH, THUMB_HEIGHT));
-        const name = new Text(moleculeName(molecule.id), {
+        const nameProperty =
+          lookupStringProperty(moleculeNames, `${nameKey(molecule.id)}StringProperty`) ?? moleculeName(molecule.id);
+        const name = new Text(nameProperty, {
           font: NAME_FONT,
           fill: LIGHT_SURFACE_TEXT_FILL,
           maxWidth: THUMB_WIDTH,
@@ -131,7 +134,7 @@ export class UnknownsScreenView extends ScreenView {
           xMargin: 6,
           yMargin: 6,
           listener: () => model.guess(molecule.id),
-          accessibleName: moleculeName(molecule.id),
+          accessibleName: nameProperty,
         });
         return { id: molecule.id, button, content, mark, frame };
       });
@@ -140,6 +143,23 @@ export class UnknownsScreenView extends ScreenView {
       }
       updateMarks();
     };
+    const feedbackText = (): string => {
+      if (model.isLoadingProperty.value) {
+        return strings.loadingStringProperty.value;
+      }
+      if (model.loadErrorProperty.value) {
+        return strings.loadErrorStringProperty.value;
+      }
+      const unknown = model.unknownProperty.value;
+      if (model.resultProperty.value === GuessResult.CORRECT && unknown) {
+        return StringUtils.fillIn(strings.correctStringProperty.value, { name: moleculeName(unknown.target.id) });
+      }
+      const lastWrong = model.wrongGuessesProperty.value.at(-1);
+      if (model.resultProperty.value === GuessResult.INCORRECT && lastWrong) {
+        return StringUtils.fillIn(strings.incorrectStringProperty.value, { name: moleculeName(lastWrong) });
+      }
+      return unknown ? "" : strings.noFamiliesStringProperty.value;
+    };
     const updateMarks = () => {
       const unknown = model.unknownProperty.value;
       for (const entry of buttons) {
@@ -147,26 +167,14 @@ export class UnknownsScreenView extends ScreenView {
         const right = model.solved && entry.id === unknown?.target.id;
         entry.mark.visible = wrong;
         entry.frame.visible = right;
-        entry.button.enabled = !(wrong || model.solved);
+        entry.button.enabled = !(wrong || model.solved || model.isLoadingProperty.value);
       }
       const result = model.resultProperty.value;
-      const lastWrong = model.wrongGuessesProperty.value.at(-1);
-      feedback.string = model.loadErrorProperty.value
-        ? strings.loadErrorStringProperty.value
-        : result === GuessResult.CORRECT && unknown
-          ? StringUtils.fillIn(strings.correctStringProperty.value, { name: moleculeName(unknown.target.id) })
-          : result === GuessResult.INCORRECT && lastWrong
-            ? StringUtils.fillIn(strings.incorrectStringProperty.value, { name: moleculeName(lastWrong) })
-            : unknown
-              ? ""
-              : strings.noFamiliesStringProperty.value;
+      feedback.string = feedbackText();
       feedback.fill =
         result === GuessResult.CORRECT
           ? SpectroscopyLabColors.regionTextColorProperty
           : SpectroscopyLabColors.textColorProperty;
-      if (result !== GuessResult.NONE && feedback.string) {
-        grid.addAccessibleResponse(feedback.string);
-      }
     };
     const unknownListener = () => {
       rebuildCandidates().catch(() => {
@@ -175,10 +183,36 @@ export class UnknownsScreenView extends ScreenView {
       });
     };
     model.unknownProperty.link(unknownListener);
-    const marksMultilink = Multilink.multilink(
-      [model.wrongGuessesProperty, model.resultProperty, model.loadErrorProperty],
+    const marksMultilink = Multilink.multilinkAny(
+      [
+        model.wrongGuessesProperty,
+        model.resultProperty,
+        model.loadErrorProperty,
+        model.isLoadingProperty,
+        strings.loadingStringProperty,
+        strings.loadErrorStringProperty,
+        strings.correctStringProperty,
+        strings.incorrectStringProperty,
+        strings.noFamiliesStringProperty,
+        ...Object.values(moleculeNames),
+      ],
       updateMarks,
     );
+    // Language changes refresh feedback without re-announcing the previous guess.
+    let announcedGuess: string | null = null;
+    const resultMultilink = Multilink.multilinkAny([model.resultProperty, model.wrongGuessesProperty], () => {
+      const result = model.resultProperty.value;
+      const guess =
+        result === GuessResult.CORRECT
+          ? "correct"
+          : result === GuessResult.INCORRECT
+            ? (model.wrongGuessesProperty.value.at(-1) ?? null)
+            : null;
+      if (guess !== null && guess !== announcedGuess) {
+        grid.addAccessibleResponse(feedbackText());
+      }
+      announcedGuess = guess;
+    });
 
     // ── Formula, unsaturation, molecular ion, controls ─────────────────────────
     const formulaLine = new Text("", {
@@ -250,6 +284,8 @@ export class UnknownsScreenView extends ScreenView {
         model.roundsProperty,
         strings.formulaStringProperty,
         strings.scoreStringProperty,
+        strings.unsaturationStringProperty,
+        strings.ionPeakStringProperty,
       ],
       () => {
         const target = model.unknownProperty.value?.target;
@@ -415,6 +451,7 @@ export class UnknownsScreenView extends ScreenView {
     this.disposeUnknownsScreenView = () => {
       model.unknownProperty.unlink(unknownListener);
       marksMultilink.dispose();
+      resultMultilink.dispose();
       infoMultilink.dispose();
       infoPanel.boundsProperty.unlink(anchorInfoPanel);
       irCurve.dispose();

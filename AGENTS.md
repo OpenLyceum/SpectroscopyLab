@@ -69,6 +69,19 @@ computes IR intensities, so changing an isotope only changes masses. Never hand-
   peaks (announced via `addAccessibleResponse`), Escape clears. Keys live in
   `SpectroscopyLabHotkeyData.ts` and feed both listeners and the keyboard-help dialog.
 - Screen summaries have a **live** current-details paragraph naming the molecule and selected peak.
+- Charts configured with `focusable: false` still accept pointer picks, but must not request focus.
+- Unknowns candidate text and accessible names bind to localized molecule-name Properties;
+  feedback and clue patterns must also update when the locale changes within a round.
+
+## Runtime contracts
+
+- Carbon spectrum sampling and chart transforms share derived ranges. Keep the default
+  −5…225 ppm full range and ±6 ppm zoom as minima; expand for actual coupled components plus
+  1 ppm margin at low fields. Zoom tick spacing adapts to the expanded window.
+- Requesting an unknown immediately clears old clues/candidates and sets `isLoadingProperty`.
+  Guesses are ineligible until the current load generation completes. Late successes/failures
+  must not alter a newer request, including after Reset. Preserve the previous target separately
+  so clearing the question does not remove the avoid-repeat behavior.
 
 ## Compliance carve-outs
 
@@ -119,6 +132,9 @@ Fleet-standard Vitest layout (keep when forking):
 | `tests/uv-vis/pi-system.test.ts` | Hückel levels, cyanine box λ, calibration re-derived by least squares, colours |
 | `tests/uv-vis/beer-lambert.test.ts` | A = εbc, stray-light saturation, per-molecule concentration range, colour vs concentration |
 | `tests/unknowns/unknowns.test.ts` | Formula, unsaturation, ion cluster, isomer families, scoring |
+| `tests/nmr/carbon-window.test.ts` | All coupled CH₃/CH₄ components remain sampled at both field limits |
+| `tests/unknowns/round-loading.test.ts` | Pending-round answer rejection, Reset, obsolete completion/failure and retry |
+| `tests/browser/review-regressions.spec.ts` | Chart focus/picks, carbon chart transforms, pending answers and live locale changes |
 | `tests/memory-leak.test.ts` | Lists the sim's disposables for `describeDisposalLeaks()` (collected after dispose, repeated cycles; opt-in double dispose) |
 | `tests/helpers/memoryLeak.ts` | Template-owned leak harness: `describeDisposalLeaks`, `forceGC`, `createAndDispose` |
 | `tests/fuzz/fuzz.spec.ts` | Optional Playwright fuzz smoke: pointer `?fuzz` + keyboard `?fuzzBoard` (template-owned; add sim-specific specs as separate files) |

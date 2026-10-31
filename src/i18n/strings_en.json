@@ -289,6 +289,7 @@
     "irTitle": "Infrared",
     "nmrTitle": "¹H NMR, 300 MHz",
     "noFamilies": "No isomer family has its infrared data yet.",
+    "loading": "Loading the next unknown…",
     "loadError": "The spectra could not be loaded.",
     "carbonTitle": "¹³C NMR (¹H-decoupled), 75 MHz"
   }

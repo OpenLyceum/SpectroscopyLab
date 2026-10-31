@@ -36,6 +36,8 @@ Property's value is one of its own items. Only the active family's combo box is 
 keys step through peaks and follow screen direction on inverted axes. The node calls
 `mutate(options)` only after its children exist, so layout options see real bounds. Axis titles
 re-lay out when the lazily built tick labels change size.
+The pointer handler requests focus only when the chart is focusable; read-only charts retain
+their pick callbacks, including Beer–Lambert concentration selection.
 
 ## Dynamic chart axes
 
@@ -45,6 +47,11 @@ node redraws its own overlays (regions, sticks, cursor) on the same emitter. Use
 window follows the isotopologue's origin, the line zoom follows the selected line, DEPT-135 needs a
 negative half, the UV-Vis absorbance axis switches to the absolute scale, and the Beer–Lambert
 calibration axis rescales to each molecule's ε.
+
+Carbon-NMR full and zoom domains expand around actual coupling components at low fields.
+`carbonRangeProperty` and `carbonZoomRangeProperty` derive from the sampled curves' endpoints,
+so widening a chart never exposes an unsampled region. The selected zoom uses ±6 ppm as a
+minimum, adds 1 ppm beyond its outer components and uses coarser ticks for wider multiplets.
 
 ## Numerics
 
@@ -76,3 +83,16 @@ calibration axis rescales to each molecule's ε.
 Every focusable element has an accessible name. The viewer, the IR/NMR charts and the energy
 diagram announce what they select via `addAccessibleResponse`. Each screen summary's current
 details is a `DerivedProperty` over the model and the locale strings.
+
+## Unknown round transitions and localization
+
+`newUnknown()` increments the load generation, marks the model busy and clears the old question
+before awaiting molecule data. `guess()` rejects busy, absent and out-of-family answers. Only
+the current generation may publish a question or load error and end loading; Reset starts a
+fresh generation. The previous target ID is retained separately for repeat avoidance.
+
+Candidate Text and button accessible names share localized molecule-name Properties. Feedback,
+clue text and the screen summary observe the localized patterns they read, including molecule
+names, so switching language preserves the question and answer state. Result announcements
+listen to result changes separately from locale refreshes. View disposal unlinks both sets of
+listeners and disposes derived range/tick Properties.

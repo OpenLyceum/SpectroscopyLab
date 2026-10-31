@@ -108,6 +108,11 @@ R(J) = ν₀ + F₁(J+1) − F₀(J), P(J) = ν₀ + F₁(J−1) − F₀(J), F_
   long T₁); DEPT-135 (CH, CH₃ up; CH₂ down; C absent); DEPT-90 (CH only); ¹H-coupled, each carbon
   split n + 1 by its own hydrogens with ¹J = 125 (sp³), 156 (alkene), 159 (aromatic), 172
   (aldehyde) Hz, long-range couplings ignored. ¹³C is observed at the ¹H frequency / 3.9767.
+- **Plot windows:** the full spectrum retains at least −5…225 ppm and expands to include every
+  computed component with 1 ppm margin. The selected carbon zoom retains at least ±6 ppm and
+  expands symmetrically for that signal's complete multiplet, also with 1 ppm margin. Both the
+  sampler and chart use these domains; low-field splitting changes the window, not the physical
+  line positions.
 
 ## UV-Vis
 
@@ -145,3 +150,8 @@ formula, the degree of unsaturation (2C + 2 + N − H − X)/2, the molecular-io
 ¹³C at 1.08 % per carbon, M+2 from ¹⁸O and ³⁷Cl), the IR spectrum and the 300 MHz ¹H NMR spectrum
 (exact, as on the NMR screen), switchable to the ¹H-decoupled ¹³C spectrum at 75 MHz.
 Only families with every member's IR data computed are offered.
+
+Requesting a new question, changing level or resetting immediately invalidates the old question
+and clears its clues and candidates. Loading feedback remains visible until the latest request
+finishes. Only candidates of the ready question can be scored; obsolete load completions and
+failures cannot replace the current request or change its loading state.

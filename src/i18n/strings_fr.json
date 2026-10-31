@@ -289,6 +289,7 @@
     "irTitle": "Infrarouge",
     "nmrTitle": "RMN ¹H, 300 MHz",
     "noFamilies": "Aucune famille d'isomères n'a encore ses données infrarouges.",
+    "loading": "Chargement de la prochaine inconnue…",
     "loadError": "Les spectres n'ont pas pu être chargés.",
     "carbonTitle": "RMN ¹³C (découplée ¹H), 75 MHz"
   }

@@ -5,7 +5,7 @@
  * families, and the scoring rules of the game.
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { LIBRARY, loadMolecule } from "../../src/common/model/library/SpectroscopyLibrary.js";
 import { degreeOfUnsaturation, formulaText, molecularIonCluster } from "../../src/unknowns/model/MolecularFormula.js";
 import { buildUnknown, GuessResult, LEVEL_FAMILIES, UnknownsModel } from "../../src/unknowns/model/UnknownsModel.js";
@@ -40,6 +40,7 @@ describe("molecular formula", () => {
 describe("Unknowns game", () => {
   it("scores only a first-try answer", async () => {
     const model = new UnknownsModel();
+    await vi.waitFor(() => expect(model.isLoadingProperty.value).toBe(false));
     model.unknownProperty.value = await buildUnknown("ethanol", ["ethanol", "dimethyl-ether"]);
     model.wrongGuessesProperty.value = [];
     model.resultProperty.value = GuessResult.NONE;

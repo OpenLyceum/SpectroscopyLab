@@ -70,8 +70,11 @@ export class UnknownsModel implements TModel {
   public readonly nucleusProperty: Property<NucleusValue>;
   /** True when building the round's spectra failed. */
   public readonly loadErrorProperty: BooleanProperty;
+  /** Answers are ineligible until the latest requested round is ready. */
+  public readonly isLoadingProperty: BooleanProperty;
   private disposed = false;
   private loadGeneration = 0;
+  private previousTargetId: string | undefined;
 
   public constructor() {
     this.levelProperty = new NumberProperty(1, { numberType: "Integer" });
@@ -82,6 +85,7 @@ export class UnknownsModel implements TModel {
     this.resultProperty = new Property<GuessResultValue>(GuessResult.NONE);
     this.nucleusProperty = new Property<NucleusValue>(Nucleus.PROTON);
     this.loadErrorProperty = new BooleanProperty(false);
+    this.isLoadingProperty = new BooleanProperty(false);
 
     this.levelProperty.link(() => this.newUnknown());
   }
@@ -99,12 +103,22 @@ export class UnknownsModel implements TModel {
 
   /** Starts a new round (the spectra are computed asynchronously). */
   public newUnknown(): void {
-    this.loadErrorProperty.value = false;
+    if (this.disposed) {
+      return;
+    }
     const generation = ++this.loadGeneration;
+    this.previousTargetId = this.unknownProperty.value?.target.id ?? this.previousTargetId;
+    this.isLoadingProperty.value = true;
+    this.loadErrorProperty.value = false;
+    this.wrongGuessesProperty.value = [];
+    this.resultProperty.value = GuessResult.NONE;
+    // Clear old clues and candidate buttons immediately, including during a level change/reset.
+    this.unknownProperty.value = null;
     this.loadUnknown(generation).catch(() => {
       if (!this.disposed && generation === this.loadGeneration) {
         this.unknownProperty.value = null;
         this.loadErrorProperty.value = true;
+        this.isLoadingProperty.value = false;
       }
     });
   }
@@ -114,10 +128,11 @@ export class UnknownsModel implements TModel {
     const family = families.length > 0 ? families[dotRandom.nextInt(families.length)] : undefined;
     if (!family) {
       this.unknownProperty.value = null;
+      this.isLoadingProperty.value = false;
       return;
     }
     // Avoid repeating the previous molecule when there is a choice.
-    const previous = this.unknownProperty.value?.target.id;
+    const previous = this.previousTargetId;
     const choices = family.filter((id) => id !== previous);
     const targetId = choices[dotRandom.nextInt(choices.length)] ?? family[0] ?? "";
     const level = this.levelProperty.value;
@@ -126,12 +141,19 @@ export class UnknownsModel implements TModel {
       this.unknownProperty.value = unknown;
       this.wrongGuessesProperty.value = [];
       this.resultProperty.value = GuessResult.NONE;
+      this.isLoadingProperty.value = false;
     }
   }
 
   public guess(id: string): void {
     const unknown = this.unknownProperty.value;
-    if (!unknown || this.solved || this.wrongGuessesProperty.value.includes(id)) {
+    if (
+      this.isLoadingProperty.value ||
+      !unknown ||
+      !unknown.candidates.includes(id) ||
+      this.solved ||
+      this.wrongGuessesProperty.value.includes(id)
+    ) {
       return;
     }
     if (id === unknown.target.id) {
@@ -170,6 +192,7 @@ export class UnknownsModel implements TModel {
     this.resultProperty.dispose();
     this.nucleusProperty.dispose();
     this.loadErrorProperty.dispose();
+    this.isLoadingProperty.dispose();
   }
 }
 

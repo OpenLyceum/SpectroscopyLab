@@ -225,6 +225,7 @@ export class NMRScreenView extends ScreenView {
       chartWidth: CHART_WIDTH,
       chartHeight: CHART_HEIGHT,
       xRange: CARBON_SHIFT_RANGE,
+      xRangeProperty: model.carbonRangeProperty,
       yRange: POSITIVE_RANGE,
       yRangeProperty: carbonYRangeProperty,
       xInverted: true,
@@ -269,14 +270,19 @@ export class NMRScreenView extends ScreenView {
       clear: clearSignal,
       focusable: false,
     });
+    const carbonZoomTickProperty = new DerivedProperty([model.carbonZoomRangeProperty], (range) =>
+      range.getLength() > 20 ? 5 : 2,
+    );
     const carbonZoomChart = new SpectrumChartNode({
       chartWidth: ZOOM_WIDTH,
       chartHeight: ZOOM_HEIGHT,
       xRange: CARBON_ZOOM_RANGE,
+      xRangeProperty: model.carbonZoomRangeProperty,
       yRange: POSITIVE_RANGE,
       yRangeProperty: carbonYRangeProperty,
       xInverted: true,
       xTickSpacing: 2,
+      xTickSpacingProperty: carbonZoomTickProperty,
       yTickSpacing: 0.5,
       yTickDecimals: 1,
       xLabelStringProperty: strings.zoomAxisStringProperty,
@@ -396,6 +402,7 @@ export class NMRScreenView extends ScreenView {
       rowsProperty.dispose();
       selectedShiftProperty.dispose();
       carbonYRangeProperty.dispose();
+      carbonZoomTickProperty.dispose();
     };
   }
 
