@@ -11,7 +11,7 @@
  * selected line (which shows the ³⁵Cl/³⁷Cl pair) to the info panel.
  */
 
-import { DerivedProperty, Multilink, PatternStringProperty, type TReadOnlyProperty } from "scenerystack/axon";
+import { DerivedProperty, Multilink, PatternStringProperty } from "scenerystack/axon";
 import { Bounds2, Range, toFixed } from "scenerystack/dot";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import { StringUtils } from "scenerystack/phetcommon";
@@ -28,7 +28,7 @@ import { checkbox, comboBox, label, labeled } from "../../common/view/ControlFac
 import { MoleculeChooserNode } from "../../common/view/MoleculeChooserNode.js";
 import { MoleculeViewerNode } from "../../common/view/MoleculeViewerNode.js";
 import { SpectrumChartNode, type SpectrumRegion } from "../../common/view/SpectrumChartNode.js";
-import { StringManager } from "../../i18n/StringManager.js";
+import { lookupStringProperty, StringManager } from "../../i18n/StringManager.js";
 import SpectroscopyLabColors from "../../SpectroscopyLabColors.js";
 import { SCREEN_VIEW_MARGIN } from "../../SpectroscopyLabConstants.js";
 import {
@@ -347,10 +347,7 @@ export class InfraredScreenView extends ScreenView {
       right: transmittanceChart.right,
       top: viewer.top + CHART_HEIGHT + 62,
     });
-    const moleculeNames = StringManager.getInstance().getMoleculeNames() as unknown as Record<
-      string,
-      TReadOnlyProperty<string>
-    >;
+    const moleculeNames = StringManager.getInstance().getMoleculeNames();
     const infoMultilink = Multilink.multilinkAny(
       [
         model.selectedPeakProperty,
@@ -392,7 +389,9 @@ export class InfraredScreenView extends ScreenView {
           });
           modeLines[2].string = peak.intensity < INACTIVE_INTENSITY ? strings.inactiveStringProperty.value : "";
         } else {
-          const name = molecule ? (moleculeNames[`${nameKey(molecule.id)}StringProperty`]?.value ?? molecule.id) : "";
+          const name = molecule
+            ? (lookupStringProperty(moleculeNames, `${nameKey(molecule.id)}StringProperty`)?.value ?? molecule.id)
+            : "";
           const count = model.peaksProperty.value.length;
           const atoms = molecule?.elements.length ?? 0;
           modeTitle.string = name;

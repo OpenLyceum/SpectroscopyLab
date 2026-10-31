@@ -24,7 +24,7 @@
       "screenSummary": {
         "playArea": "La zone de jeu montre une molécule en 3D dont les hydrogènes sont désignés par une lettre (ou les carbones par un numéro) selon leur environnement, son spectre RMN du proton ou du carbone 13, un agrandissement d’un signal et la table des signaux.",
         "controlArea": "La zone de commande choisit la molécule, le noyau observé et la fréquence du spectromètre. Pour le proton, elle active l’échange au D₂O, la référence TMS, l’intégrale et la simulation exacte au second ordre ; pour le carbone, elle choisit un spectre découplé, DEPT ou couplé.",
-        "interactionHint": "Placez le focus sur le spectre et utilisez les flèches pour parcourir les signaux ; les hydrogènes correspondants sont entourés."
+        "interactionHint": "Placez le focus sur le spectre et utilisez les flèches pour parcourir les signaux, ou activez une ligne de la liste des signaux. Les hydrogènes correspondants sont entourés."
       },
       "currentDetails": "{{molecule}} : {{count}} signaux à {{field}} mégahertz. {{selection}}",
       "noSelection": "Aucun signal n'est sélectionné.",
@@ -126,7 +126,8 @@
   },
   "viewer": {
     "accessibleName": "Visionneuse de molécule",
-    "helpText": "Les flèches font pivoter, plus et moins zooment, N et P parcourent les atomes."
+    "helpText": "Les flèches font pivoter, plus et moins zooment, N et P parcourent les atomes.",
+    "loadError": "Cette molécule n'a pas pu être chargée."
   },
   "keyboardHelp": {
     "viewerSection": "Visionneuse de molécule",
@@ -288,6 +289,7 @@
     "irTitle": "Infrarouge",
     "nmrTitle": "RMN ¹H, 300 MHz",
     "noFamilies": "Aucune famille d'isomères n'a encore ses données infrarouges.",
+    "loadError": "Les spectres n'ont pas pu être chargés.",
     "carbonTitle": "RMN ¹³C (découplée ¹H), 75 MHz"
   }
 }

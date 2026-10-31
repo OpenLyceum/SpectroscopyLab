@@ -9,7 +9,14 @@
  * typed array and throws (scenerystack 3.0).
  */
 
-const MAX_SWEEPS = 100;
+const MAX_SWEEPS = 400;
+
+export class EigenConvergenceError extends Error {
+  public constructor(n: number, residual: number) {
+    super(`Jacobi did not converge for a ${n}×${n} symmetric matrix (off-diagonal squared norm ${residual})`);
+    this.name = "EigenConvergenceError";
+  }
+}
 
 export type SymmetricEigenResult = {
   /** Eigenvalues in ascending order. */
@@ -18,8 +25,12 @@ export type SymmetricEigenResult = {
   readonly vectors: Float64Array;
 };
 
-/** @param matrix - row-major n×n; only symmetric input is meaningful. It is not modified. */
-export function symmetricEigen(matrix: Float64Array, n: number): SymmetricEigenResult {
+/**
+ * @param matrix - row-major n×n; only symmetric input is meaningful. It is not modified.
+ * @param maxSweeps - override for tests. The default is enough for the Hessians and spin blocks here.
+ * @throws {EigenConvergenceError} when off-diagonal entries remain after the last sweep.
+ */
+export function symmetricEigen(matrix: Float64Array, n: number, maxSweeps = MAX_SWEEPS): SymmetricEigenResult {
   const a = matrix.slice();
   const v = new Float64Array(n * n);
   for (let i = 0; i < n; i++) {
@@ -32,12 +43,16 @@ export function symmetricEigen(matrix: Float64Array, n: number): SymmetricEigenR
   }
   const threshold = 1e-30 * Math.max(scale, Number.MIN_VALUE);
 
-  for (let sweep = 0; sweep < MAX_SWEEPS && offDiagonalSquared(a, n) > threshold; sweep++) {
+  for (let sweep = 0; sweep < maxSweeps && offDiagonalSquared(a, n) > threshold; sweep++) {
     for (let p = 0; p < n; p++) {
       for (let q = p + 1; q < n; q++) {
         rotate(a, v, n, p, q);
       }
     }
+  }
+  const residual = offDiagonalSquared(a, n);
+  if (residual > threshold) {
+    throw new EigenConvergenceError(n, residual);
   }
 
   const order = Array.from({ length: n }, (_, i) => i).sort((i, j) => (a[i * n + i] ?? 0) - (a[j * n + j] ?? 0));

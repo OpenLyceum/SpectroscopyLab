@@ -8,11 +8,13 @@
  */
 
 import { Multilink, type Property, type TReadOnlyProperty } from "scenerystack/axon";
+import { StringUtils } from "scenerystack/phetcommon";
 import { KeyboardListener, Line, Node, Rectangle, Text } from "scenerystack/scenery";
 import { ArrowNode, PhetFont } from "scenerystack/scenery-phet";
 import SpectroscopyLabHotkeyData from "../../common/SpectroscopyLabHotkeyData.js";
 import { StringManager } from "../../i18n/StringManager.js";
 import SpectroscopyLabColors from "../../SpectroscopyLabColors.js";
+import type { ElectronicStructure } from "../model/PiSystem.js";
 import type { Prediction } from "../model/UVVisModel.js";
 
 const LEVEL_WIDTH = 64;
@@ -30,6 +32,25 @@ type LevelDrawing = {
   readonly labelWidth: number;
   readonly select: () => void;
 };
+
+/** Spoken description of the orbital drawn on the molecule. `index` is 0-based. */
+export function describeOrbital(index: number, structure: ElectronicStructure): string {
+  const a11y = StringManager.getInstance().getUVVisA11yStrings();
+  const strings = StringManager.getInstance().getUVVisStrings();
+  const orbital = structure.orbitals[index];
+  const role =
+    index === structure.homo
+      ? `, ${strings.homoStringProperty.value}`
+      : index === structure.lumo
+        ? `, ${strings.lumoStringProperty.value}`
+        : "";
+  return StringUtils.fillIn(a11y.orbitalStringProperty.value, {
+    number: index + 1,
+    count: structure.orbitals.length,
+    occupancy: orbital?.occupancy ?? 0,
+    role,
+  });
+}
 
 /** One level: its line, a click target, its electrons, and a HOMO/LUMO label. */
 function drawLevel(layer: Node, level: LevelDrawing): void {
@@ -182,7 +203,18 @@ export class EnergyLevelDiagramNode extends Node {
     });
     this.addInputListener(keyboardListener);
 
+    const announceOrbital = () => {
+      const prediction = predictionProperty.value;
+      const index = selectedOrbitalProperty.value;
+      if (!prediction || index === null) {
+        return;
+      }
+      this.addAccessibleResponse(describeOrbital(index, prediction.structure));
+    };
+    selectedOrbitalProperty.lazyLink(announceOrbital);
+
     this.disposeEnergyLevelDiagramNode = () => {
+      selectedOrbitalProperty.unlink(announceOrbital);
       multilink.dispose();
       keyboardListener.dispose();
       axisLabel.dispose();

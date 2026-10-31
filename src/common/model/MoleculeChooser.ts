@@ -68,4 +68,16 @@ export class MoleculeChooser {
     }
     this.familyProperty.reset();
   }
+
+  public dispose(): void {
+    disposeOwned(this.moleculeIdProperty);
+    this.familyProperty.dispose();
+    for (const selection of this.allSelections) {
+      selection.dispose();
+    }
+  }
+}
+
+function disposeOwned(property: object): void {
+  (property as { dispose?: () => void }).dispose?.();
 }

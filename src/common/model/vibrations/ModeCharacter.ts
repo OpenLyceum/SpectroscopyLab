@@ -34,7 +34,15 @@ const STRETCH_CONSTANT = 5;
 /** Bend force constant, mdyn·Å/rad². */
 const BEND_CONSTANT = 0.7;
 
-export function describeMode(molecule: Molecule, displacements: Float64Array): ModeCharacter {
+/**
+ * @param masses - isotope masses parallel to `molecule.elements`. A hydrogen heavier than protium
+ * is written D, so a D₂O shake names the stretch O–D rather than O–H.
+ */
+export function describeMode(
+  molecule: Molecule,
+  displacements: Float64Array,
+  masses?: readonly number[],
+): ModeCharacter {
   const p = molecule.positions;
   const d = displacements;
   const vector = (array: Float64Array, i: number): [number, number, number] => [
@@ -76,7 +84,7 @@ export function describeMode(molecule: Molecule, displacements: Float64Array): M
     }
   });
 
-  const symbol = (i: number) => molecule.elements[i]?.symbol ?? "?";
+  const symbol = (i: number) => isotopeSymbol(molecule, i, masses);
   if (bestStretch.value >= bestBend.value) {
     // As chemists write bonds: carbon first, hydrogen last, otherwise heavier first ("C=O", "O–H", "C–Cl").
     const rank = (i: number) => {
@@ -98,6 +106,19 @@ export function describeMode(molecule: Molecule, displacements: Float64Array): M
     label: `${symbol(end1)}–${symbol(vertex)}–${symbol(end2)}`,
     bondOrder: 1,
   };
+}
+
+/** Protium stays H. A substituted hydrogen (deuterium in this library) is written D. */
+function isotopeSymbol(molecule: Molecule, index: number, masses: readonly number[] | undefined): string {
+  const element = molecule.elements[index];
+  if (!element) {
+    return "?";
+  }
+  const mass = masses?.[index];
+  if (element.symbol === "H" && mass !== undefined && mass > 1.5) {
+    return "D";
+  }
+  return element.symbol;
 }
 
 /** First-order change of angle a–centre–b, radians per unit displacement. */

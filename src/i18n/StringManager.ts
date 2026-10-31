@@ -185,3 +185,24 @@ export class StringManager {
     return stringProperties.preferences;
   }
 }
+
+/**
+ * A nested string property by its runtime key (`waterStringProperty`), or undefined when the key
+ * is not a string property. Dynamic molecule and multiplicity names cannot be indexed with a
+ * literal, so this is the one place that reads them.
+ */
+export function lookupStringProperty(group: object, key: string): ReadOnlyProperty<string> | undefined {
+  if (!Object.hasOwn(group, key)) {
+    return undefined;
+  }
+  const value = (group as Record<string, unknown>)[key];
+  if (
+    value !== null &&
+    typeof value === "object" &&
+    "value" in value &&
+    typeof (value as { value: unknown }).value === "string"
+  ) {
+    return value as ReadOnlyProperty<string>;
+  }
+  return undefined;
+}

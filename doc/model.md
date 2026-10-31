@@ -32,7 +32,7 @@ quantum chemistry, and that is computed offline.
    bond (k_s = 5 mdyn/Å per bond order n) against k_b·Δθ² per angle (k_b = 0.7 mdyn·Å/rad²).
 
 Isotopes change only masses: the Hessian is the same Born–Oppenheimer surface, which is why a
-D₂O shake moves the O–H stretch from ~3650 to ~2700 cm⁻¹ (ratio ≈ 1/√2) and leaves C–H alone.
+D₂O shake moves the O–H stretch from ~3650 to ~2700 cm⁻¹ (ratio ≈ 1/√2), renames it O–D, and leaves C–H alone.
 
 **Limitations:** gas-phase harmonic frequencies, so no hydrogen-bond broadening of O–H, and no
 overtones or combination bands.
@@ -53,6 +53,8 @@ R(J) = ν₀ + F₁(J+1) − F₀(J), P(J) = ν₀ + F₁(J−1) − F₀(J), F_
 - Isotopologues: an atom left at its most abundant isotope also appears as its common minor
   isotope at natural abundance (³⁵Cl 75.76 %, ³⁷Cl 24.24 %), so every line has an H³⁷Cl partner
   ~2 cm⁻¹ lower. Lorentzian HWHM 0.3 cm⁻¹ (a high-resolution FTIR; the Doppler width is ~0.003).
+- The summed curve is scaled so its strongest point reaches absorbance 1.3, matching the
+  low-resolution band. The line zoom uses that same scale, so a weak line stays weak.
 - Readouts: r from B, and the harmonic force constant k = μ(2πcν₀)².
 
 ## ¹H NMR
@@ -64,7 +66,10 @@ R(J) = ν₀ + F₁(J+1) − F₀(J), P(J) = ν₀ + F₁(J−1) − F₀(J), F_
   OH, NH: characteristic values. Tests hold 14 molecules to within 0.3 ppm of literature spectra.
 - **Splitting** (`ProtonSpectrum.ts`): first order, from protons three bonds away in *other*
   environments; ³J = 7.0 Hz (sp³–sp³), 6.5 (allylic), 7.8 (aromatic ortho), 10.5 / 17.0 (alkene
-  cis/trans, from the H–C=C–H dihedral), 2.0 (aldehyde). Couplings within 0.6 Hz merge (the n + 1
+  cis/trans). A =CH₂ group always gets one cis and one trans coupling: the hydrogen with the
+  smaller H–C=C–H torsion is cis, so a twisted conformer cannot assign both the same J. A
+  disubstituted double bond uses its H–C=C–H dihedral, and within 15° of 90° it uses the torsion
+  of the two non-hydrogen substituents instead. Aldehyde ³J is 2.0 Hz. Couplings within 0.6 Hz merge (the n + 1
   rule); different J values nest (dd, qd…). O–H and N–H exchange fast and neither split nor are split.
   A symmetry class whose members couple differently (the cis/trans =CH₂ protons) is split in two.
 - **Field:** line positions are computed in Hz and divided by the spectrometer frequency, so J is

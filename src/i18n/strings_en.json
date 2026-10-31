@@ -24,7 +24,7 @@
       "screenSummary": {
         "playArea": "The play area shows a molecule in 3D with its hydrogens lettered (or carbons numbered) by environment, its proton or carbon-13 NMR spectrum, a zoom on one signal, and a table of signals.",
         "controlArea": "The control area chooses the molecule, the observed nucleus and the spectrometer frequency. For protons it toggles a D₂O shake, the TMS reference, the integral and the exact second-order simulation; for carbon it chooses a decoupled, DEPT or coupled spectrum.",
-        "interactionHint": "Focus the spectrum and use the arrow keys to step through the signals; the matching hydrogens are ringed."
+        "interactionHint": "Focus the spectrum and use the arrow keys to step through the signals, or activate a row in the signal list. The matching hydrogens are ringed."
       },
       "currentDetails": "{{molecule}}: {{count}} signals at {{field}} megahertz. {{selection}}",
       "noSelection": "No signal is selected.",
@@ -126,7 +126,8 @@
   },
   "viewer": {
     "accessibleName": "Molecule viewer",
-    "helpText": "Arrow keys rotate, plus and minus zoom, N and P step through atoms."
+    "helpText": "Arrow keys rotate, plus and minus zoom, N and P step through atoms.",
+    "loadError": "This molecule could not be loaded."
   },
   "keyboardHelp": {
     "viewerSection": "Molecule Viewer",
@@ -288,6 +289,7 @@
     "irTitle": "Infrared",
     "nmrTitle": "¹H NMR, 300 MHz",
     "noFamilies": "No isomer family has its infrared data yet.",
+    "loadError": "The spectra could not be loaded.",
     "carbonTitle": "¹³C NMR (¹H-decoupled), 75 MHz"
   }
 }

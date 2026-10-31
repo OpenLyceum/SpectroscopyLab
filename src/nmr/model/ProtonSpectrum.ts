@@ -153,15 +153,72 @@ export function vicinalCoupling(graph: MoleculeGraph, h1: number, h2: number): n
     return COUPLING.aromaticOrtho;
   }
   if (graph.order(c1, c2) === 2) {
-    const p = graph.molecule.positions;
-    const at = (i: number): Vec3 => [p[3 * i] ?? 0, p[3 * i + 1] ?? 0, p[3 * i + 2] ?? 0];
-    const angle = Math.abs(dihedral(at(h1), at(c1), at(c2), at(h2)));
-    return angle < 90 ? COUPLING.alkeneCis : COUPLING.alkeneTrans;
+    return alkeneCoupling(graph, h1, h2, c1, c2);
   }
   if (graph.isAlkeneCarbon(c1) || graph.isAlkeneCarbon(c2)) {
     return COUPLING.allylic;
   }
   return COUPLING.saturated;
+}
+
+/** Dihedrals this close (degrees) are a tie; the lower atom index is called cis. */
+const DIHEDRAL_TIE = 1;
+
+/**
+ * Cis is 10.5 Hz and trans is 17 Hz. A =CH₂ carbon always contributes one of each: the hydrogen
+ * with the smaller H–C=C–H torsion is cis, even when a twisted conformer puts both torsions on
+ * the same side of 90°. A disubstituted double bond uses its own H–C=C–H dihedral, and near 90°
+ * falls back to the torsion of the two non-hydrogen substituents.
+ */
+function alkeneCoupling(graph: MoleculeGraph, h1: number, h2: number, c1: number, c2: number): number {
+  const angle = hydrogenDihedral(graph, h1, c1, c2, h2);
+  const partnerOnFirst = otherMethyleneHydrogen(graph, h1, c1);
+  if (partnerOnFirst !== null) {
+    return cisIfSmaller(angle, hydrogenDihedral(graph, partnerOnFirst, c1, c2, h2), h1, partnerOnFirst);
+  }
+  const partnerOnSecond = otherMethyleneHydrogen(graph, h2, c2);
+  if (partnerOnSecond !== null) {
+    return cisIfSmaller(angle, hydrogenDihedral(graph, h1, c1, c2, partnerOnSecond), h2, partnerOnSecond);
+  }
+  if (angle > 75 && angle < 105) {
+    const substituent = substituentDihedral(graph, c1, c2);
+    if (substituent !== null) {
+      return substituent < 90 ? COUPLING.alkeneCis : COUPLING.alkeneTrans;
+    }
+  }
+  return angle < 90 ? COUPLING.alkeneCis : COUPLING.alkeneTrans;
+}
+
+function otherMethyleneHydrogen(graph: MoleculeGraph, hydrogen: number, carbon: number): number | null {
+  if (graph.hydrogenCount(carbon) !== 2) {
+    return null;
+  }
+  return graph.neighborsOf(carbon, "H").find((atom) => atom !== hydrogen) ?? null;
+}
+
+function cisIfSmaller(angle: number, other: number, hydrogen: number, partner: number): number {
+  if (Math.abs(angle - other) < DIHEDRAL_TIE) {
+    return hydrogen < partner ? COUPLING.alkeneCis : COUPLING.alkeneTrans;
+  }
+  return angle < other ? COUPLING.alkeneCis : COUPLING.alkeneTrans;
+}
+
+function hydrogenDihedral(graph: MoleculeGraph, a: number, b: number, c: number, d: number): number {
+  const p = graph.molecule.positions;
+  const at = (i: number): Vec3 => [p[3 * i] ?? 0, p[3 * i + 1] ?? 0, p[3 * i + 2] ?? 0];
+  return Math.abs(dihedral(at(a), at(b), at(c), at(d)));
+}
+
+/** Torsion of the two non-hydrogen attachments of a disubstituted double bond, or null. */
+function substituentDihedral(graph: MoleculeGraph, c1: number, c2: number): number | null {
+  const heavy = (carbon: number, otherCarbon: number) =>
+    (graph.neighbors[carbon] ?? []).find((atom) => atom !== otherCarbon && graph.symbol(atom) !== "H");
+  const first = heavy(c1, c2);
+  const second = heavy(c2, c1);
+  if (first === undefined || second === undefined) {
+    return null;
+  }
+  return hydrogenDihedral(graph, first, c1, c2, second);
 }
 
 function groupCouplings(js: readonly number[]): CouplingGroup[] {

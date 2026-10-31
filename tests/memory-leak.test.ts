@@ -9,7 +9,7 @@
  * tests below using forceGC().
  */
 
-import { NumberProperty, Property } from "scenerystack/axon";
+import { BooleanProperty, NumberProperty, Property } from "scenerystack/axon";
 import { Bounds2, Range } from "scenerystack/dot";
 import { Node } from "scenerystack/scenery";
 import { loadMolecule } from "../src/common/model/library/SpectroscopyLibrary.js";
@@ -21,8 +21,13 @@ import { MoleculeThumbnailNode } from "../src/common/view/MoleculeThumbnailNode.
 import { MoleculeViewerNode } from "../src/common/view/MoleculeViewerNode.js";
 import { SpectrumChartNode } from "../src/common/view/SpectrumChartNode.js";
 import { StringManager } from "../src/i18n/StringManager.js";
+import { InfraredModel } from "../src/infrared/model/InfraredModel.js";
+import { NMRModel } from "../src/nmr/model/NMRModel.js";
 import { SignalTableNode } from "../src/nmr/view/SignalTableNode.js";
+import { SpectroscopyLabPreferencesModel } from "../src/preferences/SpectroscopyLabPreferencesModel.js";
+import { UnknownsModel } from "../src/unknowns/model/UnknownsModel.js";
 import type { Prediction } from "../src/uv-vis/model/UVVisModel.js";
+import { UVVisModel } from "../src/uv-vis/model/UVVisModel.js";
 import { EnergyLevelDiagramNode } from "../src/uv-vis/view/EnergyLevelDiagramNode.js";
 import { describeDisposalLeaks } from "./helpers/memoryLeak.js";
 
@@ -55,6 +60,15 @@ const predictionProperty = new Property<Prediction | null>({
 const selectedOrbitalProperty = new Property<number | null>(1);
 
 describeDisposalLeaks([
+  { name: "MoleculeViewModel", create: () => new MoleculeViewModel() },
+  { name: "MoleculeChooser", create: () => new MoleculeChooser("water") },
+  { name: "SpectroscopyLabPreferencesModel", create: () => new SpectroscopyLabPreferencesModel() },
+  { name: "InfraredModel", create: () => new InfraredModel(new BooleanProperty(false)) },
+  { name: "NMRModel", create: () => new NMRModel() },
+  { name: "UVVisModel", create: () => new UVVisModel() },
+  { name: "UnknownsModel", create: () => new UnknownsModel() },
+  // Screen views are not listed: ScreenView.dispose() sets pdomOrder to null, and this
+  // SceneryStack build throws from that setter. The views already unlink what they own.
   { name: "MoleculeViewerNode", create: () => new MoleculeViewerNode(viewer, new Bounds2(0, 0, 300, 300)) },
   {
     name: "EnergyLevelDiagramNode",

@@ -5,10 +5,9 @@
  * per family, bound to that family's own selection, and only the active family's box is shown.
  */
 
-import type { TReadOnlyProperty } from "scenerystack/axon";
 import { HBox, Node, VBox } from "scenerystack/scenery";
 import type { ComboBox } from "scenerystack/sun";
-import { StringManager } from "../../i18n/StringManager.js";
+import { lookupStringProperty, StringManager } from "../../i18n/StringManager.js";
 import { nameKey } from "../model/library/SpectroscopyLibrary.js";
 import type { MoleculeChooser } from "../model/MoleculeChooser.js";
 import { comboBox, label } from "./ControlFactory.js";
@@ -21,15 +20,15 @@ export class MoleculeChooserNode extends VBox {
   public constructor(chooser: MoleculeChooser, listParent: Node, width: number) {
     const stringManager = StringManager.getInstance();
     const controls = stringManager.getControlStrings();
-    const familyNames = stringManager.getFamilyNames() as unknown as Record<string, TReadOnlyProperty<string>>;
-    const moleculeNames = stringManager.getMoleculeNames() as unknown as Record<string, TReadOnlyProperty<string>>;
+    const familyNames = stringManager.getFamilyNames();
+    const moleculeNames = stringManager.getMoleculeNames();
     const comboWidth = width - LABEL_WIDTH - 10;
 
     const familyCombo = comboBox(
       chooser.familyProperty,
       chooser.families.map((family) => ({
         value: family,
-        label: familyNames[`${family}StringProperty`] ?? controls.familyStringProperty,
+        label: lookupStringProperty(familyNames, `${family}StringProperty`) ?? controls.familyStringProperty,
       })),
       listParent,
       controls.familyStringProperty,
@@ -45,7 +44,9 @@ export class MoleculeChooserNode extends VBox {
         selection,
         chooser.entries(family).map((entry) => ({
           value: entry.id,
-          label: moleculeNames[`${nameKey(entry.id)}StringProperty`] ?? controls.moleculeStringProperty,
+          label:
+            lookupStringProperty(moleculeNames, `${nameKey(entry.id)}StringProperty`) ??
+            controls.moleculeStringProperty,
         })),
         listParent,
         controls.moleculeStringProperty,

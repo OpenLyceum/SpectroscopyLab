@@ -80,6 +80,8 @@ export type InfraredPeak = NormalMode & {
 
 export class InfraredModel implements TModel {
   public readonly viewer = new MoleculeViewModel();
+  private disposed = false;
+  private loadGeneration = 0;
   public readonly chooser: MoleculeChooser;
   public readonly isotopeSchemeProperty: Property<IsotopeSchemeValue>;
   public readonly halfWidthProperty: NumberProperty;
@@ -178,15 +180,20 @@ export class InfraredModel implements TModel {
     this.chooser.moleculeIdProperty.link((id) => {
       this.selectedPeakProperty.value = null;
       this.selectedLineProperty.value = null;
+      this.viewer.loadErrorProperty.value = false;
+      const generation = ++this.loadGeneration;
       loadMolecule(id).then(
         (molecule) => {
-          // Ignore a load that finishes after the user has already moved on.
-          if (this.chooser.moleculeIdProperty.value === id) {
+          // Ignore a load that finishes after the user has already moved on, or after dispose.
+          if (!this.disposed && generation === this.loadGeneration && this.chooser.moleculeIdProperty.value === id) {
             this.viewer.moleculeProperty.value = molecule;
           }
         },
         () => {
-          this.viewer.moleculeProperty.value = null;
+          if (!this.disposed && generation === this.loadGeneration && this.chooser.moleculeIdProperty.value === id) {
+            this.viewer.moleculeProperty.value = null;
+            this.viewer.loadErrorProperty.value = true;
+          }
         },
       );
     });
@@ -291,6 +298,45 @@ export class InfraredModel implements TModel {
   public step(dt: number): void {
     this.viewer.step(dt);
   }
+
+  public dispose(): void {
+    this.disposed = true;
+    for (const property of [
+      this.lineZoomTransmittanceProperty,
+      this.lineZoomAbsorbanceProperty,
+      this.lineZoomRangeProperty,
+      this.selectedLineDataProperty,
+      this.fineTransmittanceProperty,
+      this.fineAbsorbanceProperty,
+      this.fineRangeProperty,
+      this.fineProperty,
+      this.fineStructureShownProperty,
+      this.fineStructureAvailableProperty,
+      this.spectrumProperty,
+      this.absorbanceSpectrumProperty,
+      this.peaksProperty,
+    ]) {
+      disposeOwned(property);
+    }
+    this.viewer.dispose();
+    this.chooser.dispose();
+    for (const property of [
+      this.isotopeSchemeProperty,
+      this.halfWidthProperty,
+      this.showSticksProperty,
+      this.showRegionsProperty,
+      this.selectedPeakProperty,
+      this.fineStructureProperty,
+      this.temperatureProperty,
+      this.selectedLineProperty,
+    ]) {
+      property.dispose();
+    }
+  }
+}
+
+function disposeOwned(property: object): void {
+  (property as { dispose?: () => void }).dispose?.();
 }
 
 const EMPTY_CURVE: SampledCurve = { x: new Float64Array(0), y: new Float64Array(0) };
@@ -338,14 +384,17 @@ export function computePeaks(molecule: Molecule, scheme: IsotopeSchemeValue): In
   if (!molecule.vibrations) {
     return [];
   }
-  const modes = analyzeNormalModes(molecule.positions, isotopeMasses(molecule, scheme), molecule.vibrations);
+  const masses = isotopeMasses(molecule, scheme);
+  const modes = analyzeNormalModes(molecule.positions, masses, molecule.vibrations);
   const strongest = Math.max(...modes.map((mode) => mode.intensity), Number.MIN_VALUE);
-  return modes.map((mode, index) => ({
-    ...mode,
-    index,
-    character: describeMode(molecule, mode.displacements),
-    relativeIntensity: mode.intensity / strongest,
-  }));
+  return modes
+    .map((mode, index) => ({
+      ...mode,
+      index,
+      character: describeMode(molecule, mode.displacements, masses),
+      relativeIntensity: mode.intensity / strongest,
+    }))
+    .filter((peak) => peak.wavenumber > 0);
 }
 
 /** Absorbance: a Lorentzian sum of the modes, scaled so the strongest band reaches PEAK_ABSORBANCE. */

@@ -129,6 +129,8 @@ export type Prediction = {
 
 export class UVVisModel implements TModel {
   public readonly viewer = new MoleculeViewModel(Rotation3.aboutAxis([1, 0, 0], -55));
+  private disposed = false;
+  private loadGeneration = 0;
   public readonly chooser: MoleculeChooser;
   public readonly electronicModelProperty: Property<ElectronicModelValue>;
   /** Orbital drawn as lobes in the viewer (index into the structure's orbitals), or null. */
@@ -227,15 +229,20 @@ export class UVVisModel implements TModel {
     );
 
     this.chooser.moleculeIdProperty.link((id) => {
+      this.viewer.loadErrorProperty.value = false;
+      const generation = ++this.loadGeneration;
       loadMolecule(id).then(
         (molecule) => {
-          if (this.chooser.moleculeIdProperty.value === id) {
+          if (!this.disposed && generation === this.loadGeneration && this.chooser.moleculeIdProperty.value === id) {
             this.viewer.moleculeProperty.value = molecule;
             this.selectHomo();
           }
         },
         () => {
-          this.viewer.moleculeProperty.value = null;
+          if (!this.disposed && generation === this.loadGeneration && this.chooser.moleculeIdProperty.value === id) {
+            this.viewer.moleculeProperty.value = null;
+            this.viewer.loadErrorProperty.value = true;
+          }
         },
       );
     });
@@ -271,6 +278,43 @@ export class UVVisModel implements TModel {
   public step(dt: number): void {
     this.viewer.step(dt);
   }
+
+  public dispose(): void {
+    this.disposed = true;
+    for (const property of [
+      this.idealCalibrationProperty,
+      this.calibrationProperty,
+      this.measuredColorProperty,
+      this.predictedColorProperty,
+      this.measuredSpectrumProperty,
+      this.spectrumProperty,
+      this.measuredPeakAbsorbanceProperty,
+      this.peakAbsorbanceProperty,
+      this.concentrationProperty,
+      this.maxConcentrationProperty,
+      this.molarAbsorptivityProperty,
+      this.measuredWavelengthProperty,
+      this.predictionProperty,
+      this.piSystemProperty,
+    ]) {
+      disposeOwned(property);
+    }
+    this.viewer.dispose();
+    this.chooser.dispose();
+    for (const property of [
+      this.electronicModelProperty,
+      this.selectedOrbitalProperty,
+      this.quantitativeProperty,
+      this.concentrationFractionProperty,
+      this.pathLengthProperty,
+    ]) {
+      property.dispose();
+    }
+  }
+}
+
+function disposeOwned(property: object): void {
+  (property as { dispose?: () => void }).dispose?.();
 }
 
 export function familyOf(id: string): MoleculeFamilyValue | null {

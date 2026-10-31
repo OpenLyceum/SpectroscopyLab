@@ -80,12 +80,13 @@ onReadyToLaunch(() => {
       },
     }),
 
-    // Optional: fill in credits shown in Help → About
     credits: {
-      leadDesign: "",
-      softwareDevelopment: "",
-      team: "",
-      qualityAssurance: "",
+      leadDesign: "OpenLyceum",
+      softwareDevelopment: "OpenLyceum",
+      team: "OpenLyceum",
+      contributors:
+        "PubChem 3D conformers (public domain). B3LYP/def2-SVP Hessians computed for this simulation. AME2020 isotope masses. Jmol CPK colours via MolScope.",
+      thanks: "Built with SceneryStack.",
     },
   });
 
