@@ -3,6 +3,9 @@
  *
  * Shared sizing and layout for panel controls (sliders, checkboxes, NumberControls).
  * Import these instead of repeating scale / track-size values in each screen view.
+ *
+ * Template-owned toolkit: each sim uses only some of these, so every export is tagged
+ * `@public` to tell dead-code checkers (knip) that an unused one is not dead code.
  */
 
 import { Dimension2 } from "scenerystack/dot";
@@ -16,14 +19,14 @@ const STANDALONE_SLIDER_TRACK_SIZE = new Dimension2(150, 3);
 const NUMBER_CONTROL_SLIDER_TRACK_SIZE = new Dimension2(110, 3);
 const CHECKBOX_BOX_WIDTH = 16;
 
-/** Options for standalone HSlider instances in control panels. */
+/** Options for standalone HSlider instances in control panels. @public */
 export const SPECTROSCOPY_LAB_SLIDER_OPTIONS = {
   trackSize: STANDALONE_SLIDER_TRACK_SIZE,
   thumbSize: SLIDER_THUMB_SIZE,
   trackFillEnabled: SpectroscopyLabColors.textColorProperty,
 } satisfies HSliderOptions;
 
-/** Base NumberControl options; spread into each instance and add titleNodeOptions as needed. */
+/** Base NumberControl options; spread into each instance and add titleNodeOptions as needed. @public */
 export const SPECTROSCOPY_LAB_NUMBER_CONTROL_OPTIONS = {
   arrowButtonOptions: { ...FLAT_RECTANGULAR_BUTTON_OPTIONS, scale: 0.75 },
   layoutFunction: NumberControl.createLayoutFunction4({
@@ -45,6 +48,8 @@ export const SPECTROSCOPY_LAB_NUMBER_CONTROL_OPTIONS = {
  * the tick/border use {@link SpectroscopyLabColors.textColorProperty} (near-white in default
  * mode). Do not use {@link SpectroscopyLabColors.controlSurfaceColorProperty} here — that
  * colour is for white chrome (push buttons, combo lists, Preferences).
+ *
+ * @public
  */
 export const SPECTROSCOPY_LAB_CHECKBOX_OPTIONS = {
   boxWidth: CHECKBOX_BOX_WIDTH,
