@@ -91,40 +91,14 @@ computes IR intensities, so changing an isotope only changes masses. Never hand-
   from Biome in `biome.json`.
 - **`scripts/qm/`** is a dev-only Python pipeline with its own gitignored `.venv`; CI never runs it.
 
-### Template-owned files (drift-checked)
-
-Infrastructure files are owned by this template and must stay byte-identical in every sim
-(after substituting the sim's own name). `Baton/scripts/check-template-drift.sh <Sim>` compares a
-sim against this repo using `Baton/config/template-manifest.json`, which lists the exact files,
-the required `package.json` scripts, and the few keys a sim may extend (extra `biome.json`
-ignores, extra tsconfig `types`, CSP/Permissions additions).
-
-To diverge on purpose, add a bullet to the sim's own `## Compliance carve-outs` section naming
-the file in backticks and the reason, e.g. ``- `tests/setup.ts`: adds a WebGPU mock``. The drift
-checker treats a file named there as approved. Fix template-owned files **here first**, then
-propagate — never hand-edit one in a single sim.
-
 ### `package.json` overrides
 
-JSON cannot carry comments, so the rationale for forced transitive pins lives here. Prefer
-**tilde (`~`) or exact** versions — caret (`^`) lets minors drift under what is meant to be a
-hard pin. Dependabot ignores these three names (see `.github/dependabot.yml`) so it does not
-open PRs that fight the overrides. Revisit when SceneryStack drops or re-pins them upstream.
-
-| Override | Pin | Why |
-|---|---|---|
-| `lodash` | `~4.18.1` | SceneryStack declares `~4.17.12`. Bump clears Dependabot/npm advisories patched in 4.18.x (e.g. GHSA-r5fr-rjxr-66jc, GHSA-f23m-r3pf-42rh). |
-| `three` | `~0.137.5` | SceneryStack declares `^0.104.0` and types against `@types/three` `~0.137.0` (its `mobius` package). 0.125.0 was the floor for GHSA-fq6p-x6j3-cmmq (ReDoS); 0.137.0 fixes the loader XSS GHSA-7vvq-7r29-5vg3. This sim never imports `three` or `mobius`. Stay on the 0.137 line while those types do. Remove the override if SceneryStack drops `three` or pins a newer line itself. |
-| `brace-expansion` | `~5.0.12` | Transitive via `vite-plugin-pwa` / Workbox. Clears npm audit (originally GHSA-mh99-v99m-4gvg; keep ≥5.0.9 for GHSA-rgw5-rvv9-x895; ≥5.0.12 for the CPU-DoS advisory). |
+`three` is `~0.137.5` instead of the template's `~0.125.2`. This sim does not import `three`. `lodash` and `brace-expansion` match the template; the rationale is in SceneryStackTemplate `AGENTS.md`.
 
 ## Testing
 
-Fleet-standard Vitest layout (keep when forking):
-
 | Path | Purpose |
 |---|---|
-| `vitest.config.ts` | `happy-dom` environment; `setupFiles: ["./tests/setup.ts"]`; `execArgv: ["--expose-gc"]` |
-| `tests/setup.ts` | Canvas / AudioContext mocks + `init({ name: "…" })` before SceneryStack imports |
 | `tests/common/normal-modes.test.ts` | NMA against B3LYP data + experiment: mode counts, fundamentals, CO₂ selection rule, D₂O and ³⁷Cl shifts |
 | `tests/infrared/infrared-model.test.ts` | Mode naming, isotope schemes (D₂O shake), transmittance curve |
 | `tests/infrared/fine-structure.test.ts` | HCl P/R lines: no Q branch, 2B spacing, branch convergence, ³⁷Cl partners, DCl ratios, thermal envelope |
@@ -141,39 +115,11 @@ Fleet-standard Vitest layout (keep when forking):
 | `playwright.config.ts` | Chromium project + Vite webServer for `tests/**/*.spec.ts` (template-owned) |
 | `tests/browser/*.spec.ts` | Optional sim-specific Playwright tests (`npx playwright test tests/browser`); `npm run test:fuzz` runs only `tests/fuzz/` |
 
-- Put unit tests only under root `tests/`, mirroring `src/` (never co-locate or use `__tests__/`).
 - Change the `name` passed to `init()` in `tests/setup.ts` to match `package.json` after `npm run rename`.
-- Run `npm test`. CI runs the suite when a `test` script is present.
 - Add every model/view object that adds/removes nodes or links Properties at runtime to the
   `describeDisposalLeaks([...])` list in `memory-leak.test.ts`; put sim-specific leak scenarios
   after it using `forceGC()` from `tests/helpers/memoryLeak.ts` (never a local copy).
-- Optional: `npm run test:fuzz` / `test:fuzz:quick` / `test:fuzz:long` (not part of default CI).
   Duration is 30s by default; override with `npm run test:fuzz -- 90` or `FUZZ_DURATION=90`.
-
-## Commands
-
-```bash
-npm run lint && npm run check && npm run build && npm test
-```
-
-| Command | Description |
-|---|---|
-| `npm start` / `npm run dev` | Vite dev server |
-| `npm run build` | Type-check + production build |
-| `npm run build:single` | Single-file build mode |
-| `npm run check` | TypeScript (`tsc --noEmit` on app, scripts, and tests) |
-| `npm run lint` / `npm run fix` | Biome check / auto-fix |
-| `npm test` | Vitest unit tests |
-| `npm run test:fuzz` | Playwright fuzz smoke (pointer + keyboard, `?ea`, 30s each; `npm run test:fuzz -- 90` to change) |
-| `npm run test:fuzz:quick` | 10s fuzz |
-| `npm run test:fuzz:long` | 300s fuzz |
-| `npm run icons` | Regenerate PWA icons; seed missing screenshots, preserve existing ones |
-| `npm run rename` | Sim-level fork/rename (`--id`, `--name`) |
-| `npm run scaffold-screens` | Emit N screens (`--screens Intro,Lab`) |
-| `npm run release` | `check && lint && build && test`, then version patch + push tags |
-
-`src/init.ts` reads `version` from `package.json`, so the patch bump shows up in the About dialog
-without a second edit.
 
 ## PWA
 
