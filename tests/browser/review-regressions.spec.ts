@@ -224,11 +224,11 @@ test("a pending level/New unknown request removes obsolete answers and preserves
     return !model.isLoadingProperty.value && !!model.unknownProperty.value;
   });
   const target = await page.evaluate(async (path) => {
-    const { moleculeName } = (await import(path)) as typeof import("../../src/nmr/view/NMRScreenView.js");
+    const { moleculeName } = (await import(path)) as typeof import("../../src/common/view/moleculeName.js");
     const model = (window as unknown as SimulationWindow).phet.joist.sim.selectedScreenProperty.value
       .model as UnknownsModel;
     return moleculeName(model.unknownProperty.value!.target.id);
-  }, "/src/nmr/view/NMRScreenView.ts");
+  }, "/src/common/view/moleculeName.ts");
   await page.getByRole("button", { name: target, exact: true }).press("Enter");
   expect(await sceneTexts(page)).toContain("Score: 1 / 1");
 });
