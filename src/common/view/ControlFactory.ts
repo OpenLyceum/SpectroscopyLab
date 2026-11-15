@@ -6,7 +6,7 @@
  */
 
 import type { PhetioProperty, Property, TReadOnlyProperty } from "scenerystack/axon";
-import { HBox, Node, Text, VBox } from "scenerystack/scenery";
+import { type Node, Text, VBox } from "scenerystack/scenery";
 import { PhetFont } from "scenerystack/scenery-phet";
 import { AquaRadioButtonGroup, Checkbox, ComboBox, type ComboBoxItem, TextPushButton } from "scenerystack/sun";
 import SpectroscopyLabColors from "../../SpectroscopyLabColors.js";
@@ -18,12 +18,6 @@ import {
 import { SPECTROSCOPY_LAB_CHECKBOX_OPTIONS } from "../SpectroscopyLabControlOptions.js";
 
 export const CONTROL_FONT = new PhetFont(13);
-export const SMALL_FONT = new PhetFont(12);
-export const HEADING_FONT = new PhetFont({ size: 14, weight: "bold" });
-
-export function heading(text: TReadOnlyProperty<string>, maxWidth: number): Text {
-  return new Text(text, { font: HEADING_FONT, fill: SpectroscopyLabColors.textColorProperty, maxWidth });
-}
 
 export function label(text: TReadOnlyProperty<string> | string, maxWidth: number): Text {
   return new Text(text, { font: CONTROL_FONT, fill: SpectroscopyLabColors.textColorProperty, maxWidth });
@@ -103,17 +97,4 @@ export function radioGroup<T>(
       accessibleName,
     },
   );
-}
-
-/** Two checkboxes side by side (or one) for compact panels. */
-export function pairRow(left: Node, right: Node | null, columnWidth: number): HBox {
-  return new HBox({
-    spacing: 8,
-    align: "center",
-    children: right ? [sized(left, columnWidth), right] : [left],
-  });
-}
-
-function sized(node: Node, width: number): Node {
-  return new Node({ children: [node], localBounds: node.localBounds.withMaxX(Math.max(node.localBounds.maxX, width)) });
 }

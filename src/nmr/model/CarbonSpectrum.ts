@@ -192,7 +192,7 @@ export function carbonTypeName(hydrogens: number): string {
 
 // ── Shift rules ─────────────────────────────────────────────────────────────────
 
-export function estimateCarbonShift(graph: MoleculeGraph, carbon: number): number {
+function estimateCarbonShift(graph: MoleculeGraph, carbon: number): number {
   const heavy = heavyNeighbors(graph, carbon);
   const doubleO = heavy.filter((n) => graph.symbol(n) === "O" && graph.order(carbon, n) === 2);
   if (doubleO.length === 2) {

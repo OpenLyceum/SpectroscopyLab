@@ -48,7 +48,7 @@ type Item = {
   color: number;
 };
 
-export type OverlayColors = {
+type OverlayColors = {
   readonly label: string;
   readonly highlight: string;
   readonly hover: string;
@@ -400,7 +400,7 @@ export class MoleculeRenderer {
 }
 
 /** Scales a colour's brightness (0 = black, 1 = unchanged). */
-export function shadeColor(color: number, factor: number): number {
+function shadeColor(color: number, factor: number): number {
   const r = Math.round(((color >> 16) & 255) * factor);
   const g = Math.round(((color >> 8) & 255) * factor);
   const b = Math.round((color & 255) * factor);
@@ -408,7 +408,7 @@ export function shadeColor(color: number, factor: number): number {
 }
 
 /** Blends a colour toward white. */
-export function lighten(color: number, amount: number): number {
+function lighten(color: number, amount: number): number {
   const r = (color >> 16) & 255;
   const g = (color >> 8) & 255;
   const b = color & 255;

@@ -23,7 +23,7 @@ export type IonPeak = {
   readonly relative: number;
 };
 
-export function elementCounts(molecule: Molecule): Map<string, number> {
+function elementCounts(molecule: Molecule): Map<string, number> {
   const counts = new Map<string, number>();
   for (const element of molecule.elements) {
     counts.set(element.symbol, (counts.get(element.symbol) ?? 0) + 1);

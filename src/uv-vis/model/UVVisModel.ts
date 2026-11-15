@@ -94,7 +94,7 @@ const DEFAULT_CONCENTRATION_FRACTION = 0.1;
 export const PATH_LENGTH_RANGE = new Range(0.1, 5);
 const DEFAULT_PATH_LENGTH = 1;
 /** Fraction of stray light reaching the detector; it caps measured absorbance near −log₁₀(s) = 3. */
-export const STRAY_LIGHT = 0.001;
+const STRAY_LIGHT = 0.001;
 const CALIBRATION_SAMPLES = 201;
 
 /** E (eV) = a + b·Δx per family, least-squares over the family's measured maxima (azulene excluded). */
@@ -349,7 +349,7 @@ export function predict(
  * `peakAbsorbance` it is the spectrometer reading of a band that truly peaks there (stray light
  * included); without it, unit height.
  */
-export function bandSpectrum(wavelength: number | null, peakAbsorbance: number | null = null): SampledCurve {
+function bandSpectrum(wavelength: number | null, peakAbsorbance: number | null = null): SampledCurve {
   const x = new Float64Array(SPECTRUM_SAMPLES);
   const y = new Float64Array(SPECTRUM_SAMPLES);
   const step = WAVELENGTH_RANGE.getLength() / (SPECTRUM_SAMPLES - 1);

@@ -74,7 +74,7 @@ const TABLE =
   "Pa,protactinium,00A1FF,2.00,0,231.04,1.5;U,uranium,008FFF,1.96,1.86,238.03,1.38";
 
 /** Placeholder for unknown element symbols (dummy atoms, "X", unparseable labels). */
-export const UNKNOWN_ELEMENT: ElementData = {
+const UNKNOWN_ELEMENT: ElementData = {
   number: 0,
   symbol: "Xx",
   name: "unknown",
@@ -104,19 +104,8 @@ const ELEMENTS: readonly ElementData[] = TABLE.split(";").map((row, index) => {
 });
 
 const BY_SYMBOL = new Map<string, ElementData>();
-const BY_NAME = new Map<string, ElementData>();
 for (const element of ELEMENTS) {
   BY_SYMBOL.set(element.symbol.toUpperCase(), element);
-  BY_NAME.set(element.name, element);
-}
-// Common alternate spellings accepted by the selection language.
-const aluminium = BY_NAME.get("aluminum");
-const sulphur = BY_NAME.get("sulfur");
-if (aluminium) {
-  BY_NAME.set("aluminium", aluminium);
-}
-if (sulphur) {
-  BY_NAME.set("sulphur", sulphur);
 }
 // Deuterium and tritium are hydrogen for display purposes.
 const hydrogen = BY_SYMBOL.get("H");
@@ -125,42 +114,7 @@ if (hydrogen) {
   BY_SYMBOL.set("T", hydrogen);
 }
 
-/** Every element in atomic-number order (index 0 is hydrogen). */
-export function allElements(): readonly ElementData[] {
-  return ELEMENTS;
-}
-
 /** Element for a symbol, case-insensitive ("CL", "cl", "Cl"); {@link UNKNOWN_ELEMENT} if unknown. */
 export function elementForSymbol(symbol: string): ElementData {
   return BY_SYMBOL.get(symbol.trim().toUpperCase()) ?? UNKNOWN_ELEMENT;
-}
-
-/** Element for an atomic number; {@link UNKNOWN_ELEMENT} if out of range. */
-export function elementForNumber(atomicNumber: number): ElementData {
-  return ELEMENTS[atomicNumber - 1] ?? UNKNOWN_ELEMENT;
-}
-
-/** Element for an English element name ("carbon"), or null. Used by the selection language. */
-export function elementForName(name: string): ElementData | null {
-  return BY_NAME.get(name.toLowerCase()) ?? null;
-}
-
-/** True if the symbol names a real element. */
-export function isElementSymbol(symbol: string): boolean {
-  return BY_SYMBOL.has(symbol.trim().toUpperCase());
-}
-
-/**
- * Best-effort element from an atom label such as "Si1", "O2-", "CA" (with a residue hint) or "Fe3+".
- * Tries the two leading letters, then the first one.
- */
-export function elementFromLabel(label: string): ElementData {
-  const letters = label.replace(/[^A-Za-z]/g, "");
-  if (letters.length >= 2) {
-    const two = BY_SYMBOL.get(letters.slice(0, 2).toUpperCase());
-    if (two && letters[1] === letters[1]?.toLowerCase()) {
-      return two;
-    }
-  }
-  return BY_SYMBOL.get(letters.slice(0, 1).toUpperCase()) ?? UNKNOWN_ELEMENT;
 }

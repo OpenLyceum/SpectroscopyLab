@@ -11,7 +11,7 @@
 
 import { type ElementData, elementForSymbol } from "./structure/Elements.js";
 
-export type Bond = {
+type Bond = {
   readonly a: number;
   readonly b: number;
   /** 1, 2 or 3 (SDF bond orders; aromatic rings are Kekulé). */
@@ -52,7 +52,7 @@ export type MoleculeFile = {
   readonly vibrations?: VibrationData;
 };
 
-export class MoleculeFormatError extends Error {}
+class MoleculeFormatError extends Error {}
 
 export function moleculeFromFile(file: MoleculeFile): Molecule {
   const n = file.elements.length;

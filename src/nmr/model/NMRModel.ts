@@ -37,10 +37,10 @@ export const SHIFT_RANGE = new Range(-0.5, 12.5);
 /** ¹³C chemical-shift window, ppm (TMS at 0, ketones near 210). */
 export const CARBON_SHIFT_RANGE = new Range(-5, 225);
 /** Window of the multiplet zoom, ppm either side of the signal centre. */
-export const ZOOM_HALF_WIDTH = 0.3;
+const ZOOM_HALF_WIDTH = 0.3;
 export const ZOOM_RANGE = new Range(-ZOOM_HALF_WIDTH, ZOOM_HALF_WIDTH);
 /** Minimum ¹³C zoom; expanded when a selected multiplet extends beyond it. */
-export const CARBON_ZOOM_HALF_WIDTH = 6;
+const CARBON_ZOOM_HALF_WIDTH = 6;
 export const CARBON_ZOOM_RANGE = new Range(-CARBON_ZOOM_HALF_WIDTH, CARBON_ZOOM_HALF_WIDTH);
 /** Spectrometer (¹H Larmor) frequency, MHz. */
 export const FIELD_RANGE = new Range(60, 600);

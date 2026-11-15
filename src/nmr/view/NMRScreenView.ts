@@ -417,7 +417,7 @@ export class NMRScreenView extends ScreenView {
 }
 
 /** Localised multiplicity word ("quartet"), falling back to the code ("ddt"). */
-export function multiplicityWord(code: string): string {
+function multiplicityWord(code: string): string {
   const words = StringManager.getInstance().getNMRStrings().multiplicities;
   return lookupStringProperty(words, `${code}StringProperty`)?.value ?? code;
 }

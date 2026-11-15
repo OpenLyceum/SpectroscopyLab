@@ -18,7 +18,7 @@ import { Rotation3 } from "./structure/Rotation3.js";
 const VIBRATION_DISPLAY_FREQUENCY = 1.2;
 
 /** Peak displacement of the fastest-moving atom when a mode animates, Å. */
-export const VIBRATION_AMPLITUDE = 0.25;
+const VIBRATION_AMPLITUDE = 0.25;
 
 const MIN_ZOOM = 0.3;
 const MAX_ZOOM = 6;

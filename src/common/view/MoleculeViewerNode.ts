@@ -383,7 +383,7 @@ export class MoleculeViewerNode extends Node {
 }
 
 /** "C 2" — element symbol and 1-based atom number. */
-export function defaultAtomDescription(model: MoleculeViewModel, index: number): string {
+function defaultAtomDescription(model: MoleculeViewModel, index: number): string {
   const element = model.molecule?.elements[index];
   return element ? `${element.symbol} ${index + 1}` : "";
 }

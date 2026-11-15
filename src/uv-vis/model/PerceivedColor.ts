@@ -20,7 +20,7 @@ function lobe(lambda: number, mu: number, below: number, above: number): number 
 }
 
 /** CIE 1931 2° observer, x̄ ȳ z̄ at a wavelength in nm. */
-export function colorMatching(lambda: number): [number, number, number] {
+function colorMatching(lambda: number): [number, number, number] {
   return [
     1.056 * lobe(lambda, 599.8, 37.9, 31.0) +
       0.362 * lobe(lambda, 442.0, 16.0, 26.7) -

@@ -20,7 +20,7 @@ import { symmetricEigen } from "../../common/model/math/symmetricEigen.js";
 import type { Vec3 } from "../../common/model/structure/Geometry.js";
 
 /** Free-electron bond length, m (Kuhn). */
-export const BOX_BOND_LENGTH = 1.39e-10;
+const BOX_BOND_LENGTH = 1.39e-10;
 const ELECTRON_MASS = 9.1093837e-31; // kg
 const PLANCK = 6.62607015e-34; // J·s
 const LIGHT_SPEED = 2.99792458e8; // m/s

@@ -54,9 +54,9 @@ const NATURAL_ABUNDANCE: Readonly<Record<string, readonly number[]>> = {
 export const TEMPERATURE_RANGE = new Range(50, 1000);
 export const DEFAULT_TEMPERATURE = 298;
 /** Instrument line half-width (HWHM) of a high-resolution FTIR, cm⁻¹. */
-export const FINE_HALF_WIDTH = 0.3;
+const FINE_HALF_WIDTH = 0.3;
 /** The band window spans this far either side of the main isotopologue's origin, cm⁻¹. */
-export const BAND_HALF_WIDTH = 450;
+const BAND_HALF_WIDTH = 450;
 /** Half-width of the zoom on one line, cm⁻¹ (wide enough for the ³⁵Cl/³⁷Cl pair). */
 export const LINE_ZOOM_HALF_WIDTH = 6;
 const BAND_SAMPLES = 6000;
@@ -65,7 +65,7 @@ const ZOOM_SAMPLES = 600;
 const MIN_RELATIVE_INTENSITY = 1e-4;
 const MAX_J = 60;
 
-export type Isotopologue = {
+type Isotopologue = {
   /** "H³⁵Cl". */
   readonly label: string;
   readonly masses: readonly number[];
@@ -113,7 +113,7 @@ export function hasFineStructure(molecule: Molecule | null): boolean {
  * The isotopologues of a diatomic: the given masses, plus — for an atom left at its most abundant
  * isotope — each common minor isotope, weighted by natural abundance.
  */
-export function isotopologues(molecule: Molecule, masses: readonly number[]): Isotopologue[] {
+function isotopologues(molecule: Molecule, masses: readonly number[]): Isotopologue[] {
   const choices = molecule.elements.map((element, i) => {
     const mass = masses[i] ?? element.mass;
     const isotopes = isotopesFor(element.symbol);

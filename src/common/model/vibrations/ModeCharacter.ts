@@ -11,11 +11,11 @@
 import type { Molecule } from "../Molecule.js";
 import { neighborLists } from "../Molecule.js";
 
-export const ModeKind = {
+const ModeKind = {
   STRETCH: "stretch",
   BEND: "bend",
 } as const;
-export type ModeKindValue = (typeof ModeKind)[keyof typeof ModeKind];
+type ModeKindValue = (typeof ModeKind)[keyof typeof ModeKind];
 
 export type ModeCharacter = {
   readonly kind: ModeKindValue;

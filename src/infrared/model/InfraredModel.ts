@@ -398,7 +398,7 @@ export function computePeaks(molecule: Molecule, scheme: IsotopeSchemeValue): In
 }
 
 /** Absorbance: a Lorentzian sum of the modes, scaled so the strongest band reaches PEAK_ABSORBANCE. */
-export function absorbanceCurve(peaks: readonly InfraredPeak[], halfWidth: number): SampledCurve {
+function absorbanceCurve(peaks: readonly InfraredPeak[], halfWidth: number): SampledCurve {
   const sticks: StickPeak[] = peaks
     .filter((peak) => peak.wavenumber > 0)
     .map((peak) => ({ position: peak.wavenumber, height: peak.relativeIntensity }));
@@ -412,7 +412,7 @@ export function absorbanceCurve(peaks: readonly InfraredPeak[], halfWidth: numbe
 }
 
 /** Percent transmittance T = 100 · 10^(−A) (Beer–Lambert). */
-export function transmittanceFromAbsorbance(absorbance: SampledCurve): SampledCurve {
+function transmittanceFromAbsorbance(absorbance: SampledCurve): SampledCurve {
   return { x: absorbance.x, y: absorbance.y.map((a) => 100 * 10 ** -a) };
 }
 

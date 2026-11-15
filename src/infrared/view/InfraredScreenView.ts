@@ -487,7 +487,7 @@ export class InfraredScreenView extends ScreenView {
 }
 
 /** "C=O stretch" / "H–C–H bend", localised. */
-export function modeName(peak: InfraredPeak): string {
+function modeName(peak: InfraredPeak): string {
   const strings = StringManager.getInstance().getInfraredStrings();
   return peak.character.kind === "stretch"
     ? StringUtils.fillIn(strings.stretchStringProperty.value, { bond: peak.character.label })

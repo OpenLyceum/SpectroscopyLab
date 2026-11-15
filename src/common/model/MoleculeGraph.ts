@@ -15,7 +15,7 @@
 
 import type { Molecule } from "./Molecule.js";
 
-export const AROMATIC_ORDER = 1.5;
+const AROMATIC_ORDER = 1.5;
 
 export class MoleculeGraph {
   public readonly molecule: Molecule;

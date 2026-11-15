@@ -234,7 +234,7 @@ function groupCouplings(js: readonly number[]): CouplingGroup[] {
   return groups;
 }
 
-export function multiplicityName(couplings: readonly CouplingGroup[]): string {
+function multiplicityName(couplings: readonly CouplingGroup[]): string {
   if (couplings.length === 0) {
     return "s";
   }
