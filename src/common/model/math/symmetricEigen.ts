@@ -11,6 +11,7 @@
 
 const MAX_SWEEPS = 400;
 
+/** @internal Exported for unit tests; not part of the application API. */
 export class EigenConvergenceError extends Error {
   public constructor(n: number, residual: number) {
     super(`Jacobi did not converge for a ${n}×${n} symmetric matrix (off-diagonal squared norm ${residual})`);

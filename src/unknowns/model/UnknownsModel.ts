@@ -29,7 +29,10 @@ import {
 import { protonEnvironments } from "../../common/model/nmr/ProtonSpectrum.js";
 import type { SampledCurve } from "../../common/model/SpectrumCurve.js";
 
-/** Isomer families by level. */
+/**
+ * Isomer families by level.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export const LEVEL_FAMILIES: readonly (readonly (readonly string[])[])[] = [
   [
     ["ethanol", "dimethyl-ether"],
@@ -202,7 +205,10 @@ export class UnknownsModel implements TModel {
   }
 }
 
-/** The spectra a student is given for one unknown. */
+/**
+ * The spectra a student is given for one unknown.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export async function buildUnknown(targetId: string, candidates: readonly string[]): Promise<Unknown> {
   const target = await loadMolecule(targetId);
   const graph = new MoleculeGraph(target);

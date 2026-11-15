@@ -39,6 +39,7 @@ import { boxWavelength, type ElectronicStructure, gapToWavelength, PiSystem } fr
  * Polyenes and benzenoids: Jaffé & Orchin, *Theory and Applications of Ultraviolet Spectroscopy*
  * (Wiley, 1962) and the NIST WebBook; benzene and the acenes are the ¹Lₐ (p) band; azulene is its
  * weak visible S₁ band. Streptocyanines Me₂N(CH)ₚNMe₂⁺: Malhotra & Whiting, J. Chem. Soc. 1960, 3812.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export const MEASURED_MAXIMA: Readonly<Record<string, number>> = {
   ethene: 171,
@@ -64,6 +65,7 @@ export const MEASURED_MAXIMA: Readonly<Record<string, number>> = {
  * values; the acenes are log ε 3.75–4.20 from compilations of their p bands; hexatriene,
  * octatetraene and the streptocyanines follow the usual growth of ε with chain length (cyanines
  * reach ~10⁵). The mode is about proportionality, not about these digits.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export const MOLAR_ABSORPTIVITY: Readonly<Record<string, number>> = {
   ethene: 15_000,
@@ -321,6 +323,7 @@ export function familyOf(id: string): MoleculeFamilyValue | null {
   return LIBRARY.find((entry) => entry.id === id)?.family ?? null;
 }
 
+/** @internal Exported for unit tests; not part of the application API. */
 export function predict(
   pi: PiSystem,
   model: ElectronicModelValue,
@@ -361,7 +364,10 @@ function bandSpectrum(wavelength: number | null, peakAbsorbance: number | null =
   return { x, y };
 }
 
-/** A = ε·b·c with ε in L mol⁻¹ cm⁻¹, b in cm and c in µmol/L. */
+/**
+ * A = ε·b·c with ε in L mol⁻¹ cm⁻¹, b in cm and c in µmol/L.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function beerLambert(epsilon: number, pathLength: number, concentration: number): number {
   return epsilon * pathLength * concentration * 1e-6;
 }
@@ -369,19 +375,26 @@ export function beerLambert(epsilon: number, pathLength: number, concentration: 
 /**
  * The absorbance a spectrometer reports when a fraction STRAY_LIGHT of its light bypasses the
  * sample: A_measured = −log₁₀((T + s)/(1 + s)), equal to A when dilute, capped near 3.
+ * @internal Exported for unit tests; not part of the application API.
  */
 export function measuredAbsorbance(absorbance: number): number {
   return -Math.log10((10 ** -absorbance + STRAY_LIGHT) / (1 + STRAY_LIGHT));
 }
 
-/** Top of the concentration slider for a molar absorptivity, µmol/L (1–2–5 steps). */
+/**
+ * Top of the concentration slider for a molar absorptivity, µmol/L (1–2–5 steps).
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function maxConcentration(epsilon: number | null): number {
   const target = epsilon ? (MAX_CONCENTRATION_ABSORBANCE * 1e6) / epsilon : 100;
   const decade = 10 ** Math.floor(Math.log10(target));
   return [1, 2, 5, 10].map((step) => step * decade).find((value) => value >= target * (1 - 1e-9)) ?? 10 * decade;
 }
 
-/** Absorbance at λmax against concentration from 0 to `maximum` (µmol/L), measured or ideal. */
+/**
+ * Absorbance at λmax against concentration from 0 to `maximum` (µmol/L), measured or ideal.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function calibrationCurve(
   epsilon: number,
   pathLength: number,
@@ -404,7 +417,10 @@ function bandAbsorbance(lambda: number, maximum: number): number {
   return Math.exp(-0.5 * t * t);
 }
 
-/** The colour seen through a sample whose band peaks at λmax with the given absorbance. */
+/**
+ * The colour seen through a sample whose band peaks at λmax with the given absorbance.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function colorOfBand(wavelength: number, peakAbsorbance = COLOR_ABSORBANCE): readonly [number, number, number] {
   return perceivedColor((lambda) => peakAbsorbance * bandAbsorbance(lambda, wavelength));
 }

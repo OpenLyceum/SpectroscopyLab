@@ -24,7 +24,10 @@ import type { MoleculeGraph } from "../MoleculeGraph.js";
 import { symmetricEigen } from "../math/symmetricEigen.js";
 import { multipletLines, type ProtonEnvironment, vicinalCoupling } from "./ProtonSpectrum.js";
 
-/** Larger coupled groups fall back to first order (a 10-spin block is 252 × 252; 9 spins is 126). */
+/**
+ * Larger coupled groups fall back to first order (a 10-spin block is 252 × 252; 9 spins is 126).
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export const MAX_EXACT_SPINS = 9;
 /** Lines weaker than this (in protons) are dropped. */
 const MIN_WEIGHT = 1e-4;
@@ -127,7 +130,7 @@ export function resolvedLines(
   return lines;
 }
 
-export type ExactLine = {
+type ExactLine = {
   /** Hz. */
   readonly frequency: number;
   /** Area in spins (the lines of a system sum to its number of spins). */
@@ -141,6 +144,7 @@ export type ExactLine = {
  * @param frequencies - νᵢ, Hz
  * @param couplings - symmetric Jᵢⱼ, Hz (diagonal ignored)
  * @param groups - a label per spin (its signal), used to attribute each line
+ * @internal Exported for unit tests; not part of the application API.
  */
 export function exactLines(
   frequencies: readonly number[],

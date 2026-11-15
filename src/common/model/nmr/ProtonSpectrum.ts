@@ -23,7 +23,10 @@ import type { MoleculeGraph } from "../MoleculeGraph.js";
 import { dihedral, type Vec3 } from "../structure/Geometry.js";
 import { estimateShift } from "./ChemicalShiftRules.js";
 
-/** Typical vicinal (³J) coupling constants, Hz. */
+/**
+ * Typical vicinal (³J) coupling constants, Hz.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export const COUPLING = {
   saturated: 7.0,
   aldehyde: 2.0,

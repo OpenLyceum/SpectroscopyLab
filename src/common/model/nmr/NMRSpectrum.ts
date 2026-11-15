@@ -37,7 +37,10 @@ export const Nucleus = {
 } as const;
 export type NucleusValue = (typeof Nucleus)[keyof typeof Nucleus];
 
-/** First-order lines of every signal as sticks on the ppm axis, with heights for equal-area broadening. */
+/**
+ * First-order lines of every signal as sticks on the ppm axis, with heights for equal-area broadening.
+ * @internal Exported for unit tests; not part of the application API.
+ */
 export function spectrumSticks(environments: readonly ProtonEnvironment[], field: number, tms: boolean): StickPeak[] {
   return linesToSticks(resolvedLines(environments, field, null), tms);
 }
