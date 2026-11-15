@@ -19,8 +19,8 @@
  */
 
 import { toFixed } from "scenerystack/dot";
-import type { MoleculeGraph } from "../../common/model/MoleculeGraph.js";
-import { dihedral, type Vec3 } from "../../common/model/structure/Geometry.js";
+import type { MoleculeGraph } from "../MoleculeGraph.js";
+import { dihedral, type Vec3 } from "../structure/Geometry.js";
 import { estimateShift } from "./ChemicalShiftRules.js";
 
 /** Typical vicinal (³J) coupling constants, Hz. */

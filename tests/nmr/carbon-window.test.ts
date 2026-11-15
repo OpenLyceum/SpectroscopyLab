@@ -1,8 +1,9 @@
 import { expect, it, vi } from "vitest";
 import { loadMolecule } from "../../src/common/model/library/SpectroscopyLibrary.js";
+import { CarbonSpectrumType } from "../../src/common/model/nmr/CarbonSpectrum.js";
+import { Nucleus } from "../../src/common/model/nmr/NMRSpectrum.js";
 import type { SampledCurve } from "../../src/common/model/SpectrumCurve.js";
-import { CarbonSpectrumType } from "../../src/nmr/model/CarbonSpectrum.js";
-import { NMRModel, Nucleus } from "../../src/nmr/model/NMRModel.js";
+import { NMRModel } from "../../src/nmr/model/NMRModel.js";
 
 function peakCount(curve: SampledCurve): number {
   let count = 0;

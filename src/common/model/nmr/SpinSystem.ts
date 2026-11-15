@@ -20,8 +20,8 @@
  * blocks, at Eₐ − E_b with intensity |⟨b|I⁻|a⟩|², I⁻ = Σᵢ I⁻ᵢ.
  */
 
-import type { MoleculeGraph } from "../../common/model/MoleculeGraph.js";
-import { symmetricEigen } from "../../common/model/math/symmetricEigen.js";
+import type { MoleculeGraph } from "../MoleculeGraph.js";
+import { symmetricEigen } from "../math/symmetricEigen.js";
 import { multipletLines, type ProtonEnvironment, vicinalCoupling } from "./ProtonSpectrum.js";
 
 /** Larger coupled groups fall back to first order (a 10-spin block is 252 × 252; 9 spins is 126). */

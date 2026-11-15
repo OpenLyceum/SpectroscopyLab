@@ -19,6 +19,13 @@ import { HBox, Node, Rectangle, Text, VBox } from "scenerystack/scenery";
 import { PhetFont, ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
 import { HSlider } from "scenerystack/sun";
+import {
+  IR_RANGE,
+  IsotopeScheme,
+  type IsotopeSchemeValue,
+  isotopeSchemeApplies,
+  PEAK_ABSORBANCE,
+} from "../../common/model/infrared/InfraredSpectrum.js";
 import { nameKey } from "../../common/model/library/SpectroscopyLibrary.js";
 import type { Molecule } from "../../common/model/Molecule.js";
 import { FLAT_RESET_ALL_BUTTON_OPTIONS } from "../../common/SpectroscopyLabButtonOptions.js";
@@ -31,15 +38,7 @@ import { SpectrumChartNode, type SpectrumRegion } from "../../common/view/Spectr
 import { lookupStringProperty, StringManager } from "../../i18n/StringManager.js";
 import SpectroscopyLabColors from "../../SpectroscopyLabColors.js";
 import { SCREEN_VIEW_MARGIN } from "../../SpectroscopyLabConstants.js";
-import {
-  HALF_WIDTH_RANGE,
-  type InfraredModel,
-  IR_RANGE,
-  IsotopeScheme,
-  type IsotopeSchemeValue,
-  isotopeSchemeApplies,
-  PEAK_ABSORBANCE,
-} from "../model/InfraredModel.js";
+import { HALF_WIDTH_RANGE, type InfraredModel } from "../model/InfraredModel.js";
 import {
   type FineStructure,
   LINE_ZOOM_HALF_WIDTH,

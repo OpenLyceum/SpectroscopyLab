@@ -14,14 +14,20 @@
 import { BooleanProperty, NumberProperty, Property } from "scenerystack/axon";
 import { dotRandom } from "scenerystack/dot";
 import type { TModel } from "scenerystack/joist";
+import { computePeaks, IsotopeScheme, transmittanceCurve } from "../../common/model/infrared/InfraredSpectrum.js";
 import { hasVibrationData, loadMolecule } from "../../common/model/library/SpectroscopyLibrary.js";
 import type { Molecule } from "../../common/model/Molecule.js";
 import { MoleculeGraph } from "../../common/model/MoleculeGraph.js";
+import { CarbonSpectrumType, carbonEnvironments, carbonLines } from "../../common/model/nmr/CarbonSpectrum.js";
+import {
+  carbonSpectrum,
+  fullSpectrum,
+  integralTrace,
+  Nucleus,
+  type NucleusValue,
+} from "../../common/model/nmr/NMRSpectrum.js";
+import { protonEnvironments } from "../../common/model/nmr/ProtonSpectrum.js";
 import type { SampledCurve } from "../../common/model/SpectrumCurve.js";
-import { computePeaks, IsotopeScheme, transmittanceCurve } from "../../infrared/model/InfraredModel.js";
-import { CarbonSpectrumType, carbonEnvironments, carbonLines } from "../../nmr/model/CarbonSpectrum.js";
-import { carbonSpectrum, fullSpectrum, integralTrace, Nucleus, type NucleusValue } from "../../nmr/model/NMRModel.js";
-import { protonEnvironments } from "../../nmr/model/ProtonSpectrum.js";
 
 /** Isomer families by level. */
 export const LEVEL_FAMILIES: readonly (readonly (readonly string[])[])[] = [

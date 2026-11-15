@@ -7,8 +7,9 @@
 import { describe, expect, it } from "vitest";
 import { loadMolecule } from "../../src/common/model/library/SpectroscopyLibrary.js";
 import { MoleculeGraph } from "../../src/common/model/MoleculeGraph.js";
-import { NMRModel, Nucleus, spectrumSticks } from "../../src/nmr/model/NMRModel.js";
-import { protonEnvironments } from "../../src/nmr/model/ProtonSpectrum.js";
+import { Nucleus, spectrumSticks } from "../../src/common/model/nmr/NMRSpectrum.js";
+import { protonEnvironments } from "../../src/common/model/nmr/ProtonSpectrum.js";
+import { NMRModel } from "../../src/nmr/model/NMRModel.js";
 
 async function ethanolModel(): Promise<NMRModel> {
   const model = new NMRModel();

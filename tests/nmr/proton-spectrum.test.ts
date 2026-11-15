@@ -9,9 +9,14 @@ import { describe, expect, it } from "vitest";
 import { loadMolecule } from "../../src/common/model/library/SpectroscopyLibrary.js";
 import type { Molecule } from "../../src/common/model/Molecule.js";
 import { MoleculeGraph } from "../../src/common/model/MoleculeGraph.js";
+import {
+  COUPLING,
+  multipletLines,
+  protonEnvironments,
+  vicinalCoupling,
+} from "../../src/common/model/nmr/ProtonSpectrum.js";
 import { elementForSymbol } from "../../src/common/model/structure/Elements.js";
 import { dihedral, type Vec3 } from "../../src/common/model/structure/Geometry.js";
-import { COUPLING, multipletLines, protonEnvironments, vicinalCoupling } from "../../src/nmr/model/ProtonSpectrum.js";
 
 const TOLERANCE = 0.3;
 

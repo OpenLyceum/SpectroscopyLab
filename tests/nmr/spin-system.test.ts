@@ -8,8 +8,8 @@
 import { describe, expect, it } from "vitest";
 import { loadMolecule } from "../../src/common/model/library/SpectroscopyLibrary.js";
 import { MoleculeGraph } from "../../src/common/model/MoleculeGraph.js";
-import { protonEnvironments } from "../../src/nmr/model/ProtonSpectrum.js";
-import { exactLines, MAX_EXACT_SPINS, resolvedLines } from "../../src/nmr/model/SpinSystem.js";
+import { protonEnvironments } from "../../src/common/model/nmr/ProtonSpectrum.js";
+import { exactLines, MAX_EXACT_SPINS, resolvedLines } from "../../src/common/model/nmr/SpinSystem.js";
 
 async function setup(id: string) {
   const graph = new MoleculeGraph(await loadMolecule(id));

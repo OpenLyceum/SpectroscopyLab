@@ -17,6 +17,23 @@ import { StringUtils } from "scenerystack/phetcommon";
 import { HBox, Node, Rectangle, Text, VBox } from "scenerystack/scenery";
 import { NumberControl, PhetFont, ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
+import {
+  type CarbonEnvironment,
+  CarbonSpectrumType,
+  type CarbonSpectrumTypeValue,
+  carbonTypeName,
+  PROTON_TO_CARBON_FREQUENCY,
+} from "../../common/model/nmr/CarbonSpectrum.js";
+import {
+  CARBON_SHIFT_RANGE,
+  CARBON_ZOOM_RANGE,
+  FIELD_RANGE,
+  Nucleus,
+  type NucleusValue,
+  SHIFT_RANGE,
+  ZOOM_RANGE,
+} from "../../common/model/nmr/NMRSpectrum.js";
+import type { ProtonEnvironment } from "../../common/model/nmr/ProtonSpectrum.js";
 import { FLAT_RESET_ALL_BUTTON_OPTIONS } from "../../common/SpectroscopyLabButtonOptions.js";
 import { SPECTROSCOPY_LAB_NUMBER_CONTROL_OPTIONS } from "../../common/SpectroscopyLabControlOptions.js";
 import { SpectroscopyLabPanel } from "../../common/SpectroscopyLabPanel.js";
@@ -27,24 +44,7 @@ import { SpectrumChartNode } from "../../common/view/SpectrumChartNode.js";
 import { lookupStringProperty, StringManager } from "../../i18n/StringManager.js";
 import SpectroscopyLabColors from "../../SpectroscopyLabColors.js";
 import { SCREEN_VIEW_MARGIN } from "../../SpectroscopyLabConstants.js";
-import {
-  type CarbonEnvironment,
-  CarbonSpectrumType,
-  type CarbonSpectrumTypeValue,
-  carbonTypeName,
-  PROTON_TO_CARBON_FREQUENCY,
-} from "../model/CarbonSpectrum.js";
-import {
-  CARBON_SHIFT_RANGE,
-  CARBON_ZOOM_RANGE,
-  FIELD_RANGE,
-  type NMRModel,
-  Nucleus,
-  type NucleusValue,
-  SHIFT_RANGE,
-  ZOOM_RANGE,
-} from "../model/NMRModel.js";
-import type { ProtonEnvironment } from "../model/ProtonSpectrum.js";
+import type { NMRModel } from "../model/NMRModel.js";
 import { describeSignal } from "./NMRDescriptions.js";
 import { NMRScreenSummaryContent } from "./NMRScreenSummaryContent.js";
 import { type SignalRow, SignalTableNode } from "./SignalTableNode.js";

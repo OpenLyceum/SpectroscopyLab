@@ -6,9 +6,9 @@
 
 import { toFixed } from "scenerystack/dot";
 import { StringUtils } from "scenerystack/phetcommon";
+import { type CarbonEnvironment, carbonTypeName } from "../../common/model/nmr/CarbonSpectrum.js";
+import type { ProtonEnvironment } from "../../common/model/nmr/ProtonSpectrum.js";
 import { lookupStringProperty, StringManager } from "../../i18n/StringManager.js";
-import { type CarbonEnvironment, carbonTypeName } from "../model/CarbonSpectrum.js";
-import type { ProtonEnvironment } from "../model/ProtonSpectrum.js";
 
 export { moleculeName } from "../../common/view/moleculeName.js";
 

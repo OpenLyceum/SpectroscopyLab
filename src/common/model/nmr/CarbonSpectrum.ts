@@ -23,7 +23,7 @@
  */
 
 import { toFixed } from "scenerystack/dot";
-import type { MoleculeGraph } from "../../common/model/MoleculeGraph.js";
+import type { MoleculeGraph } from "../MoleculeGraph.js";
 import { multipletLines } from "./ProtonSpectrum.js";
 
 /** γ(¹H)/γ(¹³C). */

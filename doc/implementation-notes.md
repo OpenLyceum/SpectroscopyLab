@@ -96,3 +96,8 @@ clue text and the screen summary observe the localized patterns they read, inclu
 names, so switching language preserves the question and answer state. Result announcements
 listen to result changes separately from locale refreshes. View disposal unlinks both sets of
 listeners and disposes derived range/tick Properties.
+
+IR spectrum calculations live in `src/common/model/infrared/InfraredSpectrum.ts`.
+NMR shifts, spin systems, environments and sampled curves live in `src/common/model/nmr/`.
+Infrared, NMR and Unknowns import these shared domain modules; Unknowns does not import
+another screen's model or view. Screen models retain their own reactive state and lifecycle.

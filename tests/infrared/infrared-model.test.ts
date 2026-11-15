@@ -5,10 +5,6 @@
  */
 
 import { describe, expect, it } from "vitest";
-import ethanolFile from "../../src/common/model/library/data/ethanol.json";
-import formaldehydeFile from "../../src/common/model/library/data/formaldehyde.json";
-import waterFile from "../../src/common/model/library/data/water.json";
-import { type MoleculeFile, moleculeFromFile } from "../../src/common/model/Molecule.js";
 import {
   computePeaks,
   IR_RANGE,
@@ -16,7 +12,11 @@ import {
   isotopeMasses,
   isotopeSchemeApplies,
   transmittanceCurve,
-} from "../../src/infrared/model/InfraredModel.js";
+} from "../../src/common/model/infrared/InfraredSpectrum.js";
+import ethanolFile from "../../src/common/model/library/data/ethanol.json";
+import formaldehydeFile from "../../src/common/model/library/data/formaldehyde.json";
+import waterFile from "../../src/common/model/library/data/water.json";
+import { type MoleculeFile, moleculeFromFile } from "../../src/common/model/Molecule.js";
 
 const water = moleculeFromFile(waterFile as MoleculeFile);
 const ethanol = moleculeFromFile(ethanolFile as MoleculeFile);

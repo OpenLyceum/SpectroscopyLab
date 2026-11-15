@@ -15,7 +15,7 @@
  * Additivity is approximate (±0.2–0.3 ppm typically); tests compare against literature spectra.
  */
 
-import type { MoleculeGraph } from "../../common/model/MoleculeGraph.js";
+import type { MoleculeGraph } from "../MoleculeGraph.js";
 
 /** Methane, and base values for CH₃ / CH₂ / CH in an alkane, ppm. */
 const METHANE = 0.23;

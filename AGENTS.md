@@ -51,12 +51,13 @@ computes IR intensities, so changing an isotope only changes masses. Never hand-
 | `MoleculeChooserNode.ts` / `ControlFactory.ts` | Family/molecule combo boxes; themed control builders |
 | `MoleculeGraph.ts` | Aromatic-ring perception, Morgan symmetry classes, bond-order and functional-group helpers |
 | `MoleculeThumbnailNode.ts` | Still ball-and-stick picture (Unknowns answer buttons) |
+| Shared IR calculations | `src/common/model/infrared/InfraredSpectrum.ts` — isotope masses, normal-mode peaks and broadened curves, reused by Infrared and Unknowns |
 | `src/infrared/` | IR model (isotope schemes, peaks, transmittance/absorbance) and view |
 | `src/infrared/model/RotationalFineStructure.ts` | Diatomic P/R lines from ν₀ (Hessian), B (B3LYP r_e), measured α_e; isotopologues at natural abundance |
-| `src/nmr/model/ChemicalShiftRules.ts` / `ProtonSpectrum.ts` | Shift additivity rules; environments, ³J couplings, multiplets |
-| `src/nmr/model/SpinSystem.ts` | Exact ¹H lines: spin Hamiltonian per coupled group, block-diagonal by Iz; first-order fallback above 9 spins |
-| `src/nmr/model/CarbonSpectrum.ts` | ¹³C environments, additivity shifts, decoupled/DEPT/coupled lines |
-| `src/nmr/model/NMRModel.ts` | Nucleus, field, D₂O, TMS, integral, zoom; `fullSpectrum`/`carbonSpectrum`/`integralTrace` reused by Unknowns |
+| `src/common/model/nmr/ChemicalShiftRules.ts` / `ProtonSpectrum.ts` | Shift additivity rules; environments, ³J couplings, multiplets |
+| `src/common/model/nmr/SpinSystem.ts` | Exact ¹H lines: spin Hamiltonian per coupled group, block-diagonal by Iz; first-order fallback above 9 spins |
+| `src/common/model/nmr/CarbonSpectrum.ts` | ¹³C environments, additivity shifts, decoupled/DEPT/coupled lines |
+| `src/nmr/model/NMRModel.ts` | Nucleus, field, D₂O, TMS, integral, zoom; uses shared `common/model/nmr/NMRSpectrum.ts` sampling, also used by Unknowns |
 | `src/uv-vis/model/PiSystem.ts` | π atoms/electrons, Hückel matrix, Kuhn box, orbital lobes |
 | `src/uv-vis/model/UVVisModel.ts` | Measured λmax and approximate ε tables (with sources), per-family Hückel calibration, band + colour, Beer–Lambert with stray light |
 | `src/uv-vis/model/PerceivedColor.ts` | CIE 1931 (Wyman–Sloan–Shirley fit) → white-balanced sRGB |
@@ -124,4 +125,3 @@ computes IR intensities, so changing an isotope only changes masses. Never hand-
 ## PWA
 
 After `npm run build`, the sim is installable offline via Workbox (`dist/manifest.webmanifest`).
-- `check:architecture` / `no-cross-screen`: intentional — the Unknowns screen composes IR/NMR models and spectra by design (identify-an-unknown pedagogy). Hoisting every shared spectrum type into `common/` is possible later; for now cross-imports from `unknowns/` into `infrared/` and `nmr/` are accepted.

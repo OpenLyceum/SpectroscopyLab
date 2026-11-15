@@ -6,9 +6,9 @@
  */
 
 import { describe, expect, it } from "vitest";
+import { IsotopeScheme, isotopeMasses, PEAK_ABSORBANCE } from "../../src/common/model/infrared/InfraredSpectrum.js";
 import { loadMolecule } from "../../src/common/model/library/SpectroscopyLibrary.js";
 import type { Molecule } from "../../src/common/model/Molecule.js";
-import { IsotopeScheme, isotopeMasses, PEAK_ABSORBANCE } from "../../src/infrared/model/InfraredModel.js";
 import {
   fineAbsorbance,
   fineStructure,

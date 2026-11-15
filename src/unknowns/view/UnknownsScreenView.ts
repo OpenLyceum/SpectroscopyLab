@@ -14,7 +14,9 @@ import { HBox, Node, Rectangle, Text, VBox } from "scenerystack/scenery";
 import { PhetFont, ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
 import { RectangularPushButton } from "scenerystack/sun";
+import { IR_RANGE } from "../../common/model/infrared/InfraredSpectrum.js";
 import { loadMolecule, nameKey } from "../../common/model/library/SpectroscopyLibrary.js";
+import { CARBON_SHIFT_RANGE, Nucleus, type NucleusValue, SHIFT_RANGE } from "../../common/model/nmr/NMRSpectrum.js";
 import { lorentzianSum, type SampledCurve } from "../../common/model/SpectrumCurve.js";
 import {
   FLAT_RECTANGULAR_BUTTON_OPTIONS,
@@ -28,8 +30,6 @@ import { MoleculeThumbnailNode } from "../../common/view/MoleculeThumbnailNode.j
 import { moleculeName } from "../../common/view/moleculeName.js";
 import { SpectrumChartNode } from "../../common/view/SpectrumChartNode.js";
 import { lookupStringProperty, StringManager } from "../../i18n/StringManager.js";
-import { IR_RANGE } from "../../infrared/model/InfraredModel.js";
-import { CARBON_SHIFT_RANGE, Nucleus, type NucleusValue, SHIFT_RANGE } from "../../nmr/model/NMRModel.js";
 import SpectroscopyLabColors from "../../SpectroscopyLabColors.js";
 import { SCREEN_VIEW_MARGIN } from "../../SpectroscopyLabConstants.js";
 import { degreeOfUnsaturation, formulaText, molecularIonCluster } from "../model/MolecularFormula.js";

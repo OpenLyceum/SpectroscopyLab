@@ -6,8 +6,8 @@
 
 import { toFixed } from "scenerystack/dot";
 import { StringUtils } from "scenerystack/phetcommon";
+import type { InfraredPeak } from "../../common/model/infrared/InfraredSpectrum.js";
 import { StringManager } from "../../i18n/StringManager.js";
-import type { InfraredPeak } from "../model/InfraredModel.js";
 import type { RotationalLine } from "../model/RotationalFineStructure.js";
 
 /** "H³⁵Cl R(3): J 3 → 4 — 2945.1 cm⁻¹". */

@@ -13,7 +13,7 @@ import {
   carbonEnvironments,
   carbonLines,
   PROTON_TO_CARBON_FREQUENCY,
-} from "../../src/nmr/model/CarbonSpectrum.js";
+} from "../../src/common/model/nmr/CarbonSpectrum.js";
 
 /** Additivity is good to a few ppm; 1,4-dioxane (ring gauche effects) is the worst case, ~5 ppm. */
 const TOLERANCE = 5;
