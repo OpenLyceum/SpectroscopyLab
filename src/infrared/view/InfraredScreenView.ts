@@ -34,7 +34,6 @@ import { SCREEN_VIEW_MARGIN } from "../../SpectroscopyLabConstants.js";
 import {
   HALF_WIDTH_RANGE,
   type InfraredModel,
-  type InfraredPeak,
   IR_RANGE,
   IsotopeScheme,
   type IsotopeSchemeValue,
@@ -47,6 +46,7 @@ import {
   type RotationalLine,
   TEMPERATURE_RANGE,
 } from "../model/RotationalFineStructure.js";
+import { describeLine, describePeak, modeName } from "./InfraredDescriptions.js";
 import { InfraredScreenSummaryContent } from "./InfraredScreenSummaryContent.js";
 
 const VIEWER_SIZE = 380;
@@ -486,14 +486,6 @@ export class InfraredScreenView extends ScreenView {
   }
 }
 
-/** "C=O stretch" / "H–C–H bend", localised. */
-function modeName(peak: InfraredPeak): string {
-  const strings = StringManager.getInstance().getInfraredStrings();
-  return peak.character.kind === "stretch"
-    ? StringUtils.fillIn(strings.stretchStringProperty.value, { bond: peak.character.label })
-    : StringUtils.fillIn(strings.bendStringProperty.value, { angle: peak.character.label });
-}
-
 function formatWavenumber(value: number): string {
   return StringUtils.fillIn(StringManager.getInstance().getInfraredStrings().wavenumberStringProperty.value, {
     value: toFixed(value, 0),
@@ -528,24 +520,4 @@ function fineStructureInfo(fine: FineStructure, line: RotationalLine | null): st
         })
       : strings.fineHintStringProperty.value,
   ];
-}
-
-/** "H³⁵Cl R(3): J 3 → 4 — 2945.1 cm⁻¹". */
-export function describeLine(line: RotationalLine, isotopologue: string): string {
-  return StringUtils.fillIn(StringManager.getInstance().getInfraredStrings().lineTitleStringProperty.value, {
-    isotopologue,
-    branch: line.branch,
-    j: line.j,
-    upper: line.branch === "R" ? line.j + 1 : line.j - 1,
-    wavenumber: toFixed(line.wavenumber, 1),
-  });
-}
-
-/** The spoken description of a peak. */
-export function describePeak(peak: InfraredPeak): string {
-  return StringUtils.fillIn(StringManager.getInstance().getInfraredA11yStrings().peakStringProperty.value, {
-    mode: modeName(peak),
-    wavenumber: toFixed(peak.wavenumber, 0),
-    intensity: toFixed(peak.intensity, 0),
-  });
 }

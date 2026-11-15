@@ -17,7 +17,6 @@ import { StringUtils } from "scenerystack/phetcommon";
 import { HBox, Node, Rectangle, Text, VBox } from "scenerystack/scenery";
 import { NumberControl, PhetFont, ResetAllButton } from "scenerystack/scenery-phet";
 import { ScreenView, type ScreenViewOptions } from "scenerystack/sim";
-import { nameKey } from "../../common/model/library/SpectroscopyLibrary.js";
 import { FLAT_RESET_ALL_BUTTON_OPTIONS } from "../../common/SpectroscopyLabButtonOptions.js";
 import { SPECTROSCOPY_LAB_NUMBER_CONTROL_OPTIONS } from "../../common/SpectroscopyLabControlOptions.js";
 import { SpectroscopyLabPanel } from "../../common/SpectroscopyLabPanel.js";
@@ -46,6 +45,7 @@ import {
   ZOOM_RANGE,
 } from "../model/NMRModel.js";
 import type { ProtonEnvironment } from "../model/ProtonSpectrum.js";
+import { describeSignal } from "./NMRDescriptions.js";
 import { NMRScreenSummaryContent } from "./NMRScreenSummaryContent.js";
 import { type SignalRow, SignalTableNode } from "./SignalTableNode.js";
 
@@ -416,34 +416,6 @@ export class NMRScreenView extends ScreenView {
   }
 }
 
-/** Localised multiplicity word ("quartet"), falling back to the code ("ddt"). */
-function multiplicityWord(code: string): string {
-  const words = StringManager.getInstance().getNMRStrings().multiplicities;
-  return lookupStringProperty(words, `${code}StringProperty`)?.value ?? code;
-}
-
-function isProton(signal: ProtonEnvironment | CarbonEnvironment): signal is ProtonEnvironment {
-  return "multiplicity" in signal;
-}
-
-/** The spoken description of a signal. */
-export function describeSignal(signal: ProtonEnvironment | CarbonEnvironment): string {
-  const a11y = StringManager.getInstance().getNMRA11yStrings();
-  return isProton(signal)
-    ? StringUtils.fillIn(a11y.signalStringProperty.value, {
-        label: signal.label,
-        count: signal.atoms.length,
-        shift: toFixed(signal.shift, 2),
-        multiplicity: multiplicityWord(signal.multiplicity),
-      })
-    : StringUtils.fillIn(a11y.carbonSignalStringProperty.value, {
-        label: signal.label,
-        count: signal.atoms.length,
-        type: carbonTypeName(signal.hydrogens),
-        shift: toFixed(signal.shift, 1),
-      });
-}
-
 /** "a   δ 3.65   2H   q" over "J = 7.0 Hz". */
 function protonRow(environment: ProtonEnvironment): SignalRow {
   const strings = StringManager.getInstance().getNMRStrings();
@@ -488,10 +460,4 @@ function describeAtom(model: NMRModel, index: number): string {
   const signal = model.signals.find((e) => e.atoms.includes(index));
   const base = element ? `${element.symbol} ${index + 1}` : "";
   return signal ? `${base} — ${signal.label}, δ ${toFixed(signal.shift, model.isCarbon ? 1 : 2)}` : base;
-}
-
-/** The molecule's display name. */
-export function moleculeName(id: string): string {
-  const names = StringManager.getInstance().getMoleculeNames();
-  return lookupStringProperty(names, `${nameKey(id)}StringProperty`)?.value ?? id;
 }

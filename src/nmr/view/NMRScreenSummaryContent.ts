@@ -12,7 +12,7 @@ import { StringUtils } from "scenerystack/phetcommon";
 import { ScreenSummaryContent } from "scenerystack/sim";
 import { StringManager } from "../../i18n/StringManager.js";
 import type { NMRModel } from "../model/NMRModel.js";
-import { describeSignal, moleculeName } from "./NMRScreenView.js";
+import { describeSignal, moleculeName } from "./NMRDescriptions.js";
 
 export class NMRScreenSummaryContent extends ScreenSummaryContent {
   public constructor(model: NMRModel) {

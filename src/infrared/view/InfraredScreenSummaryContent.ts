@@ -11,7 +11,7 @@ import { ScreenSummaryContent } from "scenerystack/sim";
 import { nameKey } from "../../common/model/library/SpectroscopyLibrary.js";
 import { lookupStringProperty, StringManager } from "../../i18n/StringManager.js";
 import type { InfraredModel } from "../model/InfraredModel.js";
-import { describeLine, describePeak } from "./InfraredScreenView.js";
+import { describeLine, describePeak } from "./InfraredDescriptions.js";
 
 export class InfraredScreenSummaryContent extends ScreenSummaryContent {
   public constructor(model: InfraredModel) {

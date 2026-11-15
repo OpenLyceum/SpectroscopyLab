@@ -12,7 +12,7 @@ import { ScreenSummaryContent } from "scenerystack/sim";
 import { StringManager } from "../../i18n/StringManager.js";
 import { ElectronicModel, type UVVisModel } from "../model/UVVisModel.js";
 import { describeOrbital } from "./EnergyLevelDiagramNode.js";
-import { uvMoleculeName } from "./UVVisScreenView.js";
+import { uvMoleculeName } from "./UVVisDescriptions.js";
 
 export class UVVisScreenSummaryContent extends ScreenSummaryContent {
   public constructor(model: UVVisModel) {

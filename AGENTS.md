@@ -124,3 +124,4 @@ computes IR intensities, so changing an isotope only changes masses. Never hand-
 ## PWA
 
 After `npm run build`, the sim is installable offline via Workbox (`dist/manifest.webmanifest`).
+- `check:architecture` / `no-cross-screen`: intentional — the Unknowns screen composes IR/NMR models and spectra by design (identify-an-unknown pedagogy). Hoisting every shared spectrum type into `common/` is possible later; for now cross-imports from `unknowns/` into `infrared/` and `nmr/` are accepted.

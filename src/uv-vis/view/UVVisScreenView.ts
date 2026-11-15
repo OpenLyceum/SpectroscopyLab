@@ -24,7 +24,6 @@ import { MoleculeChooserNode } from "../../common/view/MoleculeChooserNode.js";
 import { MoleculeViewerNode } from "../../common/view/MoleculeViewerNode.js";
 import { SpectrumChartNode } from "../../common/view/SpectrumChartNode.js";
 import { StringManager } from "../../i18n/StringManager.js";
-import { moleculeName } from "../../nmr/view/NMRScreenView.js";
 import SpectroscopyLabColors from "../../SpectroscopyLabColors.js";
 import { SCREEN_VIEW_MARGIN } from "../../SpectroscopyLabConstants.js";
 import {
@@ -485,10 +484,4 @@ export class UVVisScreenView extends ScreenView {
     this.disposeUVVisScreenView();
     super.dispose();
   }
-}
-
-/** Spoken name of the molecule (shared with the summary). */
-export function uvMoleculeName(model: UVVisModel): string {
-  const molecule = model.viewer.molecule;
-  return molecule ? moleculeName(molecule.id) : "";
 }

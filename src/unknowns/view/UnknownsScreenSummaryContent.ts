@@ -8,8 +8,8 @@
 import { DerivedProperty } from "scenerystack/axon";
 import { StringUtils } from "scenerystack/phetcommon";
 import { ScreenSummaryContent } from "scenerystack/sim";
+import { moleculeName } from "../../common/view/moleculeName.js";
 import { StringManager } from "../../i18n/StringManager.js";
-import { moleculeName } from "../../nmr/view/NMRScreenView.js";
 import { formulaText } from "../model/MolecularFormula.js";
 import { GuessResult, type UnknownsModel } from "../model/UnknownsModel.js";
 
