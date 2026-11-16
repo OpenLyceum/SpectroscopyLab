@@ -76,9 +76,9 @@ export type RenderInput = {
 };
 
 export class MoleculeRenderer {
-  private items: Item[] = [];
+  private readonly items: Item[] = [];
   private itemCount = 0;
-  private order: number[] = [];
+  private readonly order: number[] = [];
   private readonly sprites = new Map<number, HTMLCanvasElement>();
   private readonly cssCache = new Map<number, string>();
 
