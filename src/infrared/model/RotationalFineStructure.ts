@@ -1,3 +1,7 @@
+import {
+  ROTATIONAL_FINE_STRUCTURE_NUMERICS,
+  ROTATIONAL_FINE_STRUCTURE_SETTINGS,
+} from "../../SpectroscopyLabConstants.js";
 /**
  * RotationalFineStructure.ts
  *
@@ -30,12 +34,12 @@ import { lorentzianSum, type SampledCurve, type StickPeak } from "../../common/m
 import { analyzeNormalModes } from "../../common/model/vibrations/NormalModeAnalysis.js";
 
 /** h / (8π²c), in cm⁻¹ · u · Å². */
-const ROTATIONAL_CONSTANT_FACTOR = 16.857629;
+const ROTATIONAL_CONSTANT_FACTOR: number = ROTATIONAL_FINE_STRUCTURE_SETTINGS.ROTATIONAL_CONSTANT_FACTOR;
 /** Second radiation constant hc/k, cm · K. */
-const HC_OVER_K = 1.438777;
+const HC_OVER_K: number = ROTATIONAL_FINE_STRUCTURE_SETTINGS.HC_OVER_K;
 /** Atomic mass unit, kg; speed of light, cm/s. */
-const ATOMIC_MASS_UNIT = 1.66053907e-27;
-const SPEED_OF_LIGHT = 2.99792458e10;
+const ATOMIC_MASS_UNIT: number = ROTATIONAL_FINE_STRUCTURE_SETTINGS.ATOMIC_MASS_UNIT;
+const SPEED_OF_LIGHT: number = ROTATIONAL_FINE_STRUCTURE_SETTINGS.SPEED_OF_LIGHT;
 
 /**
  * Molecules the fine structure is offered for, with the measured vibration–rotation constant α_e
@@ -51,19 +55,22 @@ const NATURAL_ABUNDANCE: Readonly<Record<string, readonly number[]>> = {
   Cl: [0.7576, 0.2424],
 };
 
-export const TEMPERATURE_RANGE = new Range(50, 1000);
-export const DEFAULT_TEMPERATURE = 298;
+export const TEMPERATURE_RANGE = new Range(
+  ROTATIONAL_FINE_STRUCTURE_SETTINGS.TEMPERATURE_RANGE_MIN,
+  ROTATIONAL_FINE_STRUCTURE_SETTINGS.TEMPERATURE_RANGE_MAX,
+);
+export const DEFAULT_TEMPERATURE: number = ROTATIONAL_FINE_STRUCTURE_SETTINGS.DEFAULT_TEMPERATURE;
 /** Instrument line half-width (HWHM) of a high-resolution FTIR, cm⁻¹. */
-const FINE_HALF_WIDTH = 0.3;
+const FINE_HALF_WIDTH: number = ROTATIONAL_FINE_STRUCTURE_SETTINGS.FINE_HALF_WIDTH;
 /** The band window spans this far either side of the main isotopologue's origin, cm⁻¹. */
-const BAND_HALF_WIDTH = 450;
+const BAND_HALF_WIDTH: number = ROTATIONAL_FINE_STRUCTURE_SETTINGS.BAND_HALF_WIDTH;
 /** Half-width of the zoom on one line, cm⁻¹ (wide enough for the ³⁵Cl/³⁷Cl pair). */
-export const LINE_ZOOM_HALF_WIDTH = 6;
-const BAND_SAMPLES = 6000;
-const ZOOM_SAMPLES = 600;
+export const LINE_ZOOM_HALF_WIDTH: number = ROTATIONAL_FINE_STRUCTURE_SETTINGS.LINE_ZOOM_HALF_WIDTH;
+const BAND_SAMPLES: number = ROTATIONAL_FINE_STRUCTURE_SETTINGS.BAND_SAMPLES;
+const ZOOM_SAMPLES: number = ROTATIONAL_FINE_STRUCTURE_SETTINGS.ZOOM_SAMPLES;
 /** Lines weaker than this fraction of the strongest are left out. */
-const MIN_RELATIVE_INTENSITY = 1e-4;
-const MAX_J = 60;
+const MIN_RELATIVE_INTENSITY: number = ROTATIONAL_FINE_STRUCTURE_SETTINGS.MIN_RELATIVE_INTENSITY;
+const MAX_J: number = ROTATIONAL_FINE_STRUCTURE_SETTINGS.MAX_J;
 
 type Isotopologue = {
   /** "H³⁵Cl". */
@@ -166,7 +173,9 @@ function describeIsotopologue(molecule: Molecule, masses: readonly number[], abu
 /** "H", "D", "³⁵Cl", "¹³C"… */
 function isotopeLabel(symbol: string, mass: number): string {
   const isotopes = isotopesFor(symbol);
-  const index = isotopes.findIndex((isotope) => Math.abs(isotope.mass - mass) < 1e-4);
+  const index = isotopes.findIndex(
+    (isotope) => Math.abs(isotope.mass - mass) < ROTATIONAL_FINE_STRUCTURE_NUMERICS.ISOTOPE_MASS_TOLERANCE,
+  );
   if (symbol === "H") {
     return index === 1 ? "D" : "H";
   }

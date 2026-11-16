@@ -1,3 +1,4 @@
+import { MOLECULE_RENDERER_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * MoleculeRenderer.ts
  *
@@ -15,19 +16,19 @@ import type { Vec3 } from "../model/structure/Geometry.js";
 import type { Rotation3 } from "../model/structure/Rotation3.js";
 
 /** Camera distance in units of the bounding radius (Jmol's default `cameraDepth` is 3). */
-const CAMERA_DEPTH = 3;
+const CAMERA_DEPTH: number = MOLECULE_RENDERER_SETTINGS.CAMERA_DEPTH;
 /** Sprite resolution for shaded spheres, px. */
-const SPRITE_SIZE = 128;
+const SPRITE_SIZE: number = MOLECULE_RENDERER_SETTINGS.SPRITE_SIZE;
 /** Minimum pick radius, px. */
-const MIN_PICK_RADIUS = 6;
+const MIN_PICK_RADIUS: number = MOLECULE_RENDERER_SETTINGS.MIN_PICK_RADIUS;
 /** Ball radius as a fraction of the van der Waals radius (Jmol's ball-and-stick is 20 %). */
-const BALL_FRACTION = 0.25;
+const BALL_FRACTION: number = MOLECULE_RENDERER_SETTINGS.BALL_FRACTION;
 /** Stick radius, Å. */
-const STICK_RADIUS = 0.11;
+const STICK_RADIUS: number = MOLECULE_RENDERER_SETTINGS.STICK_RADIUS;
 /** Orbital lobe radius for |c| = 1, Å, and the lobe centre's offset along the π normal per Å of radius. */
-const LOBE_RADIUS = 1.6;
-const LOBE_OFFSET = 0.9;
-const LOBE_ALPHA = 0.62;
+const LOBE_RADIUS: number = MOLECULE_RENDERER_SETTINGS.LOBE_RADIUS;
+const LOBE_OFFSET: number = MOLECULE_RENDERER_SETTINGS.LOBE_OFFSET;
+const LOBE_ALPHA: number = MOLECULE_RENDERER_SETTINGS.LOBE_ALPHA;
 
 const Kind = {
   SPHERE: 0,
@@ -298,7 +299,7 @@ export class MoleculeRenderer {
     if (it.extent < 2.5) {
       return;
     }
-    ctx.lineWidth = it.extent * 0.7;
+    ctx.lineWidth = it.extent * MOLECULE_RENDERER_SETTINGS.PAINT_CYLINDER_LINE_WIDTH_FACTOR;
     ctx.strokeStyle = this.css(it.color);
     ctx.stroke();
     if (it.extent < 5) {
@@ -326,7 +327,7 @@ export class MoleculeRenderer {
     const { colors } = input;
     ctx.save();
     ctx.strokeStyle = colors.highlight;
-    ctx.lineWidth = 3;
+    ctx.lineWidth = MOLECULE_RENDERER_SETTINGS.LINE_WIDTH_LINE_WIDTH;
     for (const i of input.highlighted) {
       this.ring(ctx, i, 3);
     }

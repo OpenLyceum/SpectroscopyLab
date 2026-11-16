@@ -1,3 +1,4 @@
+import { MODE_CHARACTER_NUMERICS, MODE_CHARACTER_SETTINGS } from "../../../SpectroscopyLabConstants.js";
 /**
  * ModeCharacter.ts
  *
@@ -30,9 +31,9 @@ export type ModeCharacter = {
 const BOND_GLYPHS = ["", "–", "=", "≡"];
 
 /** Stretch force constant per unit bond order, mdyn/Å. */
-const STRETCH_CONSTANT = 5;
+const STRETCH_CONSTANT: number = MODE_CHARACTER_SETTINGS.STRETCH_CONSTANT;
 /** Bend force constant, mdyn·Å/rad². */
-const BEND_CONSTANT = 0.7;
+const BEND_CONSTANT: number = MODE_CHARACTER_SETTINGS.BEND_CONSTANT;
 
 /**
  * @param masses - isotope masses parallel to `molecule.elements`. A hydrogen heavier than protium
@@ -115,7 +116,7 @@ function isotopeSymbol(molecule: Molecule, index: number, masses: readonly numbe
     return "?";
   }
   const mass = masses?.[index];
-  if (element.symbol === "H" && mass !== undefined && mass > 1.5) {
+  if (element.symbol === "H" && mass !== undefined && mass > MODE_CHARACTER_NUMERICS.HEAVY_HYDROGEN_MASS) {
     return "D";
   }
   return element.symbol;
@@ -135,7 +136,7 @@ function angleChange(p: Float64Array, d: Float64Array, a: number, center: number
     return Math.acos(Math.max(-1, Math.min(1, cos)));
   };
   // Central difference along the displacement direction.
-  const h = 1e-4;
+  const h: number = MODE_CHARACTER_NUMERICS.FINITE_DIFFERENCE_STEP;
   const plus = angle(
     u.map((value, c) => value + h * (du[c] ?? 0)),
     v.map((value, c) => value + h * (dv[c] ?? 0)),

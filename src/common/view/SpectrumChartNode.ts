@@ -1,3 +1,4 @@
+import { SPECTRUM_CHART_NODE_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * SpectrumChartNode.ts
  *
@@ -33,11 +34,11 @@ import SpectroscopyLabColors from "../../SpectroscopyLabColors.js";
 import type { SampledCurve, StickPeak } from "../model/SpectrumCurve.js";
 import SpectroscopyLabHotkeyData from "../SpectroscopyLabHotkeyData.js";
 
-const TICK_FONT = new PhetFont(11);
-const AXIS_LABEL_FONT = new PhetFont(12);
-const REGION_FONT = new PhetFont(10);
+const TICK_FONT = new PhetFont(SPECTRUM_CHART_NODE_SETTINGS.TICK_FONT_SIZE);
+const AXIS_LABEL_FONT = new PhetFont(SPECTRUM_CHART_NODE_SETTINGS.AXIS_LABEL_FONT_SIZE);
+const REGION_FONT = new PhetFont(SPECTRUM_CHART_NODE_SETTINGS.REGION_FONT_SIZE);
 /** Click tolerance, px. */
-const PICK_TOLERANCE = 8;
+const PICK_TOLERANCE: number = SPECTRUM_CHART_NODE_SETTINGS.PICK_TOLERANCE;
 
 export type SpectrumRegion = {
   readonly min: number;
@@ -155,9 +156,12 @@ export class SpectrumChartNode extends Node {
         const right = chartTransform.modelToViewX(region.max);
         const width = Math.abs(right - left);
         rectangle.setRect(Math.min(left, right), 0, width, options.chartHeight);
-        label.maxWidth = Math.max(width + 24, 40);
+        label.maxWidth = Math.max(
+          width + SPECTRUM_CHART_NODE_SETTINGS.LAYOUT_REGIONS_MAX_WIDTH_OFFSET,
+          SPECTRUM_CHART_NODE_SETTINGS.LAYOUT_REGIONS_MAX_WIDTH,
+        );
         label.centerX = Math.min(left, right) + width / 2;
-        label.top = 3;
+        label.top = SPECTRUM_CHART_NODE_SETTINGS.TOP_TOP;
       }
     };
     for (const { label } of regionNodes) {
@@ -166,24 +170,27 @@ export class SpectrumChartNode extends Node {
 
     const plot = new LinePlot(chartTransform, [], {
       stroke: SpectroscopyLabColors.spectrumColorProperty,
-      lineWidth: 1.6,
+      lineWidth: SPECTRUM_CHART_NODE_SETTINGS.PLOT_LINE_WIDTH,
       pickable: false,
     });
     const secondaryPlot = new LinePlot(chartTransform, [], {
       stroke: SpectroscopyLabColors.integralColorProperty,
-      lineWidth: 1.4,
+      lineWidth: SPECTRUM_CHART_NODE_SETTINGS.SECONDARY_PLOT_LINE_WIDTH,
       pickable: false,
     });
     const sticks = new Path(null, {
       stroke: SpectroscopyLabColors.peakMarkerColorProperty,
       lineWidth: 1,
-      opacity: 0.8,
+      opacity: SPECTRUM_CHART_NODE_SETTINGS.STICKS_OPACITY,
       pickable: false,
     });
     const cursor = new Line(0, 0, 0, options.chartHeight, {
       stroke: SpectroscopyLabColors.peakMarkerColorProperty,
-      lineWidth: 2,
-      lineDash: [5, 3],
+      lineWidth: SPECTRUM_CHART_NODE_SETTINGS.CURSOR_LINE_WIDTH,
+      lineDash: [
+        SPECTRUM_CHART_NODE_SETTINGS.CURSOR_LINE_DASH_DASH,
+        SPECTRUM_CHART_NODE_SETTINGS.CONSTRUCTOR_CURSOR_LINE_DASH_DASH,
+      ],
       pickable: false,
       visible: false,
     });
@@ -227,9 +234,9 @@ export class SpectrumChartNode extends Node {
     });
     const layoutAxisLabels = () => {
       xAxisLabel.centerX = options.chartWidth / 2;
-      xAxisLabel.top = xLabels.bottom + 4;
+      xAxisLabel.top = xLabels.bottom + SPECTRUM_CHART_NODE_SETTINGS.LAYOUT_AXIS_LABELS_TOP_OFFSET;
       yAxisLabel.centerY = options.chartHeight / 2;
-      yAxisLabel.right = yLabels.left - 6;
+      yAxisLabel.right = yLabels.left - SPECTRUM_CHART_NODE_SETTINGS.LAYOUT_AXIS_LABELS_RIGHT_OFFSET;
     };
     // Tick labels are built lazily, so re-place the axis titles whenever any of them changes size.
     for (const node of [xAxisLabel, yAxisLabel, xLabels, yLabels]) {

@@ -1,5 +1,6 @@
 /** Isotope substitution, normal-mode peaks and IR curves shared by Infrared and Unknowns. */
 import { Range } from "scenerystack/dot";
+import { INFRARED_SPECTRUM_SETTINGS } from "../../../SpectroscopyLabConstants.js";
 import { defaultIsotopeMass, isotopesFor } from "../Isotopes.js";
 import { type Molecule, neighborLists } from "../Molecule.js";
 import { lorentzianSum, type SampledCurve, type StickPeak } from "../SpectrumCurve.js";
@@ -7,11 +8,11 @@ import { describeMode, type ModeCharacter } from "../vibrations/ModeCharacter.js
 import { analyzeNormalModes, type NormalMode } from "../vibrations/NormalModeAnalysis.js";
 
 /** Wavenumber window of a mid-IR spectrometer, cm⁻¹. */
-export const IR_RANGE = new Range(400, 4000);
-const CURVE_SAMPLES = 1200;
+export const IR_RANGE = new Range(INFRARED_SPECTRUM_SETTINGS.IR_RANGE_MIN, INFRARED_SPECTRUM_SETTINGS.IR_RANGE_MAX);
+const CURVE_SAMPLES: number = INFRARED_SPECTRUM_SETTINGS.CURVE_SAMPLES;
 
 /** The strongest band is scaled to this absorbance, so it dips to ~5 % transmittance. */
-export const PEAK_ABSORBANCE = 1.3;
+export const PEAK_ABSORBANCE: number = INFRARED_SPECTRUM_SETTINGS.PEAK_ABSORBANCE;
 
 export const IsotopeScheme = {
   NATURAL: "natural",

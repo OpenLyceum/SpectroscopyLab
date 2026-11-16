@@ -1,3 +1,4 @@
+import { CHEMICAL_SHIFT_RULES_SETTINGS } from "../../../SpectroscopyLabConstants.js";
 /**
  * ChemicalShiftRules.ts
  *
@@ -18,10 +19,10 @@
 import type { MoleculeGraph } from "../MoleculeGraph.js";
 
 /** Methane, and base values for CH₃ / CH₂ / CH in an alkane, ppm. */
-const METHANE = 0.23;
-const BASE_METHYL = 0.86;
-const BASE_METHYLENE = 1.25;
-const BASE_METHINE = 1.5;
+const METHANE: number = CHEMICAL_SHIFT_RULES_SETTINGS.METHANE;
+const BASE_METHYL: number = CHEMICAL_SHIFT_RULES_SETTINGS.BASE_METHYL;
+const BASE_METHYLENE: number = CHEMICAL_SHIFT_RULES_SETTINGS.BASE_METHYLENE;
+const BASE_METHINE: number = CHEMICAL_SHIFT_RULES_SETTINGS.BASE_METHINE;
 
 /** α increments on the carbon bearing the proton, ppm. */
 const ALPHA = {
@@ -38,14 +39,14 @@ const ALPHA = {
 } as const;
 
 /** With two or more α groups the increments are not fully additive; their sum is scaled by this. */
-const MULTIPLE_ALPHA_FACTOR = 0.85;
+const MULTIPLE_ALPHA_FACTOR: number = CHEMICAL_SHIFT_RULES_SETTINGS.MULTIPLE_ALPHA_FACTOR;
 
 /** β increment for each electron-withdrawing group one carbon further away, ppm. */
-const BETA = 0.3;
+const BETA: number = CHEMICAL_SHIFT_RULES_SETTINGS.BETA;
 /** β-chlorine pulls harder than the generic β group. */
-const BETA_CHLORINE = 0.55;
+const BETA_CHLORINE: number = CHEMICAL_SHIFT_RULES_SETTINGS.BETA_CHLORINE;
 
-const BENZENE = 7.27;
+const BENZENE: number = CHEMICAL_SHIFT_RULES_SETTINGS.BENZENE;
 /** Substituent increments [ortho, meta, para] for aromatic protons, ppm. */
 const AROMATIC_INCREMENTS = {
   alkyl: [-0.17, -0.09, -0.18],

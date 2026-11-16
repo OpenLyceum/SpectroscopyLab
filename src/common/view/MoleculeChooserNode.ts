@@ -1,3 +1,4 @@
+import { MOLECULE_CHOOSER_NODE_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * MoleculeChooserNode.ts
  *
@@ -12,7 +13,7 @@ import { nameKey } from "../model/library/SpectroscopyLibrary.js";
 import type { MoleculeChooser } from "../model/MoleculeChooser.js";
 import { comboBox, label } from "./ControlFactory.js";
 
-const LABEL_WIDTH = 80;
+const LABEL_WIDTH: number = MOLECULE_CHOOSER_NODE_SETTINGS.LABEL_WIDTH;
 
 export class MoleculeChooserNode extends VBox {
   private readonly disposeMoleculeChooserNode: () => void;
@@ -68,10 +69,16 @@ export class MoleculeChooserNode extends VBox {
 
     super({
       align: "left",
-      spacing: 6,
+      spacing: MOLECULE_CHOOSER_NODE_SETTINGS.CONSTRUCTOR_SPACING,
       children: [
-        new HBox({ spacing: 10, children: [label(controls.familyStringProperty, LABEL_WIDTH), familyCombo] }),
-        new HBox({ spacing: 10, children: [label(controls.moleculeStringProperty, LABEL_WIDTH), moleculeSlot] }),
+        new HBox({
+          spacing: MOLECULE_CHOOSER_NODE_SETTINGS.ITEM_1_SPACING,
+          children: [label(controls.familyStringProperty, LABEL_WIDTH), familyCombo],
+        }),
+        new HBox({
+          spacing: MOLECULE_CHOOSER_NODE_SETTINGS.ITEM_2_SPACING,
+          children: [label(controls.moleculeStringProperty, LABEL_WIDTH), moleculeSlot],
+        }),
       ],
     });
 

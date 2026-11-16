@@ -1,3 +1,4 @@
+import { SPIN_SYSTEM_SETTINGS } from "../../../SpectroscopyLabConstants.js";
 /**
  * SpinSystem.ts
  *
@@ -28,14 +29,14 @@ import { multipletLines, type ProtonEnvironment, vicinalCoupling } from "./Proto
  * Larger coupled groups fall back to first order (a 10-spin block is 252 × 252; 9 spins is 126).
  * @internal Exported for unit tests; not part of the application API.
  */
-export const MAX_EXACT_SPINS = 9;
+export const MAX_EXACT_SPINS: number = SPIN_SYSTEM_SETTINGS.MAX_EXACT_SPINS;
 /** Lines weaker than this (in protons) are dropped. */
-const MIN_WEIGHT = 1e-4;
+const MIN_WEIGHT: number = SPIN_SYSTEM_SETTINGS.MIN_WEIGHT;
 /**
  * Lines of one signal closer than this (Hz) are merged: the many (near-)degenerate transitions of
  * methyl groups, split by hundredths of a hertz, far below the 0.8 Hz natural line width.
  */
-const MERGE_HZ = 0.1;
+const MERGE_HZ: number = SPIN_SYSTEM_SETTINGS.MERGE_HZ;
 
 export type ResolvedLine = {
   /** Chemical shift of the line, ppm. */

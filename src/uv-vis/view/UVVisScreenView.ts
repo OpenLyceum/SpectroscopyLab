@@ -1,3 +1,4 @@
+import { UV_VIS_SCREEN_VIEW_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * UVVisScreenView.ts
  *
@@ -39,26 +40,26 @@ import {
 import { EnergyLevelDiagramNode } from "./EnergyLevelDiagramNode.js";
 import { UVVisScreenSummaryContent } from "./UVVisScreenSummaryContent.js";
 
-const VIEWER_SIZE = 380;
-const VIEWER_HEIGHT = 330;
-const CONTROL_WIDTH = 356;
-const DIAGRAM_WIDTH = 150;
-const DIAGRAM_HEIGHT = 280;
-const CHART_WIDTH = 330;
-const CHART_HEIGHT = 230;
-const STRIP_HEIGHT = 8;
-const SWATCH_SIZE = 46;
-const INFO_WIDTH = 520;
-const TITLE_FONT = new PhetFont({ size: 15, weight: "bold" });
-const INFO_FONT = new PhetFont(13);
-const CALIBRATION_WIDTH = 170;
-const CALIBRATION_HEIGHT = 80;
-const CALIBRATION_TEXT_WIDTH = 190;
+const VIEWER_SIZE: number = UV_VIS_SCREEN_VIEW_SETTINGS.VIEWER_SIZE;
+const VIEWER_HEIGHT: number = UV_VIS_SCREEN_VIEW_SETTINGS.VIEWER_HEIGHT;
+const CONTROL_WIDTH: number = UV_VIS_SCREEN_VIEW_SETTINGS.CONTROL_WIDTH;
+const DIAGRAM_WIDTH: number = UV_VIS_SCREEN_VIEW_SETTINGS.DIAGRAM_WIDTH;
+const DIAGRAM_HEIGHT: number = UV_VIS_SCREEN_VIEW_SETTINGS.DIAGRAM_HEIGHT;
+const CHART_WIDTH: number = UV_VIS_SCREEN_VIEW_SETTINGS.CHART_WIDTH;
+const CHART_HEIGHT: number = UV_VIS_SCREEN_VIEW_SETTINGS.CHART_HEIGHT;
+const STRIP_HEIGHT: number = UV_VIS_SCREEN_VIEW_SETTINGS.STRIP_HEIGHT;
+const SWATCH_SIZE: number = UV_VIS_SCREEN_VIEW_SETTINGS.SWATCH_SIZE;
+const INFO_WIDTH: number = UV_VIS_SCREEN_VIEW_SETTINGS.INFO_WIDTH;
+const TITLE_FONT = new PhetFont({ size: UV_VIS_SCREEN_VIEW_SETTINGS.TITLE_FONT_SIZE, weight: "bold" });
+const INFO_FONT = new PhetFont(UV_VIS_SCREEN_VIEW_SETTINGS.INFO_FONT_SIZE);
+const CALIBRATION_WIDTH: number = UV_VIS_SCREEN_VIEW_SETTINGS.CALIBRATION_WIDTH;
+const CALIBRATION_HEIGHT: number = UV_VIS_SCREEN_VIEW_SETTINGS.CALIBRATION_HEIGHT;
+const CALIBRATION_TEXT_WIDTH: number = UV_VIS_SCREEN_VIEW_SETTINGS.CALIBRATION_TEXT_WIDTH;
 /** Absorbance axes: unit bands, and the absolute scale (stray light caps readings near 3). */
-const UNIT_RANGE = new Range(0, 1.1);
-const ABSOLUTE_RANGE = new Range(0, 3.2);
-const CONCENTRATION_STEPS = 100;
-const PATH_LENGTH_STEP = 0.1;
+const UNIT_RANGE = new Range(0, UV_VIS_SCREEN_VIEW_SETTINGS.UNIT_RANGE_MAX);
+const ABSOLUTE_RANGE = new Range(0, UV_VIS_SCREEN_VIEW_SETTINGS.ABSOLUTE_RANGE_MAX);
+const CONCENTRATION_STEPS: number = UV_VIS_SCREEN_VIEW_SETTINGS.CONCENTRATION_STEPS;
+const PATH_LENGTH_STEP: number = UV_VIS_SCREEN_VIEW_SETTINGS.PATH_LENGTH_STEP;
 
 export type UVVisScreenViewOptions = ScreenViewOptions;
 
@@ -84,12 +85,12 @@ export class UVVisScreenView extends ScreenView {
         new Rectangle(viewerBounds, {
           fill: SpectroscopyLabColors.chartBackgroundColorProperty,
           stroke: SpectroscopyLabColors.panelBorderColorProperty,
-          cornerRadius: 6,
+          cornerRadius: UV_VIS_SCREEN_VIEW_SETTINGS.VIEWER_CORNER_RADIUS,
         }),
         this.viewerNode,
       ],
       left: this.layoutBounds.minX + SCREEN_VIEW_MARGIN,
-      top: this.layoutBounds.minY + 12,
+      top: this.layoutBounds.minY + UV_VIS_SCREEN_VIEW_SETTINGS.VIEWER_TOP_OFFSET,
     });
 
     // ── Controls ────────────────────────────────────────────────────────────────
@@ -101,7 +102,7 @@ export class UVVisScreenView extends ScreenView {
         { value: ElectronicModel.BOX, label: strings.boxStringProperty },
       ],
       strings.modelStringProperty,
-      150,
+      UV_VIS_SCREEN_VIEW_SETTINGS.ELECTRONIC_MODEL_RADIO_GROUP_MAX_WIDTH,
       "horizontal",
     );
     const concentrationLabelProperty = new PatternStringProperty(strings.concentrationStringProperty, {
@@ -126,7 +127,7 @@ export class UVVisScreenView extends ScreenView {
       accessibleName: strings.pathLengthNameStringProperty,
     });
     const quantitativeControls = new HBox({
-      spacing: 16,
+      spacing: UV_VIS_SCREEN_VIEW_SETTINGS.QUANTITATIVE_CONTROLS_SPACING,
       children: [
         labeled(concentrationLabelProperty, concentrationSlider, CONTROL_WIDTH / 2),
         labeled(pathLengthLabelProperty, pathLengthSlider, CONTROL_WIDTH / 2),
@@ -135,15 +136,25 @@ export class UVVisScreenView extends ScreenView {
     const controls = new SpectroscopyLabPanel(
       new VBox({
         align: "left",
-        spacing: 10,
+        spacing: UV_VIS_SCREEN_VIEW_SETTINGS.CONTROLS_SPACING,
         children: [
           chooser,
-          new HBox({ spacing: 10, children: [label(strings.modelStringProperty, 80), modelRadio] }),
+          new HBox({
+            spacing: UV_VIS_SCREEN_VIEW_SETTINGS.CONTROLS_SPACING,
+            children: [
+              label(strings.modelStringProperty, UV_VIS_SCREEN_VIEW_SETTINGS.MODEL_LABEL_MAX_WIDTH),
+              modelRadio,
+            ],
+          }),
           checkbox(model.quantitativeProperty, strings.quantitativeStringProperty, CONTROL_WIDTH - 30),
           quantitativeControls,
         ],
       }),
-      { minWidth: VIEWER_SIZE, left: viewer.left, top: viewer.bottom + 10 },
+      {
+        minWidth: VIEWER_SIZE,
+        left: viewer.left,
+        top: viewer.bottom + UV_VIS_SCREEN_VIEW_SETTINGS.CONTROLS_TOP_OFFSET,
+      },
     );
 
     // ── Energy levels ───────────────────────────────────────────────────────────
@@ -159,7 +170,7 @@ export class UVVisScreenView extends ScreenView {
       DIAGRAM_HEIGHT,
     );
     const diagramGroup = new VBox({
-      spacing: 4,
+      spacing: UV_VIS_SCREEN_VIEW_SETTINGS.DIAGRAM_GROUP_SPACING,
       children: [
         new Text(strings.orbitalsStringProperty, {
           font: TITLE_FONT,
@@ -212,7 +223,7 @@ export class UVVisScreenView extends ScreenView {
     }
     chart.addChild(strip);
     const chartGroup = new VBox({
-      spacing: 4,
+      spacing: UV_VIS_SCREEN_VIEW_SETTINGS.CHART_GROUP_SPACING,
       align: "left",
       children: [
         new Text(strings.absorbanceAxisStringProperty, {
@@ -224,7 +235,7 @@ export class UVVisScreenView extends ScreenView {
     });
 
     const upper = new HBox({
-      spacing: 70,
+      spacing: UV_VIS_SCREEN_VIEW_SETTINGS.UPPER_SPACING,
       align: "top",
       children: [diagramGroup, chartGroup],
       right: this.layoutBounds.maxX - SCREEN_VIEW_MARGIN,
@@ -236,55 +247,59 @@ export class UVVisScreenView extends ScreenView {
       new Text("", {
         font: INFO_FONT,
         fill: SpectroscopyLabColors.textColorProperty,
-        maxWidth: INFO_WIDTH - 2 * SWATCH_SIZE - 40,
+        maxWidth: INFO_WIDTH - 2 * SWATCH_SIZE - UV_VIS_SCREEN_VIEW_SETTINGS.LINE_MAX_WIDTH_OFFSET,
       });
     const predictedText = new Text("", {
       font: TITLE_FONT,
       fill: SpectroscopyLabColors.spectrumColorProperty,
-      maxWidth: INFO_WIDTH - 2 * SWATCH_SIZE - 40,
+      maxWidth: INFO_WIDTH - 2 * SWATCH_SIZE - UV_VIS_SCREEN_VIEW_SETTINGS.PREDICTED_TEXT_MAX_WIDTH_OFFSET,
     });
     const measuredText = new Text("", {
       font: TITLE_FONT,
       fill: SpectroscopyLabColors.integralColorProperty,
-      maxWidth: INFO_WIDTH - 2 * SWATCH_SIZE - 40,
+      maxWidth: INFO_WIDTH - 2 * SWATCH_SIZE - UV_VIS_SCREEN_VIEW_SETTINGS.MEASURED_TEXT_MAX_WIDTH_OFFSET,
     });
     const gapText = line();
     const methodText = line();
     const swatch = () =>
       new Rectangle(0, 0, SWATCH_SIZE, SWATCH_SIZE, {
-        cornerRadius: 6,
+        cornerRadius: UV_VIS_SCREEN_VIEW_SETTINGS.SWATCH_CORNER_RADIUS,
         stroke: SpectroscopyLabColors.panelBorderColorProperty,
       });
     const predictedSwatch = swatch();
     const measuredSwatch = swatch();
     const swatchColumn = (node: Rectangle, text: TReadOnlyProperty<string>) =>
       new VBox({
-        spacing: 3,
+        spacing: UV_VIS_SCREEN_VIEW_SETTINGS.SWATCH_COLUMN_SPACING,
         children: [
           node,
           new Text(text, {
             font: INFO_FONT,
             fill: SpectroscopyLabColors.textColorProperty,
-            maxWidth: SWATCH_SIZE + 20,
+            maxWidth: SWATCH_SIZE + UV_VIS_SCREEN_VIEW_SETTINGS.SWATCH_COLUMN_MAX_WIDTH_OFFSET,
           }),
         ],
       });
     const results = new SpectroscopyLabPanel(
       new HBox({
-        spacing: 24,
+        spacing: UV_VIS_SCREEN_VIEW_SETTINGS.RESULTS_SPACING,
         align: "top",
         children: [
-          new VBox({ align: "left", spacing: 5, children: [predictedText, measuredText, gapText, methodText] }),
           new VBox({
-            spacing: 4,
+            align: "left",
+            spacing: UV_VIS_SCREEN_VIEW_SETTINGS.RESULTS_ITEM_1_SPACING,
+            children: [predictedText, measuredText, gapText, methodText],
+          }),
+          new VBox({
+            spacing: UV_VIS_SCREEN_VIEW_SETTINGS.RESULTS_ITEM_2_SPACING,
             children: [
               new Text(strings.colorHeadingStringProperty, {
                 font: INFO_FONT,
                 fill: SpectroscopyLabColors.textColorProperty,
-                maxWidth: 2 * SWATCH_SIZE + 30,
+                maxWidth: 2 * SWATCH_SIZE + UV_VIS_SCREEN_VIEW_SETTINGS.RESULTS_MAX_WIDTH_OFFSET,
               }),
               new HBox({
-                spacing: 12,
+                spacing: UV_VIS_SCREEN_VIEW_SETTINGS.RESULTS_ITEM_2_SPACING_VARIANT_2,
                 children: [
                   swatchColumn(predictedSwatch, strings.predictedColorStringProperty),
                   swatchColumn(measuredSwatch, strings.measuredColorStringProperty),
@@ -294,7 +309,12 @@ export class UVVisScreenView extends ScreenView {
           }),
         ],
       }),
-      { minWidth: INFO_WIDTH + 24, align: "left", right: upper.right, top: upper.bottom + 16 },
+      {
+        minWidth: INFO_WIDTH + UV_VIS_SCREEN_VIEW_SETTINGS.RESULTS_MIN_WIDTH_OFFSET,
+        align: "left",
+        right: upper.right,
+        top: upper.bottom + UV_VIS_SCREEN_VIEW_SETTINGS.RESULTS_TOP_OFFSET,
+      },
     );
 
     const resultsMultilink = Multilink.multilinkAny(
@@ -357,7 +377,7 @@ export class UVVisScreenView extends ScreenView {
     const absorbanceText = calibrationText();
     const transmittanceText = calibrationText();
     const strayText = new Text(strings.strayLightStringProperty, {
-      font: new PhetFont(11),
+      font: new PhetFont(UV_VIS_SCREEN_VIEW_SETTINGS.STRAY_TEXT_FONT_SIZE),
       fill: SpectroscopyLabColors.textColorProperty,
       maxWidth: CALIBRATION_TEXT_WIDTH,
     });
@@ -392,12 +412,12 @@ export class UVVisScreenView extends ScreenView {
     });
     const calibrationPanel = new SpectroscopyLabPanel(
       new HBox({
-        spacing: 14,
+        spacing: UV_VIS_SCREEN_VIEW_SETTINGS.CALIBRATION_PANEL_SPACING,
         align: "top",
         children: [
           new VBox({
             align: "left",
-            spacing: 4,
+            spacing: UV_VIS_SCREEN_VIEW_SETTINGS.CALIBRATION_PANEL_ITEM_1_SPACING,
             children: [
               new Text(strings.calibrationTitleStringProperty, {
                 font: TITLE_FONT,
@@ -413,7 +433,11 @@ export class UVVisScreenView extends ScreenView {
           calibrationChart,
         ],
       }),
-      { align: "left", left: results.left, top: results.bottom + 10 },
+      {
+        align: "left",
+        left: results.left,
+        top: results.bottom + UV_VIS_SCREEN_VIEW_SETTINGS.CALIBRATION_PANEL_TOP_OFFSET,
+      },
     );
     const calibrationMultilink = Multilink.multilinkAny(
       [

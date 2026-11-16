@@ -1,3 +1,4 @@
+import { UNKNOWNS_SCREEN_VIEW_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * UnknownsScreenView.ts
  *
@@ -36,16 +37,16 @@ import { degreeOfUnsaturation, formulaText, molecularIonCluster } from "../model
 import { GuessResult, LEVEL_COUNT, type UnknownsModel } from "../model/UnknownsModel.js";
 import { UnknownsScreenSummaryContent } from "./UnknownsScreenSummaryContent.js";
 
-const THUMB_WIDTH = 184;
-const THUMB_HEIGHT = 112;
-const CHART_WIDTH = 500;
-const CHART_HEIGHT = 175;
-const BAR_MAX_HEIGHT = 46;
-const BAR_WIDTH = 16;
-const TITLE_FONT = new PhetFont({ size: 15, weight: "bold" });
-const INFO_FONT = new PhetFont(13);
-const NAME_FONT = new PhetFont(13);
-const MARK_FONT = new PhetFont({ size: 64, weight: "bold" });
+const THUMB_WIDTH: number = UNKNOWNS_SCREEN_VIEW_SETTINGS.THUMB_WIDTH;
+const THUMB_HEIGHT: number = UNKNOWNS_SCREEN_VIEW_SETTINGS.THUMB_HEIGHT;
+const CHART_WIDTH: number = UNKNOWNS_SCREEN_VIEW_SETTINGS.CHART_WIDTH;
+const CHART_HEIGHT: number = UNKNOWNS_SCREEN_VIEW_SETTINGS.CHART_HEIGHT;
+const BAR_MAX_HEIGHT: number = UNKNOWNS_SCREEN_VIEW_SETTINGS.BAR_MAX_HEIGHT;
+const BAR_WIDTH: number = UNKNOWNS_SCREEN_VIEW_SETTINGS.BAR_WIDTH;
+const TITLE_FONT = new PhetFont({ size: UNKNOWNS_SCREEN_VIEW_SETTINGS.TITLE_FONT_SIZE, weight: "bold" });
+const INFO_FONT = new PhetFont(UNKNOWNS_SCREEN_VIEW_SETTINGS.INFO_FONT_SIZE);
+const NAME_FONT = new PhetFont(UNKNOWNS_SCREEN_VIEW_SETTINGS.NAME_FONT_SIZE);
+const MARK_FONT = new PhetFont({ size: UNKNOWNS_SCREEN_VIEW_SETTINGS.MARK_FONT_SIZE, weight: "bold" });
 
 export type UnknownsScreenViewOptions = ScreenViewOptions;
 
@@ -71,18 +72,18 @@ export class UnknownsScreenView extends ScreenView {
       fill: SpectroscopyLabColors.textColorProperty,
       maxWidth: 2 * THUMB_WIDTH,
     });
-    const grid = new VBox({ spacing: 10, align: "left" });
+    const grid = new VBox({ spacing: UNKNOWNS_SCREEN_VIEW_SETTINGS.GRID_SPACING, align: "left" });
     const feedback = new Text("", {
       font: INFO_FONT,
       fill: SpectroscopyLabColors.textColorProperty,
-      maxWidth: 2 * THUMB_WIDTH + 20,
+      maxWidth: 2 * THUMB_WIDTH + UNKNOWNS_SCREEN_VIEW_SETTINGS.FEEDBACK_MAX_WIDTH_OFFSET,
     });
     const candidatesGroup = new VBox({
       align: "left",
-      spacing: 8,
+      spacing: UNKNOWNS_SCREEN_VIEW_SETTINGS.CANDIDATES_GROUP_SPACING,
       children: [question, grid, feedback],
       left: this.layoutBounds.minX + SCREEN_VIEW_MARGIN,
-      top: this.layoutBounds.minY + 12,
+      top: this.layoutBounds.minY + UNKNOWNS_SCREEN_VIEW_SETTINGS.CANDIDATES_GROUP_TOP_OFFSET,
     });
 
     let buttons: { id: string; button: RectangularPushButton; content: Node; mark: Text; frame: Rectangle }[] = [];
@@ -114,32 +115,43 @@ export class UnknownsScreenView extends ScreenView {
           visible: false,
           center: thumbnail.center,
         });
-        const frame = new Rectangle(-3, -3, THUMB_WIDTH + 6, THUMB_HEIGHT + 6, {
-          stroke: SpectroscopyLabColors.rightAnswerColorProperty,
-          lineWidth: 4,
-          cornerRadius: 6,
-          visible: false,
-        });
+        const frame = new Rectangle(
+          UNKNOWNS_SCREEN_VIEW_SETTINGS.FRAME_X,
+          UNKNOWNS_SCREEN_VIEW_SETTINGS.FRAME_Y,
+          THUMB_WIDTH + 6,
+          THUMB_HEIGHT + 6,
+          {
+            stroke: SpectroscopyLabColors.rightAnswerColorProperty,
+            lineWidth: UNKNOWNS_SCREEN_VIEW_SETTINGS.FRAME_LINE_WIDTH,
+            cornerRadius: UNKNOWNS_SCREEN_VIEW_SETTINGS.FRAME_CORNER_RADIUS,
+            visible: false,
+          },
+        );
         const plate = new Rectangle(0, 0, THUMB_WIDTH, THUMB_HEIGHT, {
           fill: SpectroscopyLabColors.chartBackgroundColorProperty,
-          cornerRadius: 4,
+          cornerRadius: UNKNOWNS_SCREEN_VIEW_SETTINGS.PLATE_CORNER_RADIUS,
         });
         const content = new VBox({
-          spacing: 4,
+          spacing: UNKNOWNS_SCREEN_VIEW_SETTINGS.CONTENT_SPACING,
           children: [new Node({ children: [plate, thumbnail, mark, frame] }), name],
         });
         const button = new RectangularPushButton({
           ...FLAT_RECTANGULAR_BUTTON_OPTIONS,
           content,
-          xMargin: 6,
-          yMargin: 6,
+          xMargin: UNKNOWNS_SCREEN_VIEW_SETTINGS.BUTTON_X_MARGIN,
+          yMargin: UNKNOWNS_SCREEN_VIEW_SETTINGS.BUTTON_Y_MARGIN,
           listener: () => model.guess(molecule.id),
           accessibleName: nameProperty,
         });
         return { id: molecule.id, button, content, mark, frame };
       });
       for (let i = 0; i < buttons.length; i += 2) {
-        grid.addChild(new HBox({ spacing: 10, children: buttons.slice(i, i + 2).map((b) => b.button) }));
+        grid.addChild(
+          new HBox({
+            spacing: UNKNOWNS_SCREEN_VIEW_SETTINGS.REBUILD_CANDIDATES_SPACING,
+            children: buttons.slice(i, i + 2).map((b) => b.button),
+          }),
+        );
       }
       updateMarks();
     };
@@ -218,27 +230,31 @@ export class UnknownsScreenView extends ScreenView {
     const formulaLine = new Text("", {
       font: TITLE_FONT,
       fill: SpectroscopyLabColors.textColorProperty,
-      maxWidth: 200,
+      maxWidth: UNKNOWNS_SCREEN_VIEW_SETTINGS.FORMULA_LINE_MAX_WIDTH,
     });
     const unsaturationLine = new Text("", {
       font: INFO_FONT,
       fill: SpectroscopyLabColors.textColorProperty,
-      maxWidth: 200,
+      maxWidth: UNKNOWNS_SCREEN_VIEW_SETTINGS.UNSATURATION_LINE_MAX_WIDTH,
     });
     const ionBars = new Node();
     const ionGroup = new VBox({
       align: "left",
-      spacing: 4,
+      spacing: UNKNOWNS_SCREEN_VIEW_SETTINGS.ION_GROUP_SPACING,
       children: [
         new Text(strings.ionClusterStringProperty, {
           font: INFO_FONT,
           fill: SpectroscopyLabColors.textColorProperty,
-          maxWidth: 180,
+          maxWidth: UNKNOWNS_SCREEN_VIEW_SETTINGS.ION_GROUP_MAX_WIDTH,
         }),
         ionBars,
       ],
     });
-    const scoreText = new Text("", { font: TITLE_FONT, fill: SpectroscopyLabColors.textColorProperty, maxWidth: 160 });
+    const scoreText = new Text("", {
+      font: TITLE_FONT,
+      fill: SpectroscopyLabColors.textColorProperty,
+      maxWidth: UNKNOWNS_SCREEN_VIEW_SETTINGS.SCORE_TEXT_MAX_WIDTH,
+    });
     const levelRadio = radioGroup(
       model.levelProperty,
       Array.from({ length: LEVEL_COUNT }, (_, i) => ({
@@ -248,21 +264,31 @@ export class UnknownsScreenView extends ScreenView {
         ),
       })),
       strings.levelStringProperty,
-      30,
+      UNKNOWNS_SCREEN_VIEW_SETTINGS.LEVEL_RADIO_GROUP_MAX_WIDTH,
       "horizontal",
     );
     const newButton = pushButton(strings.newUnknownStringProperty, () => model.newUnknown());
     const infoPanel = new SpectroscopyLabPanel(
       new HBox({
-        spacing: 26,
+        spacing: UNKNOWNS_SCREEN_VIEW_SETTINGS.INFO_PANEL_SPACING,
         align: "top",
         children: [
-          new VBox({ align: "left", spacing: 6, children: [formulaLine, unsaturationLine, ionGroup] }),
           new VBox({
             align: "left",
-            spacing: 10,
+            spacing: UNKNOWNS_SCREEN_VIEW_SETTINGS.INFO_PANEL_ITEM_1_SPACING,
+            children: [formulaLine, unsaturationLine, ionGroup],
+          }),
+          new VBox({
+            align: "left",
+            spacing: UNKNOWNS_SCREEN_VIEW_SETTINGS.INFO_PANEL_ITEM_2_SPACING,
             children: [
-              new HBox({ spacing: 8, children: [label(strings.levelStringProperty, 60), levelRadio] }),
+              new HBox({
+                spacing: UNKNOWNS_SCREEN_VIEW_SETTINGS.INFO_PANEL_ITEM_1_SPACING_VARIANT_2,
+                children: [
+                  label(strings.levelStringProperty, UNKNOWNS_SCREEN_VIEW_SETTINGS.LEVEL_LABEL_MAX_WIDTH),
+                  levelRadio,
+                ],
+              }),
               newButton,
               scoreText,
             ],
@@ -317,7 +343,7 @@ export class UnknownsScreenView extends ScreenView {
                   relative: toFixed(peak.relative, 1),
                 }),
                 {
-                  font: new PhetFont(10),
+                  font: new PhetFont(UNKNOWNS_SCREEN_VIEW_SETTINGS.INFO_MULTILINK_FONT_SIZE),
                   fill: SpectroscopyLabColors.textColorProperty,
                   left: x,
                   top: BAR_MAX_HEIGHT + 2,
@@ -350,7 +376,7 @@ export class UnknownsScreenView extends ScreenView {
       chartWidth: CHART_WIDTH,
       chartHeight: CHART_HEIGHT,
       xRange: IR_RANGE,
-      yRange: new Range(0, 100),
+      yRange: new Range(0, UNKNOWNS_SCREEN_VIEW_SETTINGS.IR_CHART_RANGE_MAX),
       xInverted: true,
       xTickSpacing: 500,
       yTickSpacing: 25,
@@ -367,7 +393,7 @@ export class UnknownsScreenView extends ScreenView {
       chartWidth: CHART_WIDTH,
       chartHeight: CHART_HEIGHT,
       xRange: SHIFT_RANGE,
-      yRange: new Range(0, 1.08),
+      yRange: new Range(0, UNKNOWNS_SCREEN_VIEW_SETTINGS.NMR_CHART_RANGE_MAX),
       xInverted: true,
       xTickSpacing: 1,
       yTickSpacing: 0.25,
@@ -387,7 +413,7 @@ export class UnknownsScreenView extends ScreenView {
       chartWidth: CHART_WIDTH,
       chartHeight: CHART_HEIGHT,
       xRange: CARBON_SHIFT_RANGE,
-      yRange: new Range(0, 1.08),
+      yRange: new Range(0, UNKNOWNS_SCREEN_VIEW_SETTINGS.CARBON_CHART_RANGE_MAX),
       xInverted: true,
       xTickSpacing: 20,
       yTickSpacing: 0.25,
@@ -416,23 +442,30 @@ export class UnknownsScreenView extends ScreenView {
         { value: Nucleus.CARBON, label: nmrStrings.carbonStringProperty },
       ],
       nmrStrings.nucleusStringProperty,
-      40,
+      UNKNOWNS_SCREEN_VIEW_SETTINGS.NUCLEUS_RADIO_GROUP_MAX_WIDTH,
       "horizontal",
     );
     const title = (text: TReadOnlyProperty<string>) =>
-      new Text(text, { font: TITLE_FONT, fill: SpectroscopyLabColors.textColorProperty, maxWidth: CHART_WIDTH - 120 });
+      new Text(text, {
+        font: TITLE_FONT,
+        fill: SpectroscopyLabColors.textColorProperty,
+        maxWidth: CHART_WIDTH - UNKNOWNS_SCREEN_VIEW_SETTINGS.TITLE_MAX_WIDTH_OFFSET,
+      });
     const spectra = new VBox({
       align: "left",
-      spacing: 6,
+      spacing: UNKNOWNS_SCREEN_VIEW_SETTINGS.SPECTRA_SPACING,
       children: [
         title(strings.irTitleStringProperty),
         irChart,
-        new Node({ children: [], localBounds: new Bounds2(0, 0, 1, 4) }),
-        new HBox({ spacing: 24, children: [title(nmrTitleProperty), nucleusRadio] }),
+        new Node({ children: [], localBounds: new Bounds2(0, 0, 1, UNKNOWNS_SCREEN_VIEW_SETTINGS.SPECTRA_MAX_Y) }),
+        new HBox({
+          spacing: UNKNOWNS_SCREEN_VIEW_SETTINGS.SPECTRA_ITEM_4_SPACING,
+          children: [title(nmrTitleProperty), nucleusRadio],
+        }),
         new Node({ children: [nmrChart, carbonChart] }),
       ],
       right: this.layoutBounds.maxX - SCREEN_VIEW_MARGIN,
-      top: this.layoutBounds.minY + 8,
+      top: this.layoutBounds.minY + UNKNOWNS_SCREEN_VIEW_SETTINGS.SPECTRA_TOP_OFFSET,
     });
 
     // ── Reset All ───────────────────────────────────────────────────────────────

@@ -1,3 +1,4 @@
+import { NMR_MODEL_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * NMRModel.ts
  *
@@ -44,7 +45,7 @@ import { type ProtonEnvironment, protonEnvironments } from "../../common/model/n
 import { type ResolvedLine, resolvedLines } from "../../common/model/nmr/SpinSystem.js";
 import type { SampledCurve } from "../../common/model/SpectrumCurve.js";
 
-const DEFAULT_FIELD = 300;
+const DEFAULT_FIELD: number = NMR_MODEL_SETTINGS.DEFAULT_FIELD;
 
 /** Molecules the screen offers: any with hydrogen except HCl (no C–H, no meaningful ¹H spectrum). */
 const NMR_EXCLUDED = new Set(["hydrogen-chloride"]);

@@ -1,3 +1,4 @@
+import { SIGNAL_TABLE_NODE_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * SignalTableNode.ts
  *
@@ -14,10 +15,10 @@ import SpectroscopyLabHotkeyData from "../../common/SpectroscopyLabHotkeyData.js
 import { StringManager } from "../../i18n/StringManager.js";
 import SpectroscopyLabColors from "../../SpectroscopyLabColors.js";
 
-const ROW_FONT = new PhetFont({ size: 13, family: "monospace" });
-const DETAIL_FONT = new PhetFont(12);
-const HEADING_FONT = new PhetFont({ size: 14, weight: "bold" });
-const MAX_ROWS = 8;
+const ROW_FONT = new PhetFont({ size: SIGNAL_TABLE_NODE_SETTINGS.ROW_FONT_SIZE, family: "monospace" });
+const DETAIL_FONT = new PhetFont(SIGNAL_TABLE_NODE_SETTINGS.DETAIL_FONT_SIZE);
+const HEADING_FONT = new PhetFont({ size: SIGNAL_TABLE_NODE_SETTINGS.HEADING_FONT_SIZE, weight: "bold" });
+const MAX_ROWS: number = SIGNAL_TABLE_NODE_SETTINGS.MAX_ROWS;
 
 export type SignalRow = {
   readonly main: string;
@@ -37,7 +38,7 @@ export class SignalTableNode extends VBox {
       const main = new Text("", { font: ROW_FONT, maxWidth: width });
       const detail = new Text("", {
         font: DETAIL_FONT,
-        maxWidth: width - 16,
+        maxWidth: width - SIGNAL_TABLE_NODE_SETTINGS.DETAIL_MAX_WIDTH_OFFSET,
         fill: SpectroscopyLabColors.textColorProperty,
       });
       const listener = new FireListener({
@@ -84,7 +85,7 @@ export class SignalTableNode extends VBox {
       tagName: "div",
       accessibleName: strings.signalsStringProperty,
       align: "left",
-      spacing: 4,
+      spacing: SIGNAL_TABLE_NODE_SETTINGS.CONSTRUCTOR_SPACING,
       children: [heading, ...rows.map((r) => r.content)],
     });
 

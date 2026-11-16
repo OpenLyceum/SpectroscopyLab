@@ -1,3 +1,5 @@
+import { SYMMETRIC_EIGEN_NUMERICS, SYMMETRIC_EIGEN_SETTINGS } from "../../../SpectroscopyLabConstants.js";
+
 /**
  * symmetricEigen.ts
  *
@@ -9,7 +11,7 @@
  * typed array and throws (scenerystack 3.0).
  */
 
-const MAX_SWEEPS = 400;
+const MAX_SWEEPS: number = SYMMETRIC_EIGEN_SETTINGS.MAX_SWEEPS;
 
 /** @internal Exported for unit tests; not part of the application API. */
 export class EigenConvergenceError extends Error {
@@ -42,7 +44,7 @@ export function symmetricEigen(matrix: Float64Array, n: number, maxSweeps = MAX_
   for (let i = 0; i < n * n; i++) {
     scale += (a[i] ?? 0) ** 2;
   }
-  const threshold = 1e-30 * Math.max(scale, Number.MIN_VALUE);
+  const threshold = SYMMETRIC_EIGEN_NUMERICS.RELATIVE_OFF_DIAGONAL_FLOOR * Math.max(scale, Number.MIN_VALUE);
 
   for (let sweep = 0; sweep < maxSweeps && offDiagonalSquared(a, n) > threshold; sweep++) {
     for (let p = 0; p < n; p++) {

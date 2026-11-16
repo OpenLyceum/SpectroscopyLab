@@ -1,3 +1,4 @@
+import { SPECTROSCOPY_LAB_PANEL_SETTINGS } from "../SpectroscopyLabConstants.js";
 /**
  * SpectroscopyLabPanel.ts
  *
@@ -40,8 +41,8 @@ export class SpectroscopyLabPanel extends Panel {
         fill: SpectroscopyLabColors.panelBackgroundColorProperty,
         stroke: SpectroscopyLabColors.panelBorderColorProperty,
         cornerRadius: PANEL_CORNER_RADIUS,
-        xMargin: 12,
-        yMargin: 10,
+        xMargin: SPECTROSCOPY_LAB_PANEL_SETTINGS.OPTIONS_X_MARGIN,
+        yMargin: SPECTROSCOPY_LAB_PANEL_SETTINGS.OPTIONS_Y_MARGIN,
       },
       providedOptions,
     );

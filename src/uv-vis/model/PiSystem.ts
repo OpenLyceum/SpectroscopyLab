@@ -1,3 +1,4 @@
+import { PI_SYSTEM_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * PiSystem.ts
  *
@@ -20,15 +21,15 @@ import { symmetricEigen } from "../../common/model/math/symmetricEigen.js";
 import type { Vec3 } from "../../common/model/structure/Geometry.js";
 
 /** Free-electron bond length, m (Kuhn). */
-const BOX_BOND_LENGTH = 1.39e-10;
-const ELECTRON_MASS = 9.1093837e-31; // kg
-const PLANCK = 6.62607015e-34; // J·s
-const LIGHT_SPEED = 2.99792458e8; // m/s
-const ELECTRON_VOLT = 1.602176634e-19; // J
+const BOX_BOND_LENGTH: number = PI_SYSTEM_SETTINGS.BOX_BOND_LENGTH;
+const ELECTRON_MASS: number = PI_SYSTEM_SETTINGS.ELECTRON_MASS; // kg
+const PLANCK: number = PI_SYSTEM_SETTINGS.PLANCK; // J·s
+const LIGHT_SPEED: number = PI_SYSTEM_SETTINGS.LIGHT_SPEED; // m/s
+const ELECTRON_VOLT: number = PI_SYSTEM_SETTINGS.ELECTRON_VOLT; // J
 
 /** Hückel heteroatom parameters (Streitwieser): h on the diagonal, k for its bonds to carbon. */
-const NITROGEN_H = 1.0;
-const NITROGEN_K = 1.0;
+const NITROGEN_H: number = PI_SYSTEM_SETTINGS.NITROGEN_H;
+const NITROGEN_K: number = PI_SYSTEM_SETTINGS.NITROGEN_K;
 
 export type Orbital = {
   /** Energy relative to α in units of |β| (negative = bonding) for Hückel; eV above the box floor for the box. */

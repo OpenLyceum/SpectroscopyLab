@@ -1,5 +1,6 @@
 /** Pure spectrum sampling and display ranges shared by NMR and Unknowns. */
 import { Range } from "scenerystack/dot";
+import { NMR_SPECTRUM_SETTINGS } from "../../../SpectroscopyLabConstants.js";
 import type { MoleculeGraph } from "../MoleculeGraph.js";
 import { lorentzianSum, type SampledCurve, type StickPeak } from "../SpectrumCurve.js";
 import { type CarbonEnvironment, type CarbonLine, PROTON_TO_CARBON_FREQUENCY } from "./CarbonSpectrum.js";
@@ -7,29 +8,32 @@ import type { ProtonEnvironment } from "./ProtonSpectrum.js";
 import { type ResolvedLine, resolvedLines } from "./SpinSystem.js";
 
 /** ¹H chemical-shift window, ppm (TMS at 0, carboxylic acids near 12). */
-export const SHIFT_RANGE = new Range(-0.5, 12.5);
+export const SHIFT_RANGE = new Range(NMR_SPECTRUM_SETTINGS.SHIFT_RANGE_MIN, NMR_SPECTRUM_SETTINGS.SHIFT_RANGE_MAX);
 /** ¹³C chemical-shift window, ppm (TMS at 0, ketones near 210). */
-export const CARBON_SHIFT_RANGE = new Range(-5, 225);
+export const CARBON_SHIFT_RANGE = new Range(
+  NMR_SPECTRUM_SETTINGS.CARBON_SHIFT_RANGE_MIN,
+  NMR_SPECTRUM_SETTINGS.CARBON_SHIFT_RANGE_MAX,
+);
 /** Window of the multiplet zoom, ppm either side of the signal centre. */
-const ZOOM_HALF_WIDTH = 0.3;
+const ZOOM_HALF_WIDTH: number = NMR_SPECTRUM_SETTINGS.ZOOM_HALF_WIDTH;
 export const ZOOM_RANGE = new Range(-ZOOM_HALF_WIDTH, ZOOM_HALF_WIDTH);
 /** Minimum ¹³C zoom; expanded when a selected multiplet extends beyond it. */
-const CARBON_ZOOM_HALF_WIDTH = 6;
+const CARBON_ZOOM_HALF_WIDTH: number = NMR_SPECTRUM_SETTINGS.CARBON_ZOOM_HALF_WIDTH;
 export const CARBON_ZOOM_RANGE = new Range(-CARBON_ZOOM_HALF_WIDTH, CARBON_ZOOM_HALF_WIDTH);
 /** Spectrometer (¹H Larmor) frequency, MHz. */
-export const FIELD_RANGE = new Range(60, 600);
+export const FIELD_RANGE = new Range(NMR_SPECTRUM_SETTINGS.FIELD_RANGE_MIN, NMR_SPECTRUM_SETTINGS.FIELD_RANGE_MAX);
 
 /** Natural line half-width (HWHM) of a sharp signal, and of a broad exchanging O–H/N–H, Hz. */
-const LINE_HALF_WIDTH_HZ = 0.8;
-const BROAD_HALF_WIDTH_HZ = 12;
-const CARBON_HALF_WIDTH_HZ = 1.5;
+const LINE_HALF_WIDTH_HZ: number = NMR_SPECTRUM_SETTINGS.LINE_HALF_WIDTH_HZ;
+const BROAD_HALF_WIDTH_HZ: number = NMR_SPECTRUM_SETTINGS.BROAD_HALF_WIDTH_HZ;
+const CARBON_HALF_WIDTH_HZ: number = NMR_SPECTRUM_SETTINGS.CARBON_HALF_WIDTH_HZ;
 /** Leave at least this margin beyond the carbon lines, ppm. */
 const CARBON_WINDOW_MARGIN = 1;
-const SPECTRUM_SAMPLES = 6500;
-const ZOOM_SAMPLES = 1500;
+const SPECTRUM_SAMPLES: number = NMR_SPECTRUM_SETTINGS.SPECTRUM_SAMPLES;
+const ZOOM_SAMPLES: number = NMR_SPECTRUM_SETTINGS.ZOOM_SAMPLES;
 /** The tallest line is drawn at this height; the integral trace tops out at INTEGRAL_HEIGHT. */
 const PEAK_HEIGHT = 1;
-const INTEGRAL_HEIGHT = 0.9;
+const INTEGRAL_HEIGHT: number = NMR_SPECTRUM_SETTINGS.INTEGRAL_HEIGHT;
 
 export const Nucleus = {
   PROTON: "proton",

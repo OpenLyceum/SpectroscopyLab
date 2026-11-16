@@ -1,3 +1,4 @@
+import { MOLECULE_VIEW_MODEL_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * MoleculeViewModel.ts
  *
@@ -15,13 +16,13 @@ import type { Vec3 } from "./structure/Geometry.js";
 import { Rotation3 } from "./structure/Rotation3.js";
 
 /** Vibration animation frequency on screen, Hz (real modes are ~10¹³ Hz). */
-const VIBRATION_DISPLAY_FREQUENCY = 1.2;
+const VIBRATION_DISPLAY_FREQUENCY: number = MOLECULE_VIEW_MODEL_SETTINGS.VIBRATION_DISPLAY_FREQUENCY;
 
 /** Peak displacement of the fastest-moving atom when a mode animates, Å. */
-const VIBRATION_AMPLITUDE = 0.25;
+const VIBRATION_AMPLITUDE: number = MOLECULE_VIEW_MODEL_SETTINGS.VIBRATION_AMPLITUDE;
 
-const MIN_ZOOM = 0.3;
-const MAX_ZOOM = 6;
+const MIN_ZOOM: number = MOLECULE_VIEW_MODEL_SETTINGS.MIN_ZOOM;
+const MAX_ZOOM: number = MOLECULE_VIEW_MODEL_SETTINGS.MAX_ZOOM;
 
 /** A signed p-orbital lobe pair drawn on one atom (Hückel MO coefficients). */
 export type OrbitalLobe = {

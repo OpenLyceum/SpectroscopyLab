@@ -1,3 +1,4 @@
+import { SPECTRUM_CURVE_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * SpectrumCurve.ts
  *
@@ -18,7 +19,7 @@ export type SampledCurve = {
 };
 
 /** Beyond this many half-widths a Lorentzian's contribution (< 1/2500) is skipped. */
-const CUTOFF_HALF_WIDTHS = 50;
+const CUTOFF_HALF_WIDTHS: number = SPECTRUM_CURVE_SETTINGS.CUTOFF_HALF_WIDTHS;
 
 /** Sum of unit-height Lorentzians of half-width `halfWidth`, sampled at `samples` points on [min, max]. */
 export function lorentzianSum(

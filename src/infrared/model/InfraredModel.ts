@@ -1,3 +1,4 @@
+import { INFRARED_MODEL_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * InfraredModel.ts
  *
@@ -46,11 +47,14 @@ import {
 const INITIAL_MOLECULE = "water";
 
 /** Line half-width (HWHM) range and default, cm⁻¹. */
-export const HALF_WIDTH_RANGE = new Range(2, 40);
-const DEFAULT_HALF_WIDTH = 10;
+export const HALF_WIDTH_RANGE = new Range(
+  INFRARED_MODEL_SETTINGS.HALF_WIDTH_RANGE_MIN,
+  INFRARED_MODEL_SETTINGS.HALF_WIDTH_RANGE_MAX,
+);
+const DEFAULT_HALF_WIDTH: number = INFRARED_MODEL_SETTINGS.DEFAULT_HALF_WIDTH;
 
 /** Modes weaker than this fraction of the strongest are not offered to the peak cursor. */
-const VISIBLE_FRACTION = 0.01;
+const VISIBLE_FRACTION: number = INFRARED_MODEL_SETTINGS.VISIBLE_FRACTION;
 
 /** Identifies a rotational line across changes of temperature (which add or drop weak lines). */
 export type RotationalLineKey = {

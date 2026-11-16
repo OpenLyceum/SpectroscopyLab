@@ -11,14 +11,15 @@ import { Circle, Line, Node, Path, Rectangle } from "scenerystack/scenery";
 import { ArrowNode } from "scenerystack/scenery-phet";
 import { ScreenIcon } from "scenerystack/sim";
 import SpectroscopyLabColors from "../SpectroscopyLabColors.js";
+import { SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS } from "../SpectroscopyLabConstants.js";
 
 const W = 548;
 const H = 373;
-const CHART_LEFT = 55;
+const CHART_LEFT: number = SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CHART_LEFT;
 const CHART_RIGHT = W - 45;
-const CHART_TOP = 195;
+const CHART_TOP: number = SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CHART_TOP;
 const CHART_BOTTOM = H - 48;
-const CURVE_STEP = 2;
+const CURVE_STEP: number = SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CURVE_STEP;
 
 function background(): Rectangle {
   return new Rectangle(0, 0, W, H, { fill: SpectroscopyLabColors.backgroundColorProperty });
@@ -38,7 +39,10 @@ function chart(): Node {
   });
   const axes = new Path(
     new Shape().moveTo(CHART_LEFT, CHART_TOP).lineTo(CHART_LEFT, CHART_BOTTOM).lineTo(CHART_RIGHT, CHART_BOTTOM),
-    { stroke: SpectroscopyLabColors.chartAxisColorProperty, lineWidth: 4 },
+    {
+      stroke: SpectroscopyLabColors.chartAxisColorProperty,
+      lineWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.AXES_LINE_WIDTH,
+    },
   );
   return new Node({ children: [fill, axes] });
 }
@@ -52,24 +56,30 @@ function spectrum(yAt: (x: number) => number): Path {
   }
   return new Path(shape, {
     stroke: SpectroscopyLabColors.spectrumColorProperty,
-    lineWidth: 5,
+    lineWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.SPECTRUM_LINE_WIDTH,
     lineJoin: "round",
   });
 }
 
 export function createInfraredIcon(): ScreenIcon {
-  const bond = new Line(215, 105, 333, 105, {
-    stroke: SpectroscopyLabColors.chartAxisColorProperty,
-    lineWidth: 16,
-  });
+  const bond = new Line(
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.BOND_START_X,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.BOND_START_Y,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.BOND_END_X,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.BOND_END_Y,
+    {
+      stroke: SpectroscopyLabColors.chartAxisColorProperty,
+      lineWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.BOND_LINE_WIDTH,
+    },
+  );
   const atoms = [215, 333].map(
     (x) =>
-      new Circle(31, {
+      new Circle(SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.ATOMS_RADIUS, {
         centerX: x,
-        centerY: 105,
+        centerY: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.ATOMS_CENTER_Y,
         fill: SpectroscopyLabColors.spectrumColorProperty,
         stroke: SpectroscopyLabColors.textColorProperty,
-        lineWidth: 3,
+        lineWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.ATOMS_LINE_WIDTH,
       }),
   );
   const arrows = (
@@ -79,13 +89,19 @@ export function createInfraredIcon(): ScreenIcon {
     ] as const
   ).map(
     ([start, end]) =>
-      new ArrowNode(start, 105, end, 105, {
-        fill: SpectroscopyLabColors.highlightColorProperty,
-        stroke: null,
-        tailWidth: 7,
-        headWidth: 23,
-        headHeight: 20,
-      }),
+      new ArrowNode(
+        start,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.ARROWS_START_Y,
+        end,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.ARROWS_END_Y,
+        {
+          fill: SpectroscopyLabColors.highlightColorProperty,
+          stroke: null,
+          tailWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.ARROWS_TAIL_WIDTH,
+          headWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.ARROWS_HEAD_WIDTH,
+          headHeight: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.ARROWS_HEAD_HEIGHT,
+        },
+      ),
   );
   // Downward transmittance bands distinguish IR from the other spectra.
   const dips = [
@@ -106,28 +122,54 @@ export function createInfraredIcon(): ScreenIcon {
 }
 
 export function createNMRIcon(): ScreenIcon {
-  const tube = new Rectangle(250, 40, 48, 125, 18, 18, {
-    fill: SpectroscopyLabColors.chartBackgroundColorProperty,
-    stroke: SpectroscopyLabColors.chartAxisColorProperty,
-    lineWidth: 5,
-  });
-  const sample = new Rectangle(257, 95, 34, 62, 12, 12, {
-    fill: SpectroscopyLabColors.spectrumColorProperty,
-  });
+  const tube = new Rectangle(
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.TUBE_X,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.TUBE_Y,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.TUBE_WIDTH,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.TUBE_HEIGHT,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.TUBE_CORNER_X,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.TUBE_CORNER_Y,
+    {
+      fill: SpectroscopyLabColors.chartBackgroundColorProperty,
+      stroke: SpectroscopyLabColors.chartAxisColorProperty,
+      lineWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.TUBE_LINE_WIDTH,
+    },
+  );
+  const sample = new Rectangle(
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.SAMPLE_X,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.SAMPLE_Y,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.SAMPLE_WIDTH,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.SAMPLE_HEIGHT,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.SAMPLE_CORNER_X,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.SAMPLE_CORNER_Y,
+    {
+      fill: SpectroscopyLabColors.spectrumColorProperty,
+    },
+  );
   const field = [181, 367].map(
     (x) =>
-      new ArrowNode(x, 157, x, 49, {
-        fill: SpectroscopyLabColors.highlightColorProperty,
-        stroke: null,
-        tailWidth: 6,
-        headWidth: 22,
-        headHeight: 20,
-      }),
+      new ArrowNode(
+        x,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.FIELD_START_Y,
+        x,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.FIELD_END_Y,
+        {
+          fill: SpectroscopyLabColors.highlightColorProperty,
+          stroke: null,
+          tailWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.FIELD_TAIL_WIDTH,
+          headWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.FIELD_HEAD_WIDTH,
+          headHeight: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.FIELD_HEAD_HEIGHT,
+        },
+      ),
   );
   const trace = spectrum((x) => {
     const multiplet = (center: number, spacing: number, heights: readonly number[]) =>
       heights.reduce((sum, height, i) => sum + height / (1 + ((x - center - i * spacing) / 2.5) ** 2), 0);
-    return 318 - multiplet(137, 15, [45, 90, 45]) - multiplet(325, 14, [30, 85, 85, 30]);
+    return (
+      318 -
+      multiplet(137, SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.TRACE_SPACING, [45, 90, 45]) -
+      multiplet(325, SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.TRACE_SPACING_SEGMENT_2, [30, 85, 85, 30])
+    );
   });
   return iconFrom(
     new Node({
@@ -137,29 +179,53 @@ export function createNMRIcon(): ScreenIcon {
 }
 
 export function createUVVisIcon(): ScreenIcon {
-  const cuvette = new Rectangle(245, 44, 70, 120, {
-    fill: SpectroscopyLabColors.chartBackgroundColorProperty,
-    stroke: SpectroscopyLabColors.chartAxisColorProperty,
-    lineWidth: 5,
-  });
-  const solution = new Rectangle(252, 73, 56, 84, {
-    fill: SpectroscopyLabColors.lobePositiveColorProperty,
-    opacity: 0.65,
-  });
-  const incident = new ArrowNode(90, 108, 231, 108, {
-    fill: SpectroscopyLabColors.highlightColorProperty,
-    stroke: null,
-    tailWidth: 18,
-    headWidth: 38,
-    headHeight: 26,
-  });
-  const transmitted = new ArrowNode(329, 108, 458, 108, {
-    fill: SpectroscopyLabColors.highlightColorProperty,
-    stroke: null,
-    tailWidth: 7,
-    headWidth: 22,
-    headHeight: 22,
-  });
+  const cuvette = new Rectangle(
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CUVETTE_X,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CUVETTE_Y,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CUVETTE_WIDTH,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CUVETTE_HEIGHT,
+    {
+      fill: SpectroscopyLabColors.chartBackgroundColorProperty,
+      stroke: SpectroscopyLabColors.chartAxisColorProperty,
+      lineWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CUVETTE_LINE_WIDTH,
+    },
+  );
+  const solution = new Rectangle(
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.SOLUTION_X,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.SOLUTION_Y,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.SOLUTION_WIDTH,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.SOLUTION_HEIGHT,
+    {
+      fill: SpectroscopyLabColors.lobePositiveColorProperty,
+      opacity: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.SOLUTION_OPACITY,
+    },
+  );
+  const incident = new ArrowNode(
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.INCIDENT_START_X,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.INCIDENT_START_Y,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.INCIDENT_END_X,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.INCIDENT_END_Y,
+    {
+      fill: SpectroscopyLabColors.highlightColorProperty,
+      stroke: null,
+      tailWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.INCIDENT_TAIL_WIDTH,
+      headWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.INCIDENT_HEAD_WIDTH,
+      headHeight: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.INCIDENT_HEAD_HEIGHT,
+    },
+  );
+  const transmitted = new ArrowNode(
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.TRANSMITTED_START_X,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.TRANSMITTED_START_Y,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.TRANSMITTED_END_X,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.TRANSMITTED_END_Y,
+    {
+      fill: SpectroscopyLabColors.highlightColorProperty,
+      stroke: null,
+      tailWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.TRANSMITTED_TAIL_WIDTH,
+      headWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.TRANSMITTED_HEAD_WIDTH,
+      headHeight: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.TRANSMITTED_HEAD_HEIGHT,
+    },
+  );
   const trace = spectrum(
     (x) => 318 - 105 * Math.exp(-(((x - 240) / 47) ** 2)) - 42 * Math.exp(-(((x - 379) / 32) ** 2)),
   );
@@ -171,51 +237,127 @@ export function createUVVisIcon(): ScreenIcon {
 }
 
 export function createUnknownsIcon(): ScreenIcon {
-  const evidence = new Rectangle(310, 57, 177, 256, 10, 10, {
-    fill: SpectroscopyLabColors.chartBackgroundColorProperty,
-    stroke: SpectroscopyLabColors.chartAxisColorProperty,
-    lineWidth: 5,
-  });
+  const evidence = new Rectangle(
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.EVIDENCE_X,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.EVIDENCE_Y,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.EVIDENCE_WIDTH,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.EVIDENCE_HEIGHT,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.EVIDENCE_CORNER_X,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.EVIDENCE_CORNER_Y,
+    {
+      fill: SpectroscopyLabColors.chartBackgroundColorProperty,
+      stroke: SpectroscopyLabColors.chartAxisColorProperty,
+      lineWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.EVIDENCE_LINE_WIDTH,
+    },
+  );
   const clues = new Path(
     new Shape()
-      .moveTo(333, 137)
-      .lineTo(353, 137)
-      .lineTo(366, 177)
-      .lineTo(379, 137)
-      .lineTo(401, 137)
-      .lineTo(411, 194)
-      .lineTo(421, 137)
-      .lineTo(464, 137)
-      .moveTo(333, 284)
-      .lineTo(464, 284)
-      .moveTo(351, 284)
-      .lineTo(351, 251)
-      .moveTo(365, 284)
-      .lineTo(365, 229)
-      .moveTo(379, 284)
-      .lineTo(379, 251)
-      .moveTo(438, 284)
-      .lineTo(438, 239),
-    { stroke: SpectroscopyLabColors.spectrumColorProperty, lineWidth: 5, lineJoin: "round" },
+      .moveTo(SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X, SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_Y)
+      .lineTo(SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X_SEGMENT_2, SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_Y)
+      .lineTo(
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X_SEGMENT_3,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_Y_SEGMENT_2,
+      )
+      .lineTo(SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X_SEGMENT_4, SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_Y)
+      .lineTo(SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X_SEGMENT_5, SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_Y)
+      .lineTo(
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X_SEGMENT_6,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_Y_SEGMENT_3,
+      )
+      .lineTo(SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X_SEGMENT_7, SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_Y)
+      .lineTo(SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X_SEGMENT_8, SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_Y)
+      .moveTo(SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X, SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X_MOVE_TO_Y)
+      .lineTo(
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X_SEGMENT_8,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_Y_SEGMENT_4,
+      )
+      .moveTo(
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X_SEGMENT_9,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_Y_SEGMENT_4,
+      )
+      .lineTo(
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X_SEGMENT_9,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_Y_SEGMENT_5,
+      )
+      .moveTo(
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X_SEGMENT_10,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_Y_SEGMENT_6,
+      )
+      .lineTo(
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X_SEGMENT_10,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_Y_SEGMENT_7,
+      )
+      .moveTo(
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X_SEGMENT_11,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_Y_SEGMENT_8,
+      )
+      .lineTo(
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X_SEGMENT_11,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_Y_SEGMENT_9,
+      )
+      .moveTo(
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X_SEGMENT_12,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_Y_SEGMENT_10,
+      )
+      .lineTo(
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_X_SEGMENT_12,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_Y_SEGMENT_11,
+      ),
+    {
+      stroke: SpectroscopyLabColors.spectrumColorProperty,
+      lineWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.CLUES_LINE_WIDTH,
+      lineJoin: "round",
+    },
   );
-  const handle = new Line(218, 222, 278, 300, {
-    stroke: SpectroscopyLabColors.chartAxisColorProperty,
-    lineWidth: 22,
-    lineCap: "round",
-  });
-  const lens = new Circle(88, {
-    centerX: 160,
-    centerY: 154,
+  const handle = new Line(
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.HANDLE_START_X,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.HANDLE_START_Y,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.HANDLE_END_X,
+    SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.HANDLE_END_Y,
+    {
+      stroke: SpectroscopyLabColors.chartAxisColorProperty,
+      lineWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.HANDLE_LINE_WIDTH,
+      lineCap: "round",
+    },
+  );
+  const lens = new Circle(SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.LENS_RADIUS, {
+    centerX: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.LENS_CENTER_X,
+    centerY: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.LENS_CENTER_Y,
     fill: SpectroscopyLabColors.panelBackgroundColorProperty,
     stroke: SpectroscopyLabColors.highlightColorProperty,
-    lineWidth: 9,
+    lineWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.LENS_LINE_WIDTH,
   });
   // A question-mark symbol avoids introducing language-dependent text into the artwork.
   const question = new Path(
-    new Shape().moveTo(132, 128).cubicCurveTo(132, 88, 197, 88, 197, 125).cubicCurveTo(197, 151, 160, 146, 160, 174),
-    { stroke: SpectroscopyLabColors.textColorProperty, lineWidth: 11, lineCap: "round" },
+    new Shape()
+      .moveTo(SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.QUESTION_X, SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.QUESTION_Y)
+      .cubicCurveTo(
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.QUESTION_CONTROL_1_X,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.QUESTION_CONTROL_1_Y,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.QUESTION_CONTROL_2_X,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.QUESTION_CONTROL_2_Y,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.QUESTION_END_X,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.QUESTION_END_Y,
+      )
+      .cubicCurveTo(
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.QUESTION_CONTROL_1_X_SEGMENT_2,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.QUESTION_CONTROL_1_Y_SEGMENT_2,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.QUESTION_CONTROL_2_X_SEGMENT_2,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.QUESTION_CONTROL_2_Y_SEGMENT_2,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.QUESTION_END_X_SEGMENT_2,
+        SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.QUESTION_END_Y_SEGMENT_2,
+      ),
+    {
+      stroke: SpectroscopyLabColors.textColorProperty,
+      lineWidth: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.QUESTION_LINE_WIDTH,
+      lineCap: "round",
+    },
   );
-  const dot = new Circle(7, { centerX: 160, centerY: 199, fill: SpectroscopyLabColors.textColorProperty });
+  const dot = new Circle(SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.DOT_RADIUS, {
+    centerX: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.DOT_CENTER_X,
+    centerY: SPECTROSCOPY_LAB_SCREEN_ICONS_SETTINGS.DOT_CENTER_Y,
+    fill: SpectroscopyLabColors.textColorProperty,
+  });
   return iconFrom(
     new Node({
       children: [background(), evidence, clues, handle, lens, question, dot],

@@ -1,3 +1,4 @@
+import { ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * EnergyLevelDiagramNode.ts
  *
@@ -17,11 +18,11 @@ import SpectroscopyLabColors from "../../SpectroscopyLabColors.js";
 import type { ElectronicStructure } from "../model/PiSystem.js";
 import type { Prediction } from "../model/UVVisModel.js";
 
-const LEVEL_WIDTH = 64;
-const LABEL_FONT = new PhetFont(11);
-const ELECTRON_FONT = new PhetFont({ size: 11, weight: "bold" });
+const LEVEL_WIDTH: number = ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.LEVEL_WIDTH;
+const LABEL_FONT = new PhetFont(ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.LABEL_FONT_SIZE);
+const ELECTRON_FONT = new PhetFont({ size: ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.ELECTRON_FONT_SIZE, weight: "bold" });
 /** Levels closer than this (px) are degenerate pairs drawn side by side. */
-const DEGENERATE_PX = 2;
+const DEGENERATE_PX: number = ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.DEGENERATE_PX;
 
 type LevelDrawing = {
   readonly x: number;
@@ -58,10 +59,13 @@ function drawLevel(layer: Node, level: LevelDrawing): void {
   layer.addChild(
     new Line(x - LEVEL_WIDTH / 2, y, x + LEVEL_WIDTH / 2, y, {
       stroke: level.selected ? SpectroscopyLabColors.highlightColorProperty : SpectroscopyLabColors.textColorProperty,
-      lineWidth: level.selected ? 3 : 1.5,
+      lineWidth: level.selected ? ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.DRAW_LEVEL_LINE_WIDTH : 1.5,
     }),
   );
-  const hit = new Rectangle(x - LEVEL_WIDTH / 2, y - 5, LEVEL_WIDTH, 10, { fill: "rgba(0,0,0,0)", cursor: "pointer" });
+  const hit = new Rectangle(x - LEVEL_WIDTH / 2, y - 5, LEVEL_WIDTH, ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.HIT_HEIGHT, {
+    fill: "rgba(0,0,0,0)",
+    cursor: "pointer",
+  });
   hit.addInputListener({ down: level.select });
   layer.addChild(hit);
   if (level.occupancy > 0) {
@@ -79,9 +83,9 @@ function drawLevel(layer: Node, level: LevelDrawing): void {
       new Text(level.label, {
         font: LABEL_FONT,
         fill: SpectroscopyLabColors.textColorProperty,
-        left: x + LEVEL_WIDTH / 2 + 4,
+        left: x + LEVEL_WIDTH / 2 + ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.DRAW_LEVEL_LEFT_OFFSET,
         centerY: y,
-        maxWidth: Math.max(level.labelWidth, 10),
+        maxWidth: Math.max(level.labelWidth, ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.DRAW_LEVEL_MAX_WIDTH),
       }),
     );
   }
@@ -109,7 +113,7 @@ export class EnergyLevelDiagramNode extends Node {
     const frame = new Rectangle(0, 0, width, height, {
       fill: SpectroscopyLabColors.chartBackgroundColorProperty,
       stroke: SpectroscopyLabColors.chartAxisColorProperty,
-      cornerRadius: 4,
+      cornerRadius: ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.FRAME_CORNER_RADIUS,
     });
     const axisLabel = new Text(axisLabelProperty, {
       font: LABEL_FONT,
@@ -118,16 +122,22 @@ export class EnergyLevelDiagramNode extends Node {
       maxWidth: height,
     });
     axisLabel.boundsProperty.link(() => {
-      axisLabel.right = -4;
+      axisLabel.right = ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.RIGHT_RIGHT;
       axisLabel.centerY = height / 2;
     });
-    const axis = new ArrowNode(10, height - 8, 10, 8, {
-      headHeight: 6,
-      headWidth: 6,
-      tailWidth: 1,
-      fill: SpectroscopyLabColors.chartAxisColorProperty,
-      stroke: null,
-    });
+    const axis = new ArrowNode(
+      ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.AXIS_START_X,
+      height - 8,
+      ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.AXIS_END_X,
+      ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.AXIS_END_Y,
+      {
+        headHeight: ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.AXIS_HEAD_HEIGHT,
+        headWidth: ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.AXIS_HEAD_WIDTH,
+        tailWidth: 1,
+        fill: SpectroscopyLabColors.chartAxisColorProperty,
+        stroke: null,
+      },
+    );
     const levelsLayer = new Node();
     this.children = [frame, axisLabel, axis, levelsLayer];
 
@@ -175,9 +185,9 @@ export class EnergyLevelDiagramNode extends Node {
       if (lumo > homo && Math.abs(lumoY - homoY) > 10) {
         levelsLayer.addChild(
           new ArrowNode(centerX - LEVEL_WIDTH / 2 - 8, homoY - 2, centerX - LEVEL_WIDTH / 2 - 8, lumoY + 2, {
-            headHeight: 7,
-            headWidth: 7,
-            tailWidth: 2,
+            headHeight: ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.UPDATE_HEAD_HEIGHT,
+            headWidth: ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.UPDATE_HEAD_WIDTH,
+            tailWidth: ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.UPDATE_TAIL_WIDTH,
             fill: SpectroscopyLabColors.peakMarkerColorProperty,
             stroke: null,
           }),

@@ -1,3 +1,5 @@
+import { PERCEIVED_COLOR_SETTINGS } from "../../SpectroscopyLabConstants.js";
+
 /**
  * PerceivedColor.ts
  *
@@ -10,9 +12,9 @@
  * few per cent and table-free.
  */
 
-const STEP_NM = 2;
-const VISIBLE_MIN = 380;
-const VISIBLE_MAX = 780;
+const STEP_NM: number = PERCEIVED_COLOR_SETTINGS.STEP_NM;
+const VISIBLE_MIN: number = PERCEIVED_COLOR_SETTINGS.VISIBLE_MIN;
+const VISIBLE_MAX: number = PERCEIVED_COLOR_SETTINGS.VISIBLE_MAX;
 
 function lobe(lambda: number, mu: number, below: number, above: number): number {
   const t = (lambda - mu) / (lambda < mu ? below : above);

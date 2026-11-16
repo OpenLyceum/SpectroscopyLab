@@ -1,3 +1,4 @@
+import { UNKNOWNS_MODEL_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * UnknownsModel.ts
  *
@@ -46,8 +47,8 @@ export const LEVEL_FAMILIES: readonly (readonly (readonly string[])[])[] = [
 ];
 export const LEVEL_COUNT = LEVEL_FAMILIES.length;
 
-const IR_HALF_WIDTH = 10; // cm⁻¹
-const NMR_FIELD = 300; // MHz
+const IR_HALF_WIDTH: number = UNKNOWNS_MODEL_SETTINGS.IR_HALF_WIDTH; // cm⁻¹
+const NMR_FIELD: number = UNKNOWNS_MODEL_SETTINGS.NMR_FIELD; // MHz
 
 export type Unknown = {
   readonly target: Molecule;

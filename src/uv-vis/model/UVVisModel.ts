@@ -1,3 +1,4 @@
+import { UV_VIS_MODEL_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * UVVisModel.ts
  *
@@ -90,14 +91,17 @@ export const MOLAR_ABSORPTIVITY: Readonly<Record<string, number>> = {
  * above the concentration giving A = MAX_CONCENTRATION_ABSORBANCE in 1 cm, so a dye with
  * ε ≈ 10⁵ and azulene's weak band (ε ≈ 350) are both usable.
  */
-const MAX_CONCENTRATION_ABSORBANCE = 4;
+const MAX_CONCENTRATION_ABSORBANCE: number = UV_VIS_MODEL_SETTINGS.MAX_CONCENTRATION_ABSORBANCE;
 export const CONCENTRATION_FRACTION_RANGE = new Range(0, 1);
-const DEFAULT_CONCENTRATION_FRACTION = 0.1;
-export const PATH_LENGTH_RANGE = new Range(0.1, 5);
+const DEFAULT_CONCENTRATION_FRACTION: number = UV_VIS_MODEL_SETTINGS.DEFAULT_CONCENTRATION_FRACTION;
+export const PATH_LENGTH_RANGE = new Range(
+  UV_VIS_MODEL_SETTINGS.PATH_LENGTH_RANGE_MIN,
+  UV_VIS_MODEL_SETTINGS.PATH_LENGTH_RANGE_MAX,
+);
 const DEFAULT_PATH_LENGTH = 1;
 /** Fraction of stray light reaching the detector; it caps measured absorbance near −log₁₀(s) = 3. */
-const STRAY_LIGHT = 0.001;
-const CALIBRATION_SAMPLES = 201;
+const STRAY_LIGHT: number = UV_VIS_MODEL_SETTINGS.STRAY_LIGHT;
+const CALIBRATION_SAMPLES: number = UV_VIS_MODEL_SETTINGS.CALIBRATION_SAMPLES;
 
 /** E (eV) = a + b·Δx per family, least-squares over the family's measured maxima (azulene excluded). */
 export const HUECKEL_CALIBRATION: Partial<Record<MoleculeFamilyValue, { readonly a: number; readonly b: number }>> = {
@@ -114,10 +118,13 @@ export const ElectronicModel = {
 export type ElectronicModelValue = (typeof ElectronicModel)[keyof typeof ElectronicModel];
 
 /** Wavelength axis of the spectrum, nm. */
-export const WAVELENGTH_RANGE = new Range(150, 800);
-const SPECTRUM_SAMPLES = 651;
+export const WAVELENGTH_RANGE = new Range(
+  UV_VIS_MODEL_SETTINGS.WAVELENGTH_RANGE_MIN,
+  UV_VIS_MODEL_SETTINGS.WAVELENGTH_RANGE_MAX,
+);
+const SPECTRUM_SAMPLES: number = UV_VIS_MODEL_SETTINGS.SPECTRUM_SAMPLES;
 /** Gaussian band width in wavenumber, cm⁻¹ (a typical π→π* band envelope, FWHM ≈ 4700 cm⁻¹). */
-const BAND_SIGMA = 2000;
+const BAND_SIGMA: number = UV_VIS_MODEL_SETTINGS.BAND_SIGMA;
 /** Absorbance at λmax used for the perceived colour (90 % absorbed). */
 const COLOR_ABSORBANCE = 1;
 const INITIAL_MOLECULE = "1-3-butadiene";

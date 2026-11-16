@@ -1,3 +1,4 @@
+import { INFRARED_SCREEN_VIEW_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * InfraredScreenView.ts
  *
@@ -48,23 +49,23 @@ import {
 import { describeLine, describePeak, modeName } from "./InfraredDescriptions.js";
 import { InfraredScreenSummaryContent } from "./InfraredScreenSummaryContent.js";
 
-const VIEWER_SIZE = 380;
-const VIEWER_HEIGHT = 330;
-const CHART_WIDTH = 520;
-const CHART_HEIGHT = 270;
-const CONTROL_WIDTH = 356;
-const INFO_WIDTH = 560;
+const VIEWER_SIZE: number = INFRARED_SCREEN_VIEW_SETTINGS.VIEWER_SIZE;
+const VIEWER_HEIGHT: number = INFRARED_SCREEN_VIEW_SETTINGS.VIEWER_HEIGHT;
+const CHART_WIDTH: number = INFRARED_SCREEN_VIEW_SETTINGS.CHART_WIDTH;
+const CHART_HEIGHT: number = INFRARED_SCREEN_VIEW_SETTINGS.CHART_HEIGHT;
+const CONTROL_WIDTH: number = INFRARED_SCREEN_VIEW_SETTINGS.CONTROL_WIDTH;
+const INFO_WIDTH: number = INFRARED_SCREEN_VIEW_SETTINGS.INFO_WIDTH;
 /** Top of the absorbance axis, a little above the strongest band. */
-const ABSORBANCE_AXIS_MAX = 1.5;
-const TITLE_FONT = new PhetFont({ size: 16, weight: "bold" });
-const INFO_FONT = new PhetFont(14);
+const ABSORBANCE_AXIS_MAX: number = INFRARED_SCREEN_VIEW_SETTINGS.ABSORBANCE_AXIS_MAX;
+const TITLE_FONT = new PhetFont({ size: INFRARED_SCREEN_VIEW_SETTINGS.TITLE_FONT_SIZE, weight: "bold" });
+const INFO_FONT = new PhetFont(INFRARED_SCREEN_VIEW_SETTINGS.INFO_FONT_SIZE);
 /** Below this a mode is reported as IR-inactive (km/mol). */
-const INACTIVE_INTENSITY = 0.5;
-const LINE_ZOOM_WIDTH = 190;
-const LINE_ZOOM_HEIGHT = 80;
+const INACTIVE_INTENSITY: number = INFRARED_SCREEN_VIEW_SETTINGS.INACTIVE_INTENSITY;
+const LINE_ZOOM_WIDTH: number = INFRARED_SCREEN_VIEW_SETTINGS.LINE_ZOOM_WIDTH;
+const LINE_ZOOM_HEIGHT: number = INFRARED_SCREEN_VIEW_SETTINGS.LINE_ZOOM_HEIGHT;
 /** Info text width beside the line zoom. */
 const FINE_TEXT_WIDTH = INFO_WIDTH - LINE_ZOOM_WIDTH - 70;
-const TEMPERATURE_STEP = 10;
+const TEMPERATURE_STEP: number = INFRARED_SCREEN_VIEW_SETTINGS.TEMPERATURE_STEP;
 
 export type InfraredScreenViewOptions = ScreenViewOptions;
 
@@ -88,13 +89,13 @@ export class InfraredScreenView extends ScreenView {
     const viewerFrame = new Rectangle(viewerBounds, {
       fill: SpectroscopyLabColors.chartBackgroundColorProperty,
       stroke: SpectroscopyLabColors.panelBorderColorProperty,
-      cornerRadius: 6,
+      cornerRadius: INFRARED_SCREEN_VIEW_SETTINGS.VIEWER_FRAME_CORNER_RADIUS,
     });
     this.viewerNode = new MoleculeViewerNode(model.viewer, viewerBounds);
     const viewer = new Node({
       children: [viewerFrame, this.viewerNode],
       left: this.layoutBounds.minX + SCREEN_VIEW_MARGIN,
-      top: this.layoutBounds.minY + 12,
+      top: this.layoutBounds.minY + INFRARED_SCREEN_VIEW_SETTINGS.VIEWER_TOP_OFFSET,
     });
 
     // ── Controls ────────────────────────────────────────────────────────────────
@@ -124,7 +125,7 @@ export class InfraredScreenView extends ScreenView {
     const widthSlider = new HSlider(model.halfWidthProperty, HALF_WIDTH_RANGE, {
       ...SPECTROSCOPY_LAB_SLIDER_OPTIONS,
       accessibleName: strings.lineWidthStringProperty,
-      keyboardStep: 2,
+      keyboardStep: INFRARED_SCREEN_VIEW_SETTINGS.WIDTH_SLIDER_KEYBOARD_STEP,
     });
     const widthControl = labeled(strings.lineWidthStringProperty, widthSlider, CONTROL_WIDTH);
     const temperatureLabelProperty = new PatternStringProperty(strings.temperatureStringProperty, {
@@ -141,23 +142,41 @@ export class InfraredScreenView extends ScreenView {
     const controls = new SpectroscopyLabPanel(
       new VBox({
         align: "left",
-        spacing: 8,
+        spacing: INFRARED_SCREEN_VIEW_SETTINGS.CONTROLS_SPACING,
         children: [
           chooser,
-          new HBox({ spacing: 8, children: [label(strings.isotopesStringProperty, 80), isotopeCombo] }),
+          new HBox({
+            spacing: INFRARED_SCREEN_VIEW_SETTINGS.CONTROLS_SPACING,
+            children: [
+              label(strings.isotopesStringProperty, INFRARED_SCREEN_VIEW_SETTINGS.ISOTOPES_LABEL_MAX_WIDTH),
+              isotopeCombo,
+            ],
+          }),
           // The temperature slider takes the line-width slider's place in fine-structure mode.
           new Node({ children: [widthControl, temperatureControl] }),
           new HBox({
-            spacing: 16,
+            spacing: INFRARED_SCREEN_VIEW_SETTINGS.CONTROLS_ITEM_4_SPACING,
             children: [
-              checkbox(model.showSticksProperty, strings.showModesStringProperty, 150),
-              checkbox(model.showRegionsProperty, strings.showRegionsStringProperty, 150),
+              checkbox(
+                model.showSticksProperty,
+                strings.showModesStringProperty,
+                INFRARED_SCREEN_VIEW_SETTINGS.SHOW_STICKS_CHECKBOX_MAX_WIDTH,
+              ),
+              checkbox(
+                model.showRegionsProperty,
+                strings.showRegionsStringProperty,
+                INFRARED_SCREEN_VIEW_SETTINGS.SHOW_REGIONS_CHECKBOX_MAX_WIDTH,
+              ),
             ],
           }),
           fineCheckbox,
         ],
       }),
-      { minWidth: VIEWER_SIZE, left: viewer.left, top: viewer.bottom + 10 },
+      {
+        minWidth: VIEWER_SIZE,
+        left: viewer.left,
+        top: viewer.bottom + INFRARED_SCREEN_VIEW_SETTINGS.CONTROLS_TOP_OFFSET,
+      },
     );
 
     // Info-panel texts (filled in below); created first because the chart switch resizes them.
@@ -181,7 +200,10 @@ export class InfraredScreenView extends ScreenView {
     const sticksProperty = new DerivedProperty([model.peaksProperty], (peaks) =>
       peaks
         .filter((peak) => peak.wavenumber > 0)
-        .map((peak) => ({ position: peak.wavenumber, height: 0.95 * peak.relativeIntensity })),
+        .map((peak) => ({
+          position: peak.wavenumber,
+          height: INFRARED_SCREEN_VIEW_SETTINGS.STICKS_PROPERTY_HEIGHT_FACTOR * peak.relativeIntensity,
+        })),
     );
     // In absorbance the sticks rise to the band height they would reach if isolated.
     const absorbanceSticksProperty = new DerivedProperty([sticksProperty], (sticks) =>
@@ -199,7 +221,9 @@ export class InfraredScreenView extends ScreenView {
         chartWidth: CHART_WIDTH,
         chartHeight: CHART_HEIGHT,
         xRange: IR_RANGE,
-        yRange: absorbance ? new Range(0, ABSORBANCE_AXIS_MAX) : new Range(0, 100),
+        yRange: absorbance
+          ? new Range(0, ABSORBANCE_AXIS_MAX)
+          : new Range(0, INFRARED_SCREEN_VIEW_SETTINGS.CREATE_CHART_RANGE_MAX),
         xInverted: true,
         xTickSpacing: 500,
         yTickSpacing: absorbance ? 0.25 : 20,
@@ -236,14 +260,26 @@ export class InfraredScreenView extends ScreenView {
     const fineSticksProperty = new DerivedProperty([model.fineProperty, model.absorbanceProperty], (fine, absorbance) =>
       (fine?.lines ?? []).map((line) => ({
         position: line.wavenumber,
-        height: absorbance ? (line.intensity * PEAK_ABSORBANCE) / ABSORBANCE_AXIS_MAX : 0.95 * line.intensity,
+        height: absorbance
+          ? (line.intensity * PEAK_ABSORBANCE) / ABSORBANCE_AXIS_MAX
+          : INFRARED_SCREEN_VIEW_SETTINGS.FINE_STICKS_PROPERTY_HEIGHT_FACTOR * line.intensity,
       })),
     );
     // y axes of the fine-structure charts: band and line zoom, in transmittance or absorbance.
     const fineYAxis = (absorbance: boolean, zoom: boolean) => {
       const axis = absorbance
-        ? { max: ABSORBANCE_AXIS_MAX, spacing: zoom ? 0.5 : 0.25, decimals: zoom ? 1 : 2 }
-        : { max: 100, spacing: zoom ? 50 : 20, decimals: 0 };
+        ? {
+            max: ABSORBANCE_AXIS_MAX,
+            spacing: zoom ? 0.5 : INFRARED_SCREEN_VIEW_SETTINGS.AXIS_SPACING,
+            decimals: zoom ? 1 : 2,
+          }
+        : {
+            max: 100,
+            spacing: zoom
+              ? INFRARED_SCREEN_VIEW_SETTINGS.FINE_Y_AXIS_AXIS_SPACING
+              : INFRARED_SCREEN_VIEW_SETTINGS.CONSTRUCTOR_AXIS_SPACING,
+            decimals: 0,
+          };
       return {
         yRange: new Range(0, axis.max),
         yTickSpacing: axis.spacing,
@@ -295,12 +331,12 @@ export class InfraredScreenView extends ScreenView {
     const zoomTransmittanceChart = createZoomChart(false);
     const zoomAbsorbanceChart = createZoomChart(true);
     const lineZoom = new VBox({
-      spacing: 2,
+      spacing: INFRARED_SCREEN_VIEW_SETTINGS.LINE_ZOOM_SPACING,
       children: [
         new Text(new PatternStringProperty(strings.lineZoomStringProperty, { width: 2 * LINE_ZOOM_HALF_WIDTH }), {
-          font: new PhetFont(12),
+          font: new PhetFont(INFRARED_SCREEN_VIEW_SETTINGS.LINE_ZOOM_FONT_SIZE),
           fill: SpectroscopyLabColors.textColorProperty,
-          maxWidth: LINE_ZOOM_WIDTH + 40,
+          maxWidth: LINE_ZOOM_WIDTH + INFRARED_SCREEN_VIEW_SETTINGS.LINE_ZOOM_MAX_WIDTH_OFFSET,
         }),
         new Node({ children: [zoomTransmittanceChart, zoomAbsorbanceChart] }),
       ],
@@ -335,16 +371,23 @@ export class InfraredScreenView extends ScreenView {
 
     // ── Selected-mode panel ─────────────────────────────────────────────────────
     const infoContent = new HBox({
-      spacing: 20,
+      spacing: INFRARED_SCREEN_VIEW_SETTINGS.INFO_CONTENT_SPACING,
       align: "top",
-      children: [new VBox({ align: "left", spacing: 5, children: [modeTitle, ...modeLines] }), lineZoom],
+      children: [
+        new VBox({
+          align: "left",
+          spacing: INFRARED_SCREEN_VIEW_SETTINGS.INFO_CONTENT_ITEM_1_SPACING,
+          children: [modeTitle, ...modeLines],
+        }),
+        lineZoom,
+      ],
     });
     const infoPanel = new SpectroscopyLabPanel(infoContent, {
-      minWidth: INFO_WIDTH + 24,
-      minHeight: 120,
+      minWidth: INFO_WIDTH + INFRARED_SCREEN_VIEW_SETTINGS.INFO_PANEL_MIN_WIDTH_OFFSET,
+      minHeight: INFRARED_SCREEN_VIEW_SETTINGS.INFO_PANEL_MIN_HEIGHT,
       align: "left",
       right: transmittanceChart.right,
-      top: viewer.top + CHART_HEIGHT + 62,
+      top: viewer.top + CHART_HEIGHT + INFRARED_SCREEN_VIEW_SETTINGS.INFO_PANEL_TOP_OFFSET,
     });
     const moleculeNames = StringManager.getInstance().getMoleculeNames();
     const infoMultilink = Multilink.multilinkAny(

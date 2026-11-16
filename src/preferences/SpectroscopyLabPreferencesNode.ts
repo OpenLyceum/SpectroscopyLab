@@ -1,3 +1,4 @@
+import { SPECTROSCOPY_LAB_PREFERENCES_NODE_SETTINGS } from "../SpectroscopyLabConstants.js";
 /**
  * SpectroscopyLabPreferencesNode.ts
  *
@@ -23,20 +24,20 @@ export class SpectroscopyLabPreferencesNode extends VBox {
     // colors (readable on white in both default and projector profiles), not textColorProperty
     // (which is near-white in default mode and would be invisible on the white dialog).
     const header = new Text(prefStrings.titleStringProperty, {
-      font: new PhetFont({ size: 18, weight: "bold" }),
+      font: new PhetFont({ size: SPECTROSCOPY_LAB_PREFERENCES_NODE_SETTINGS.HEADER_FONT_SIZE, weight: "bold" }),
       fill: SpectroscopyLabColors.controlSurfaceTextColorProperty,
     });
 
     const absorbanceCheckbox = new Checkbox(
       preferencesModel.absorbanceProperty,
       new Text(prefStrings.absorbanceStringProperty, {
-        font: new PhetFont(14),
+        font: new PhetFont(SPECTROSCOPY_LAB_PREFERENCES_NODE_SETTINGS.ABSORBANCE_CHECKBOX_FONT_SIZE),
         fill: SpectroscopyLabColors.controlSurfaceTextColorProperty,
       }),
       {
         checkboxColor: SpectroscopyLabColors.controlSurfaceTextColorProperty,
         checkboxColorBackground: SpectroscopyLabColors.controlSurfaceColorProperty,
-        spacing: 8,
+        spacing: SPECTROSCOPY_LAB_PREFERENCES_NODE_SETTINGS.ABSORBANCE_CHECKBOX_SPACING,
         accessibleName: prefStrings.absorbanceStringProperty,
         ...(tandem && { tandem: tandem.createTandem("absorbanceCheckbox") }),
       },
@@ -44,7 +45,7 @@ export class SpectroscopyLabPreferencesNode extends VBox {
 
     super({
       align: "left",
-      spacing: 12,
+      spacing: SPECTROSCOPY_LAB_PREFERENCES_NODE_SETTINGS.CONSTRUCTOR_SPACING,
       children: [header, absorbanceCheckbox],
     });
   }

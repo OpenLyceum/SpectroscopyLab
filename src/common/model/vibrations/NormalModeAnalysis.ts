@@ -1,3 +1,4 @@
+import { NORMAL_MODE_ANALYSIS_SETTINGS } from "../../../SpectroscopyLabConstants.js";
 /**
  * NormalModeAnalysis.ts
  *
@@ -17,22 +18,22 @@ import type { VibrationData } from "../Molecule.js";
 import { symmetricEigen } from "../math/symmetricEigen.js";
 
 /** Electron masses per unified atomic mass unit. */
-const AMU_IN_ELECTRON_MASSES = 1822.888486;
+const AMU_IN_ELECTRON_MASSES: number = NORMAL_MODE_ANALYSIS_SETTINGS.AMU_IN_ELECTRON_MASSES;
 
 /** cm⁻¹ per hartree. */
-const HARTREE_TO_WAVENUMBER = 219474.6313705;
+const HARTREE_TO_WAVENUMBER: number = NORMAL_MODE_ANALYSIS_SETTINGS.HARTREE_TO_WAVENUMBER;
 
 /** Å per bohr. */
-const BOHR = 0.529177210903;
+const BOHR: number = NORMAL_MODE_ANALYSIS_SETTINGS.BOHR;
 
 /** km/mol per (e / √u)² — the IR intensity prefactor (NA π / 3c²) in these units. */
-const INTENSITY_KM_PER_MOL = 974.8801118;
+const INTENSITY_KM_PER_MOL: number = NORMAL_MODE_ANALYSIS_SETTINGS.INTENSITY_KM_PER_MOL;
 
 /**
  * A translation/rotation vector that Gram–Schmidt shrinks below this fraction of the longest candidate
  * is dependent — the rotation about the axis of a linear molecule.
  */
-const EXTERNAL_TOLERANCE = 1e-3;
+const EXTERNAL_TOLERANCE: number = NORMAL_MODE_ANALYSIS_SETTINGS.EXTERNAL_TOLERANCE;
 
 export type NormalMode = {
   /** Scaled harmonic wavenumber, cm⁻¹ (negative for an imaginary mode). */

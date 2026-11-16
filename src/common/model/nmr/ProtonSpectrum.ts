@@ -1,3 +1,4 @@
+import { PROTON_SPECTRUM_SETTINGS } from "../../../SpectroscopyLabConstants.js";
 /**
  * ProtonSpectrum.ts
  *
@@ -37,10 +38,10 @@ export const COUPLING = {
 } as const;
 
 /** Downfield offset of the =CH₂ proton trans to the vinyl CH (it is cis to the substituent), ppm. */
-const TRANS_VINYL_OFFSET = 0.08;
+const TRANS_VINYL_OFFSET: number = PROTON_SPECTRUM_SETTINGS.TRANS_VINYL_OFFSET;
 
 /** Couplings closer than this (Hz) are treated as equal, so the n + 1 rule merges them. */
-const SAME_J = 0.6;
+const SAME_J: number = PROTON_SPECTRUM_SETTINGS.SAME_J;
 
 export type CouplingGroup = {
   /** Coupling constant, Hz. */

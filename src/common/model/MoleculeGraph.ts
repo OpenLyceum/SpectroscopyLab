@@ -1,3 +1,4 @@
+import { MOLECULE_GRAPH_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * MoleculeGraph.ts
  *
@@ -15,7 +16,7 @@
 
 import type { Molecule } from "./Molecule.js";
 
-const AROMATIC_ORDER = 1.5;
+const AROMATIC_ORDER: number = MOLECULE_GRAPH_SETTINGS.AROMATIC_ORDER;
 
 export class MoleculeGraph {
   public readonly molecule: Molecule;

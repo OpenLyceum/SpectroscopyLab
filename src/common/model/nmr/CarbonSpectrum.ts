@@ -1,3 +1,4 @@
+import { CARBON_SPECTRUM_SETTINGS } from "../../../SpectroscopyLabConstants.js";
 /**
  * CarbonSpectrum.ts
  *
@@ -27,7 +28,7 @@ import type { MoleculeGraph } from "../MoleculeGraph.js";
 import { multipletLines } from "./ProtonSpectrum.js";
 
 /** γ(¹H)/γ(¹³C). */
-export const PROTON_TO_CARBON_FREQUENCY = 3.9767;
+export const PROTON_TO_CARBON_FREQUENCY: number = CARBON_SPECTRUM_SETTINGS.PROTON_TO_CARBON_FREQUENCY;
 
 export const CarbonSpectrumType = {
   DECOUPLED: "decoupled",
@@ -38,13 +39,13 @@ export const CarbonSpectrumType = {
 export type CarbonSpectrumTypeValue = (typeof CarbonSpectrumType)[keyof typeof CarbonSpectrumType];
 
 /** Height of a carbon line without attached hydrogens relative to one with them (little NOE, long T₁). */
-const QUATERNARY_HEIGHT = 0.35;
+const QUATERNARY_HEIGHT: number = CARBON_SPECTRUM_SETTINGS.QUATERNARY_HEIGHT;
 
 /** One-bond C–H couplings, Hz. */
 const ONE_BOND_COUPLING = { sp3: 125, alkene: 156, aromatic: 159, aldehyde: 172, nitrile: 250 } as const;
 
 // ── Shift increments, ppm ──────────────────────────────────────────────────────
-const METHANE = -2.3;
+const METHANE: number = CARBON_SPECTRUM_SETTINGS.METHANE;
 /** Grant–Paul: each sp³ carbon 1, 2, 3 bonds away. */
 const ALKYL = [9.1, 9.4, -2.5] as const;
 /** [α, β, γ] for functional groups on (or 1–2 carbons from) an sp³ carbon. */
@@ -65,12 +66,12 @@ const GROUP = {
 } as const;
 type GroupName = keyof typeof GROUP;
 /** A carbon on the far side of an ether O or an amine N (CH₃–O–CH₃, (CH₃)₂NH). */
-const ACROSS_OXYGEN = 4;
-const ACROSS_NITROGEN = 10;
+const ACROSS_OXYGEN: number = CARBON_SPECTRUM_SETTINGS.ACROSS_OXYGEN;
+const ACROSS_NITROGEN: number = CARBON_SPECTRUM_SETTINGS.ACROSS_NITROGEN;
 /** Saturated six-ring carbons (cyclohexane 27.0 ppm, not the 32 the open-chain sums give). */
-const SIX_RING = -5;
+const SIX_RING: number = CARBON_SPECTRUM_SETTINGS.SIX_RING;
 
-const BENZENE = 128.5;
+const BENZENE: number = CARBON_SPECTRUM_SETTINGS.BENZENE;
 /** [ipso, ortho, meta, para] for ring substituents. */
 const AROMATIC = {
   methyl: [9.3, 0.7, -0.1, -2.9],
@@ -79,11 +80,11 @@ const AROMATIC = {
   formyl: [8.2, 1.2, 0.5, 5.8],
 } as const;
 /** Ring-fusion carbons of naphthalene-like systems, and the CH next to them. */
-const FUSION_CARBON = 133;
-const NEXT_TO_FUSION = 128;
-const AWAY_FROM_FUSION = 126;
+const FUSION_CARBON: number = CARBON_SPECTRUM_SETTINGS.FUSION_CARBON;
+const NEXT_TO_FUSION: number = CARBON_SPECTRUM_SETTINGS.NEXT_TO_FUSION;
+const AWAY_FROM_FUSION: number = CARBON_SPECTRUM_SETTINGS.AWAY_FROM_FUSION;
 
-const ETHENE = 123.3;
+const ETHENE: number = CARBON_SPECTRUM_SETTINGS.ETHENE;
 /** [same carbon, other carbon of the C=C] for groups on an alkene carbon. */
 const ALKENE = {
   alkyl: [10.6, -7.9],
@@ -104,12 +105,12 @@ const CARBONYL = {
   ester: [171, 3.5],
   amide: [172.7, 0],
 } as const;
-const CARBON_DIOXIDE = 124.9;
-const NITRILE_CARBON = 116.9;
+const CARBON_DIOXIDE: number = CARBON_SPECTRUM_SETTINGS.CARBON_DIOXIDE;
+const NITRILE_CARBON: number = CARBON_SPECTRUM_SETTINGS.NITRILE_CARBON;
 /** Fallbacks for anything the rules do not cover. */
-const GENERIC_SP2 = 130;
-const GENERIC_SP = 80;
-const IMINIUM_CARBON = 160;
+const GENERIC_SP2: number = CARBON_SPECTRUM_SETTINGS.GENERIC_SP2;
+const GENERIC_SP: number = CARBON_SPECTRUM_SETTINGS.GENERIC_SP;
+const IMINIUM_CARBON: number = CARBON_SPECTRUM_SETTINGS.IMINIUM_CARBON;
 
 export type CarbonEnvironment = {
   /** "1", "2", … in order of decreasing shift. */

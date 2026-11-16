@@ -1,3 +1,4 @@
+import { NMR_SCREEN_VIEW_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * NMRScreenView.ts
  *
@@ -49,19 +50,19 @@ import { describeSignal } from "./NMRDescriptions.js";
 import { NMRScreenSummaryContent } from "./NMRScreenSummaryContent.js";
 import { type SignalRow, SignalTableNode } from "./SignalTableNode.js";
 
-const VIEWER_SIZE = 380;
-const VIEWER_HEIGHT = 330;
-const CHART_WIDTH = 520;
-const CHART_HEIGHT = 200;
-const ZOOM_WIDTH = 230;
-const ZOOM_HEIGHT = 150;
-const TABLE_WIDTH = 230;
-const CONTROL_WIDTH = 356;
-const FIELD_STEP = 20;
-const ZOOM_TITLE_FONT = new PhetFont({ size: 13, weight: "bold" });
-const POSITIVE_RANGE = new Range(0, 1.08);
+const VIEWER_SIZE: number = NMR_SCREEN_VIEW_SETTINGS.VIEWER_SIZE;
+const VIEWER_HEIGHT: number = NMR_SCREEN_VIEW_SETTINGS.VIEWER_HEIGHT;
+const CHART_WIDTH: number = NMR_SCREEN_VIEW_SETTINGS.CHART_WIDTH;
+const CHART_HEIGHT: number = NMR_SCREEN_VIEW_SETTINGS.CHART_HEIGHT;
+const ZOOM_WIDTH: number = NMR_SCREEN_VIEW_SETTINGS.ZOOM_WIDTH;
+const ZOOM_HEIGHT: number = NMR_SCREEN_VIEW_SETTINGS.ZOOM_HEIGHT;
+const TABLE_WIDTH: number = NMR_SCREEN_VIEW_SETTINGS.TABLE_WIDTH;
+const CONTROL_WIDTH: number = NMR_SCREEN_VIEW_SETTINGS.CONTROL_WIDTH;
+const FIELD_STEP: number = NMR_SCREEN_VIEW_SETTINGS.FIELD_STEP;
+const ZOOM_TITLE_FONT = new PhetFont({ size: NMR_SCREEN_VIEW_SETTINGS.ZOOM_TITLE_FONT_SIZE, weight: "bold" });
+const POSITIVE_RANGE = new Range(0, NMR_SCREEN_VIEW_SETTINGS.POSITIVE_RANGE_MAX);
 /** DEPT-135 draws CH₂ downward. */
-const SIGNED_RANGE = new Range(-1.08, 1.08);
+const SIGNED_RANGE = new Range(NMR_SCREEN_VIEW_SETTINGS.SIGNED_RANGE_MIN, NMR_SCREEN_VIEW_SETTINGS.SIGNED_RANGE_MAX);
 
 export type NMRScreenViewOptions = ScreenViewOptions;
 
@@ -90,12 +91,12 @@ export class NMRScreenView extends ScreenView {
         new Rectangle(viewerBounds, {
           fill: SpectroscopyLabColors.chartBackgroundColorProperty,
           stroke: SpectroscopyLabColors.panelBorderColorProperty,
-          cornerRadius: 6,
+          cornerRadius: NMR_SCREEN_VIEW_SETTINGS.VIEWER_CORNER_RADIUS,
         }),
         this.viewerNode,
       ],
       left: this.layoutBounds.minX + SCREEN_VIEW_MARGIN,
-      top: this.layoutBounds.minY + 12,
+      top: this.layoutBounds.minY + NMR_SCREEN_VIEW_SETTINGS.VIEWER_TOP_OFFSET,
     });
 
     // ── Controls ────────────────────────────────────────────────────────────────
@@ -103,7 +104,11 @@ export class NMRScreenView extends ScreenView {
     const fieldControl = new NumberControl(strings.fieldStringProperty, model.fieldProperty, FIELD_RANGE, {
       ...SPECTROSCOPY_LAB_NUMBER_CONTROL_OPTIONS,
       delta: FIELD_STEP,
-      titleNodeOptions: { font: CONTROL_FONT, fill: SpectroscopyLabColors.textColorProperty, maxWidth: 140 },
+      titleNodeOptions: {
+        font: CONTROL_FONT,
+        fill: SpectroscopyLabColors.textColorProperty,
+        maxWidth: NMR_SCREEN_VIEW_SETTINGS.FIELD_CONTROL_MAX_WIDTH,
+      },
       numberDisplayOptions: { valuePattern: strings.fieldValueStringProperty, decimalPlaces: 0 },
       sliderOptions: {
         ...SPECTROSCOPY_LAB_NUMBER_CONTROL_OPTIONS.sliderOptions,
@@ -120,19 +125,31 @@ export class NMRScreenView extends ScreenView {
         { value: Nucleus.CARBON, label: strings.carbonStringProperty },
       ],
       strings.nucleusStringProperty,
-      80,
+      NMR_SCREEN_VIEW_SETTINGS.NUCLEUS_RADIO_GROUP_MAX_WIDTH,
       "horizontal",
     );
     const protonOptions = new VBox({
       align: "left",
-      spacing: 6,
+      spacing: NMR_SCREEN_VIEW_SETTINGS.PROTON_OPTIONS_SPACING,
       children: [
         new HBox({
-          spacing: 14,
+          spacing: NMR_SCREEN_VIEW_SETTINGS.PROTON_OPTIONS_ITEM_1_SPACING,
           children: [
-            checkbox(model.d2oShakeProperty, strings.d2oShakeStringProperty, 110),
-            checkbox(model.showTmsProperty, strings.tmsStringProperty, 110),
-            checkbox(model.showIntegralProperty, strings.integralStringProperty, 90),
+            checkbox(
+              model.d2oShakeProperty,
+              strings.d2oShakeStringProperty,
+              NMR_SCREEN_VIEW_SETTINGS.D2O_SHAKE_CHECKBOX_MAX_WIDTH,
+            ),
+            checkbox(
+              model.showTmsProperty,
+              strings.tmsStringProperty,
+              NMR_SCREEN_VIEW_SETTINGS.SHOW_TMS_CHECKBOX_MAX_WIDTH,
+            ),
+            checkbox(
+              model.showIntegralProperty,
+              strings.integralStringProperty,
+              NMR_SCREEN_VIEW_SETTINGS.SHOW_INTEGRAL_CHECKBOX_MAX_WIDTH,
+            ),
           ],
         }),
         checkbox(model.secondOrderProperty, strings.secondOrderStringProperty, CONTROL_WIDTH - 30),
@@ -146,7 +163,7 @@ export class NMRScreenView extends ScreenView {
       })),
       listParent,
       strings.spectrumTypeStringProperty,
-      180,
+      NMR_SCREEN_VIEW_SETTINGS.CARBON_SPECTRUM_TYPE_COMBO_BOX_MAX_WIDTH,
     );
     const carbonFrequencyText = new Text("", {
       font: CONTROL_FONT,
@@ -155,12 +172,25 @@ export class NMRScreenView extends ScreenView {
     });
     const carbonOptions = new VBox({
       align: "left",
-      spacing: 6,
+      spacing: NMR_SCREEN_VIEW_SETTINGS.CARBON_OPTIONS_SPACING,
       children: [
-        new HBox({ spacing: 8, children: [label(strings.spectrumTypeStringProperty, 90), spectrumTypeCombo] }),
         new HBox({
-          spacing: 14,
-          children: [checkbox(model.showTmsProperty, strings.tmsStringProperty, 110), carbonFrequencyText],
+          spacing: NMR_SCREEN_VIEW_SETTINGS.CARBON_OPTIONS_ITEM_1_SPACING,
+          children: [
+            label(strings.spectrumTypeStringProperty, NMR_SCREEN_VIEW_SETTINGS.SPECTRUM_TYPE_LABEL_MAX_WIDTH),
+            spectrumTypeCombo,
+          ],
+        }),
+        new HBox({
+          spacing: NMR_SCREEN_VIEW_SETTINGS.CARBON_OPTIONS_ITEM_2_SPACING,
+          children: [
+            checkbox(
+              model.showTmsProperty,
+              strings.tmsStringProperty,
+              NMR_SCREEN_VIEW_SETTINGS.SHOW_TMS_CHECKBOX_MAX_WIDTH,
+            ),
+            carbonFrequencyText,
+          ],
         }),
       ],
     });
@@ -169,15 +199,21 @@ export class NMRScreenView extends ScreenView {
     const controls = new SpectroscopyLabPanel(
       new VBox({
         align: "left",
-        spacing: 8,
+        spacing: NMR_SCREEN_VIEW_SETTINGS.CONTROLS_SPACING,
         children: [
           chooser,
-          new HBox({ spacing: 10, children: [label(strings.nucleusStringProperty, 80), nucleusRadio] }),
+          new HBox({
+            spacing: NMR_SCREEN_VIEW_SETTINGS.CONTROLS_ITEM_2_SPACING,
+            children: [
+              label(strings.nucleusStringProperty, NMR_SCREEN_VIEW_SETTINGS.NUCLEUS_LABEL_MAX_WIDTH),
+              nucleusRadio,
+            ],
+          }),
           fieldControl,
           optionSlot,
         ],
       }),
-      { minWidth: VIEWER_SIZE, left: viewer.left, top: viewer.bottom + 10 },
+      { minWidth: VIEWER_SIZE, left: viewer.left, top: viewer.bottom + NMR_SCREEN_VIEW_SETTINGS.CONTROLS_TOP_OFFSET },
     );
 
     // ── Spectrum ────────────────────────────────────────────────────────────────
@@ -199,7 +235,7 @@ export class NMRScreenView extends ScreenView {
       chartWidth: CHART_WIDTH,
       chartHeight: CHART_HEIGHT,
       xRange: SHIFT_RANGE,
-      yRange: new Range(0, 1.08),
+      yRange: new Range(0, NMR_SCREEN_VIEW_SETTINGS.CHART_RANGE_MAX),
       xInverted: true,
       xTickSpacing: 1,
       yTickSpacing: 0.25,
@@ -249,13 +285,13 @@ export class NMRScreenView extends ScreenView {
     const zoomTitle = new Text("", {
       font: ZOOM_TITLE_FONT,
       fill: SpectroscopyLabColors.textColorProperty,
-      maxWidth: ZOOM_WIDTH + 40,
+      maxWidth: ZOOM_WIDTH + NMR_SCREEN_VIEW_SETTINGS.ZOOM_TITLE_MAX_WIDTH_OFFSET,
     });
     const zoomChart = new SpectrumChartNode({
       chartWidth: ZOOM_WIDTH,
       chartHeight: ZOOM_HEIGHT,
       xRange: ZOOM_RANGE,
-      yRange: new Range(0, 1.08),
+      yRange: new Range(0, NMR_SCREEN_VIEW_SETTINGS.ZOOM_CHART_RANGE_MAX),
       xInverted: true,
       xTickSpacing: 0.1,
       xTickDecimals: 1,
@@ -296,7 +332,7 @@ export class NMRScreenView extends ScreenView {
     });
     const zoomGroup = new VBox({
       align: "left",
-      spacing: 6,
+      spacing: NMR_SCREEN_VIEW_SETTINGS.ZOOM_GROUP_SPACING,
       children: [zoomTitle, new Node({ children: [zoomChart, carbonZoomChart] })],
     });
 
@@ -339,14 +375,18 @@ export class NMRScreenView extends ScreenView {
           : model.environmentsProperty.value.map(protonRow),
     );
     const table = new SignalTableNode(rowsProperty, model.selectedSignalProperty, TABLE_WIDTH);
-    const tablePanel = new SpectroscopyLabPanel(table, { minWidth: TABLE_WIDTH + 24, minHeight: 200, align: "left" });
+    const tablePanel = new SpectroscopyLabPanel(table, {
+      minWidth: TABLE_WIDTH + NMR_SCREEN_VIEW_SETTINGS.TABLE_PANEL_MIN_WIDTH_OFFSET,
+      minHeight: NMR_SCREEN_VIEW_SETTINGS.TABLE_PANEL_MIN_HEIGHT,
+      align: "left",
+    });
 
     const lowerRow = new HBox({
-      spacing: 22,
+      spacing: NMR_SCREEN_VIEW_SETTINGS.LOWER_ROW_SPACING,
       align: "top",
       children: [zoomGroup, tablePanel],
       right: chart.right,
-      top: chart.bottom + 14,
+      top: chart.bottom + NMR_SCREEN_VIEW_SETTINGS.LOWER_ROW_TOP_OFFSET,
     });
 
     const zoomTitleMultilink = Multilink.multilinkAny(
