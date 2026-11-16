@@ -122,7 +122,7 @@ export class EnergyLevelDiagramNode extends Node {
       maxWidth: height,
     });
     axisLabel.boundsProperty.link(() => {
-      axisLabel.right = ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.RIGHT_RIGHT;
+      axisLabel.right = ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS.AXIS_LABEL_RIGHT;
       axisLabel.centerY = height / 2;
     });
     const axis = new ArrowNode(

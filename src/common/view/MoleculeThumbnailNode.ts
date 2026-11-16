@@ -16,7 +16,7 @@ import { Rotation3 } from "../model/structure/Rotation3.js";
 import { MoleculeRenderer } from "./MoleculeRenderer.js";
 
 const VIEW_ROTATION = Rotation3.aboutAxis([1, 0, 0], -25).times(Rotation3.aboutAxis([0, 1, 0], 20));
-const FONT = new PhetFont(MOLECULE_THUMBNAIL_NODE_SETTINGS.FONT_FONT_SIZE).toCSS();
+const FONT = new PhetFont(MOLECULE_THUMBNAIL_NODE_SETTINGS.FONT_SIZE).toCSS();
 
 export class MoleculeThumbnailNode extends CanvasNode {
   private readonly moleculeRenderer = new MoleculeRenderer();

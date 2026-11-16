@@ -47,16 +47,16 @@ export const SPECTROSCOPY_LAB_CONTROL_OPTIONS_SETTINGS = {
   NUMBER_CONTROL_SLIDER_TRACK_SIZE_HEIGHT: 3,
   /** Checkbox box width (px). */
   CHECKBOX_BOX_WIDTH: 16,
-  /** Spectroscopy lab number control options scale (dimensionless). */
-  SPECTROSCOPY_LAB_NUMBER_CONTROL_OPTIONS_SCALE: 0.75,
-  /** Spectroscopy lab number control options slider padding (px). */
-  SPECTROSCOPY_LAB_NUMBER_CONTROL_OPTIONS_SLIDER_PADDING: 4,
-  /** Spectroscopy lab number control options arrow button spacing (px). */
-  SPECTROSCOPY_LAB_NUMBER_CONTROL_OPTIONS_ARROW_BUTTON_SPACING: 3,
-  /** Spectroscopy lab number control options vertical spacing (px). */
-  SPECTROSCOPY_LAB_NUMBER_CONTROL_OPTIONS_VERTICAL_SPACING: 4,
-  /** Spectroscopy lab checkbox options spacing (px). */
-  SPECTROSCOPY_LAB_CHECKBOX_OPTIONS_SPACING: 4,
+  /** NumberControl arrow-button scale (dimensionless). */
+  NUMBER_CONTROL_SCALE: 0.75,
+  /** NumberControl layout slider padding (px). */
+  NUMBER_CONTROL_SLIDER_PADDING: 4,
+  /** NumberControl layout arrow-button spacing (px). */
+  NUMBER_CONTROL_ARROW_BUTTON_SPACING: 3,
+  /** NumberControl layout vertical spacing (px). */
+  NUMBER_CONTROL_VERTICAL_SPACING: 4,
+  /** Checkbox label spacing (px). */
+  CHECKBOX_SPACING: 4,
 } as const;
 
 /** Settings for common/SpectroscopyLabPanel.ts. */
@@ -428,7 +428,7 @@ export const SPIN_SYSTEM_SETTINGS = {
   MAX_EXACT_SPINS: 9,
   /** Lines weaker than this (in protons) are dropped. */
   MIN_WEIGHT: 1e-4,
-  /** * Lines of one signal closer than this (Hz) are merged: the many (near-)degenerate transitions of methyl groups, split by hundredths of a hertz, far below the 0.8 Hz natural line width. */
+  /** Lines of one signal closer than this (Hz) are merged: the many (near-)degenerate transitions of methyl groups, split by hundredths of a hertz, far below the 0.8 Hz natural line width. */
   MERGE_HZ: 0.1,
 } as const;
 
@@ -450,7 +450,7 @@ export const NORMAL_MODE_ANALYSIS_SETTINGS = {
   BOHR: 0.529177210903,
   /** km/mol per (e / √u)² — the IR intensity prefactor (NA π / 3c²) in these units. */
   INTENSITY_KM_PER_MOL: 974.8801118,
-  /** * A translation/rotation vector that Gram–Schmidt shrinks below this fraction of the longest candidate is dependent — the rotation about the axis of a linear molecule. */
+  /** A translation/rotation vector that Gram–Schmidt shrinks below this fraction of the longest candidate is dependent — the rotation about the axis of a linear molecule. */
   EXTERNAL_TOLERANCE: 1e-3,
 } as const;
 
@@ -508,14 +508,14 @@ export const MOLECULE_RENDERER_SETTINGS = {
   LOBE_OFFSET: 0.9,
   /** Lobe alpha (dimensionless). */
   LOBE_ALPHA: 0.62,
-  /** Line width line width (px). */
-  LINE_WIDTH_LINE_WIDTH: 3,
+  /** Overlay / selection stroke width (px). */
+  LINE_WIDTH: 3,
 } as const;
 
 /** Settings for common/view/MoleculeThumbnailNode.ts. */
 export const MOLECULE_THUMBNAIL_NODE_SETTINGS = {
-  /** Font font size (px). */
-  FONT_FONT_SIZE: 11,
+  /** Thumbnail label font size (px). */
+  FONT_SIZE: 11,
 } as const;
 
 /** Settings for common/view/MoleculeViewerNode.ts. */
@@ -559,8 +559,8 @@ export const SPECTRUM_CHART_NODE_SETTINGS = {
   REGION_FONT_SIZE: 10,
   /** Click tolerance, px. */
   PICK_TOLERANCE: 8,
-  /** Top top (px). */
-  TOP_TOP: 3,
+  /** Region label top inset inside the chart (px). */
+  REGION_LABEL_TOP: 3,
   /** Plot line width (px). */
   PLOT_LINE_WIDTH: 1.6,
   /** Secondary plot line width (px). */
@@ -941,8 +941,8 @@ export const ENERGY_LEVEL_DIAGRAM_NODE_SETTINGS = {
   HIT_HEIGHT: 10,
   /** Frame corner radius (px). */
   FRAME_CORNER_RADIUS: 4,
-  /** Right right (px). */
-  RIGHT_RIGHT: -4,
+  /** Energy-axis label right edge relative to the diagram (px). */
+  AXIS_LABEL_RIGHT: -4,
   /** Axis start x (px). */
   AXIS_START_X: 10,
   /** Axis end x (px). */

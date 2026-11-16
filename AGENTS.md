@@ -30,6 +30,7 @@ computes IR intensities, so changing an isotope only changes masses. Never hand-
 
 | File | Purpose |
 |---|---|
+| `src/SpectroscopyLabConstants.ts` | Shared layout, chrome, and physics numeric constants |
 | `scripts/qm/molecules.json` | Molecule catalogue: id, PubChem CID, expected formula (checked on fetch) |
 | `scripts/qm/fetch_structures.py` | PubChem 3D SDF → `scripts/qm/structures/` |
 | `scripts/qm/compute_vibrations.py` | SDF → optimise → Hessian + dipole derivatives → `src/common/model/library/data/<id>.json` |

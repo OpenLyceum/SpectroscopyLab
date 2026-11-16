@@ -161,7 +161,7 @@ export class SpectrumChartNode extends Node {
           SPECTRUM_CHART_NODE_SETTINGS.LAYOUT_REGIONS_MAX_WIDTH,
         );
         label.centerX = Math.min(left, right) + width / 2;
-        label.top = SPECTRUM_CHART_NODE_SETTINGS.TOP_TOP;
+        label.top = SPECTRUM_CHART_NODE_SETTINGS.REGION_LABEL_TOP;
       }
     };
     for (const { label } of regionNodes) {

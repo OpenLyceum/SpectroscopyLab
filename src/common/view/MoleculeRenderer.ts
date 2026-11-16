@@ -327,7 +327,7 @@ export class MoleculeRenderer {
     const { colors } = input;
     ctx.save();
     ctx.strokeStyle = colors.highlight;
-    ctx.lineWidth = MOLECULE_RENDERER_SETTINGS.LINE_WIDTH_LINE_WIDTH;
+    ctx.lineWidth = MOLECULE_RENDERER_SETTINGS.LINE_WIDTH;
     for (const i of input.highlighted) {
       this.ring(ctx, i, 3);
     }
