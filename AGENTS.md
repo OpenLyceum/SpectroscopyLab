@@ -93,6 +93,7 @@ computes IR intensities, so changing an isotope only changes masses. Never hand-
 - **`src/common/model/library/data/` and `scripts/qm/structures/`** are generated data, excluded
   from Biome in `biome.json`.
 - **`scripts/qm/`** is a dev-only Python pipeline with its own gitignored `.venv`; CI never runs it.
+- `memory-leak:MoleculeCanvasNode`: file-private paint helper with no dispose; owned by `MoleculeViewerNode`.
 
 ### `package.json` overrides
 
