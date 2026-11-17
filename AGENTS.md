@@ -87,7 +87,6 @@ computes IR intensities, so changing an isotope only changes masses. Never hand-
 
 ## Compliance carve-outs
 
-- `.github/workflows/ci.yml`: `unused-mode: advisory` until both Knip default and production baselines are reviewed and cleared ([Baton/doc/knip.md](https://github.com/OpenLyceum/Baton/blob/main/doc/knip.md)).
 - **Data colours outside `SpectroscopyLabColors.ts`.** Atom colours are CPK data
   (`common/model/AtomStyle.ts`, Jmol's table in `structure/Elements.ts`), as in MolScope.
   UV-Vis solution fills in `UVVisScreenView.ts` also build `new Color(r, g, b)` from model-predicted
