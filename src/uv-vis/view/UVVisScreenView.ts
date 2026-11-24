@@ -10,7 +10,7 @@ import { UV_VIS_SCREEN_VIEW_SETTINGS } from "../../SpectroscopyLabConstants.js";
  */
 
 import { DerivedProperty, Multilink, PatternStringProperty, type TReadOnlyProperty } from "scenerystack/axon";
-import { Bounds2, Range, toFixed } from "scenerystack/dot";
+import { Bounds2, Range, roundSymmetric, toFixed } from "scenerystack/dot";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import { StringUtils } from "scenerystack/phetcommon";
 import { Color, HBox, Node, Rectangle, Text, VBox } from "scenerystack/scenery";
@@ -116,13 +116,13 @@ export class UVVisScreenView extends ScreenView {
     // The slider sets a fraction of the molecule's maximum concentration; its label shows µmol/L.
     const concentrationSlider = new HSlider(model.concentrationFractionProperty, CONCENTRATION_FRACTION_RANGE, {
       ...SPECTROSCOPY_LAB_SLIDER_OPTIONS,
-      constrainValue: (value: number) => Math.round(value * CONCENTRATION_STEPS) / CONCENTRATION_STEPS,
+      constrainValue: (value: number) => roundSymmetric(value * CONCENTRATION_STEPS) / CONCENTRATION_STEPS,
       keyboardStep: 5 / CONCENTRATION_STEPS,
       accessibleName: strings.concentrationNameStringProperty,
     });
     const pathLengthSlider = new HSlider(model.pathLengthProperty, PATH_LENGTH_RANGE, {
       ...SPECTROSCOPY_LAB_SLIDER_OPTIONS,
-      constrainValue: (value: number) => Math.round(value / PATH_LENGTH_STEP) * PATH_LENGTH_STEP,
+      constrainValue: (value: number) => roundSymmetric(value / PATH_LENGTH_STEP) * PATH_LENGTH_STEP,
       keyboardStep: PATH_LENGTH_STEP,
       accessibleName: strings.pathLengthNameStringProperty,
     });
@@ -403,7 +403,7 @@ export class UVVisScreenView extends ScreenView {
       pick: (c) => {
         const fraction = c / model.maxConcentrationProperty.value;
         model.concentrationFractionProperty.value = CONCENTRATION_FRACTION_RANGE.constrainValue(
-          Math.round(fraction * CONCENTRATION_STEPS) / CONCENTRATION_STEPS,
+          roundSymmetric(fraction * CONCENTRATION_STEPS) / CONCENTRATION_STEPS,
         );
       },
       step: () => undefined,

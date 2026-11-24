@@ -1,3 +1,4 @@
+import { roundSymmetric } from "scenerystack/dot";
 import { MOLECULE_RENDERER_SETTINGS } from "../../SpectroscopyLabConstants.js";
 /**
  * MoleculeRenderer.ts
@@ -214,7 +215,7 @@ export class MoleculeRenderer {
     // Start each half at the sphere surface so it does not paint over the ball's face.
     const trimA = Math.min(0.45, Math.sqrt(Math.max(0, (this.sr[a] ?? 0) ** 2 - (width / 2) ** 2)) / len);
     const trimB = Math.min(0.45, Math.sqrt(Math.max(0, (this.sr[b] ?? 0) ** 2 - (width / 2) ** 2)) / len);
-    const strands = Math.max(1, Math.min(3, Math.round(order)));
+    const strands = Math.max(1, Math.min(3, roundSymmetric(order)));
     const strandWidth = strands > 1 ? width / (strands * 0.8) : width;
     const spacing = strands > 1 ? strandWidth * 1.3 : 0;
     const px = (-dy / len) * spacing;
@@ -402,9 +403,9 @@ export class MoleculeRenderer {
 
 /** Scales a colour's brightness (0 = black, 1 = unchanged). */
 function shadeColor(color: number, factor: number): number {
-  const r = Math.round(((color >> 16) & 255) * factor);
-  const g = Math.round(((color >> 8) & 255) * factor);
-  const b = Math.round((color & 255) * factor);
+  const r = roundSymmetric(((color >> 16) & 255) * factor);
+  const g = roundSymmetric(((color >> 8) & 255) * factor);
+  const b = roundSymmetric((color & 255) * factor);
   return (Math.min(255, r) << 16) | (Math.min(255, g) << 8) | Math.min(255, b);
 }
 
@@ -414,8 +415,8 @@ function lighten(color: number, amount: number): number {
   const g = (color >> 8) & 255;
   const b = color & 255;
   return (
-    (Math.round(r + (255 - r) * amount) << 16) |
-    (Math.round(g + (255 - g) * amount) << 8) |
-    Math.round(b + (255 - b) * amount)
+    (roundSymmetric(r + (255 - r) * amount) << 16) |
+    (roundSymmetric(g + (255 - g) * amount) << 8) |
+    roundSymmetric(b + (255 - b) * amount)
   );
 }

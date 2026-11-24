@@ -1,3 +1,4 @@
+import { roundSymmetric } from "scenerystack/dot";
 import { PERCEIVED_COLOR_SETTINGS } from "../../SpectroscopyLabConstants.js";
 
 /**
@@ -60,7 +61,7 @@ function gammaEncode(linear: number): number {
 /** sRGB components 0–255 of light transmitted through a sample with absorbance A(λ). */
 export function perceivedColor(absorbance: (lambda: number) => number): [number, number, number] {
   const rgb = linearRgb((lambda) => 10 ** -absorbance(lambda));
-  return [0, 1, 2].map((c) => Math.round(255 * gammaEncode((rgb[c] ?? 0) / (WHITE[c] ?? 1)))) as [
+  return [0, 1, 2].map((c) => roundSymmetric(255 * gammaEncode((rgb[c] ?? 0) / (WHITE[c] ?? 1)))) as [
     number,
     number,
     number,
