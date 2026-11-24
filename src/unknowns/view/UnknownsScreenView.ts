@@ -363,8 +363,8 @@ export class UnknownsScreenView extends ScreenView {
     const nmrCurve = curve((u) => u.nmrSpectrum);
     const nmrIntegral = curve((u) => u.nmrIntegral);
     const carbonCurve = curve((u) => u.carbonSpectrum);
-    const noSelection = new Property<number | null>(null);
-    const showIntegral = new Property(true);
+    const noSelectionProperty = new Property<number | null>(null);
+    const showIntegralProperty = new Property(true);
     const chartOptions = {
       pick: () => undefined,
       step: () => undefined,
@@ -383,7 +383,7 @@ export class UnknownsScreenView extends ScreenView {
       xLabelStringProperty: irStrings.wavenumberAxisStringProperty,
       yLabelStringProperty: irStrings.transmittanceAxisStringProperty,
       curveProperty: irCurve,
-      selectedXProperty: noSelection,
+      selectedXProperty: noSelectionProperty,
       tagName: "div",
       accessibleName: strings.irTitleStringProperty,
       accessibleParagraph: a11y.irDescriptionStringProperty,
@@ -402,8 +402,8 @@ export class UnknownsScreenView extends ScreenView {
       yLabelStringProperty: nmrStrings.intensityAxisStringProperty,
       curveProperty: nmrCurve,
       secondaryCurveProperty: nmrIntegral,
-      secondaryVisibleProperty: showIntegral,
-      selectedXProperty: noSelection,
+      secondaryVisibleProperty: showIntegralProperty,
+      selectedXProperty: noSelectionProperty,
       tagName: "div",
       accessibleName: strings.nmrTitleStringProperty,
       accessibleParagraph: a11y.nmrDescriptionStringProperty,
@@ -421,7 +421,7 @@ export class UnknownsScreenView extends ScreenView {
       xLabelStringProperty: nmrStrings.shiftAxisStringProperty,
       yLabelStringProperty: nmrStrings.intensityAxisStringProperty,
       curveProperty: carbonCurve,
-      selectedXProperty: noSelection,
+      selectedXProperty: noSelectionProperty,
       tagName: "div",
       accessibleName: strings.carbonTitleStringProperty,
       accessibleParagraph: a11y.carbonDescriptionStringProperty,

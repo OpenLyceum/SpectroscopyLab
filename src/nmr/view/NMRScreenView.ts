@@ -12,7 +12,7 @@ import { NMR_SCREEN_VIEW_SETTINGS } from "../../SpectroscopyLabConstants.js";
  */
 
 import { DerivedProperty, Multilink } from "scenerystack/axon";
-import { Bounds2, Range, toFixed } from "scenerystack/dot";
+import { Bounds2, Range, roundSymmetric, toFixed } from "scenerystack/dot";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import { StringUtils } from "scenerystack/phetcommon";
 import { HBox, Node, Rectangle, Text, VBox } from "scenerystack/scenery";
@@ -112,7 +112,7 @@ export class NMRScreenView extends ScreenView {
       numberDisplayOptions: { valuePattern: strings.fieldValueStringProperty, decimalPlaces: 0 },
       sliderOptions: {
         ...SPECTROSCOPY_LAB_NUMBER_CONTROL_OPTIONS.sliderOptions,
-        constrainValue: (value: number) => Math.round(value / FIELD_STEP) * FIELD_STEP,
+        constrainValue: (value: number) => roundSymmetric(value / FIELD_STEP) * FIELD_STEP,
         keyboardStep: FIELD_STEP,
         majorTicks: [60, 300, 600].map((value) => ({ value })),
       },

@@ -13,7 +13,7 @@ import { INFRARED_SCREEN_VIEW_SETTINGS } from "../../SpectroscopyLabConstants.js
  */
 
 import { DerivedProperty, Multilink, PatternStringProperty } from "scenerystack/axon";
-import { Bounds2, Range, toFixed } from "scenerystack/dot";
+import { Bounds2, Range, roundSymmetric, toFixed } from "scenerystack/dot";
 import { type EmptySelfOptions, optionize } from "scenerystack/phet-core";
 import { StringUtils } from "scenerystack/phetcommon";
 import { HBox, Node, Rectangle, Text, VBox } from "scenerystack/scenery";
@@ -133,7 +133,7 @@ export class InfraredScreenView extends ScreenView {
     });
     const temperatureSlider = new HSlider(model.temperatureProperty, TEMPERATURE_RANGE, {
       ...SPECTROSCOPY_LAB_SLIDER_OPTIONS,
-      constrainValue: (value: number) => Math.round(value / TEMPERATURE_STEP) * TEMPERATURE_STEP,
+      constrainValue: (value: number) => roundSymmetric(value / TEMPERATURE_STEP) * TEMPERATURE_STEP,
       keyboardStep: TEMPERATURE_STEP * 5,
       accessibleName: strings.temperatureNameStringProperty,
     });
