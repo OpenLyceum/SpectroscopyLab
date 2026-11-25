@@ -42,6 +42,7 @@
     "start": "vite",
     "test": "vitest run",
     "test:architecture": "node --test tests/*.node-test.ts",
+    "test:browser": "playwright test --project=chromium tests/browser",
     "test:fuzz": "node scripts/test-fuzz.ts",
     "test:fuzz:long": "node scripts/test-fuzz.ts 300",
     "test:fuzz:quick": "node scripts/test-fuzz.ts 10",
